@@ -9,13 +9,12 @@
 :root{
   --bg:#101114; --sidebar:#15161a; --panel:#191a1f; --panel2:#202127;
   --gold:#d4af37; --gold-light:#f3d879; --text:#f5f5f5; --muted:#92939d;
-  --green:#43c58a; --red:#ef6464; --border:#26272e; --radius:14px;
+  --green:#43c58a; --red:#ef6464; --amber:#f0a83c; --border:#26272e; --radius:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter','Segoe UI',Arial,sans-serif;}
 body{background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
 button{cursor:pointer;font-family:inherit;}
 
-/* ============ LAYOUT ============ */
 .app{display:flex;min-height:100vh;}
 .sidebar{
   width:245px;background:var(--sidebar);border-right:1px solid var(--border);
@@ -61,7 +60,6 @@ button{cursor:pointer;font-family:inherit;}
 
 .main{margin-left:245px;flex:1;min-width:0;display:flex;flex-direction:column;transition:margin .3s ease;}
 
-/* ============ HEADER ============ */
 .topbar{
   position:sticky;top:0;z-index:200;background:rgba(16,17,20,.92);
   backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
@@ -83,12 +81,10 @@ button{cursor:pointer;font-family:inherit;}
 .header-btn svg{width:15px;height:15px;fill:currentColor;}
 .header-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,175,55,.06);}
 
-/* ============ PAGES ============ */
 .page{display:none;padding:24px 28px 48px;animation:fadeIn .35s ease;}
 .page.active{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
-/* ============ STATS ============ */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
 .stat-card{
   background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
@@ -108,17 +104,12 @@ button{cursor:pointer;font-family:inherit;}
 .stat-value{font-size:26px;font-weight:800;margin-top:6px;letter-spacing:-.5px;}
 .stat-desc{font-size:11px;color:var(--muted);margin-top:6px;}
 
-/* ============ PANELS ============ */
 .dash-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:22px;}
-.panel{
-  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
-  padding:20px;
-}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
 .panel-title{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:16px;}
 .panel-title svg{width:16px;height:16px;fill:var(--gold);}
 .panel-title .hint{font-size:11px;color:var(--muted);font-weight:500;margin-left:auto;}
 
-/* growth chart */
 .chart-wrap{display:flex;align-items:flex-end;gap:10px;height:150px;padding-top:10px;}
 .chart-bar{
   flex:1;background:linear-gradient(180deg,var(--gold),rgba(212,175,55,.15));
@@ -126,12 +117,7 @@ button{cursor:pointer;font-family:inherit;}
   transition:all .4s ease;opacity:.85;
 }
 .chart-bar:hover{opacity:1;box-shadow:0 0 16px rgba(212,175,55,.4);}
-.chart-bar span{
-  position:absolute;bottom:-20px;left:0;right:0;text-align:center;
-  font-size:10px;color:var(--muted);
-}
 
-/* info list */
 .info-row{
   display:flex;justify-content:space-between;align-items:center;
   padding:11px 0;border-bottom:1px dashed var(--border);font-size:12.5px;
@@ -146,7 +132,6 @@ button{cursor:pointer;font-family:inherit;}
 }
 .badge-live .dot-online{width:6px;height:6px;}
 
-/* ============ TABLES ============ */
 .table-toolbar{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
 .search-box{position:relative;flex:1;min-width:200px;}
 .search-box input{
@@ -184,7 +169,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 }
 .btn-detail:hover{background:var(--gold);color:#000;}
 
-/* ============ USER DETAIL ============ */
 .detail-grid{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start;}
 .profile-card{
   background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
@@ -232,8 +216,24 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 }
 .danger-btn:hover{background:var(--red);color:#fff;}
 
-/* ============ INBOX ============ */
-.sub-tabs{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.inbox-status-bar{
+  background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.2);
+  border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:11.5px;
+  color:var(--muted);display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:8px;
+}
+.inbox-status-bar b{color:var(--gold);font-weight:800;}
+.inbox-status-bar .types{
+  font-family:'Consolas',monospace;font-size:10px;
+  background:rgba(0,0,0,.3);padding:3px 8px;border-radius:6px;color:var(--gold);
+}
+.inbox-status-bar.error{background:rgba(239,100,100,.08);border-color:rgba(239,100,100,.3);color:var(--red);}
+.btn-reset-hidden{
+  background:transparent;border:1px solid rgba(239,100,100,.4);color:var(--red);
+  padding:2px 8px;border-radius:6px;font-size:10px;margin-left:6px;font-weight:700;
+}
+
+.sub-tabs{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
 .sub-tab{
   padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;
   background:var(--panel);border:1px solid var(--border);color:var(--muted);transition:.2s;
@@ -244,34 +244,44 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 .sub-tab .badge{background:var(--red);color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;}
 .sub-tab.active .badge{background:var(--gold);color:#000;}
 
-.deposit-user-card{
+.pending-item{
   background:var(--panel);border:1px solid var(--border);border-radius:12px;
-  padding:15px;margin-bottom:12px;cursor:pointer;display:flex;justify-content:space-between;
-  align-items:center;gap:12px;transition:.2s;border-left:3px solid var(--green);
+  padding:15px;margin-bottom:12px;cursor:pointer;transition:.2s;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  border-left:3px solid var(--green);
 }
-.deposit-user-card:hover{border-color:rgba(212,175,55,.4);transform:translateX(2px);}
-.deposit-user-info{display:flex;align-items:center;gap:12px;min-width:0;}
-.deposit-user-avatar{
+.pending-item.withdraw{border-left-color:var(--amber);}
+.pending-item.unknown{border-left-color:#888;}
+.pending-item:hover{border-color:rgba(212,175,55,.4);transform:translateX(2px);}
+.pending-info{display:flex;align-items:center;gap:12px;min-width:0;flex:1;}
+.pending-avatar{
   width:44px;height:44px;border-radius:50%;flex-shrink:0;
   background:linear-gradient(135deg,var(--green),#7ad9ab);
   display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:16px;
 }
-.deposit-user-info h3{font-size:14px;font-weight:700;}
-.deposit-user-info p{font-size:11px;color:var(--muted);margin-top:2px;}
-.deposit-user-nominal{text-align:right;flex-shrink:0;}
-.deposit-user-nominal .nom{font-size:15px;color:var(--green);font-weight:800;}
-.deposit-user-nominal .time{font-size:10px;color:var(--muted);margin-top:3px;}
+.pending-avatar.withdraw{background:linear-gradient(135deg,var(--amber),#f5c776);}
+.pending-avatar.unknown{background:linear-gradient(135deg,#888,#bbb);}
+.pending-info h3{font-size:14px;font-weight:700;}
+.pending-info p{font-size:11px;color:var(--muted);margin-top:2px;}
+.pending-nominal{text-align:right;flex-shrink:0;}
+.pending-nominal .nom{font-size:15px;color:var(--green);font-weight:800;}
+.pending-nominal .nom.withdraw{color:var(--amber);}
+.pending-nominal .time{font-size:10px;color:var(--muted);margin-top:3px;}
+.type-warning{
+  display:inline-block;font-size:9px;font-weight:800;letter-spacing:.5px;
+  background:rgba(240,168,60,.15);color:var(--amber);
+  border:1px solid rgba(240,168,60,.35);padding:1px 6px;border-radius:5px;
+  margin-left:6px;text-transform:uppercase;
+}
 
 .inbox-item{
   background:var(--panel);border:1px solid var(--border);border-radius:12px;
-  padding:16px;margin-bottom:12px;border-left:3px solid var(--gold);
+  padding:16px;margin-bottom:12px;border-left:3px solid var(--amber);
 }
-.inbox-item.withdraw{border-left-color:#ff9800;}
 .inbox-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .inbox-user{font-size:14px;font-weight:800;}
 .inbox-type{font-size:10.5px;padding:4px 9px;border-radius:20px;font-weight:700;}
-.inbox-type.deposit{background:rgba(67,197,138,.15);color:var(--green);border:1px solid rgba(67,197,138,.3);}
-.inbox-type.withdraw{background:rgba(255,152,0,.15);color:#ff9800;border:1px solid rgba(255,152,0,.3);}
+.inbox-type.withdraw{background:rgba(240,168,60,.15);color:var(--amber);border:1px solid rgba(240,168,60,.3);}
 .inbox-actions{display:flex;gap:10px;margin-top:14px;}
 .inbox-btn{flex:1;padding:12px;border:none;border-radius:9px;font-weight:800;cursor:pointer;font-size:12.5px;transition:.2s;}
 .inbox-btn.setujui{background:var(--green);color:#04261a;}
@@ -285,19 +295,16 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 .withdraw-row .label{color:var(--muted);}
 .withdraw-row .value{font-weight:700;text-align:right;}
 .withdraw-warning{
-  background:rgba(255,152,0,.12);border:1px solid rgba(255,152,0,.35);color:#ffb74d;
+  background:rgba(240,168,60,.12);border:1px solid rgba(240,168,60,.35);color:var(--amber);
   padding:11px;border-radius:9px;font-size:11px;font-weight:700;line-height:1.5;margin-top:12px;text-align:center;
 }
 .bukti-thumb{width:100%;max-width:220px;border-radius:9px;margin-top:10px;border:2px solid rgba(212,175,55,.4);cursor:pointer;display:block;}
 .empty-inbox{text-align:center;padding:60px 20px;color:var(--muted);}
 .empty-inbox svg{width:44px;height:44px;fill:var(--border);margin-bottom:12px;}
 
-/* ============ CHAT ============ */
 .chat-layout{display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 200px);min-height:480px;}
 .chat-sidebar{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow-y:auto;display:flex;flex-direction:column;}
 .chat-sidebar-head{padding:16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:800;}
-
-/* Filter tabs chat */
 .chat-filters{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg);}
 .chat-filter-tab{
   flex:1;padding:7px 8px;border-radius:8px;font-size:10.5px;font-weight:700;cursor:pointer;
@@ -349,8 +356,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 .chat-msg.user{align-self:flex-start;background:var(--panel2);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border);}
 .chat-msg.admin{align-self:flex-end;background:linear-gradient(135deg,rgba(212,175,55,.9),rgba(243,216,121,.9));color:#000;border-bottom-right-radius:4px;font-weight:500;}
 .chat-msg .time{font-size:10px;opacity:.65;margin-top:5px;display:block;}
-
-/* Image message */
 .chat-msg.img-only{padding:5px;background:var(--panel2) !important;border:1px solid var(--border) !important;}
 .chat-msg.admin.img-only{background:rgba(212,175,55,.15) !important;border-color:rgba(212,175,55,.35) !important;}
 .chat-img{
@@ -361,7 +366,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 .chat-msg.img-only .time{padding:3px 6px 2px;color:var(--muted);}
 .chat-msg.admin.img-only .time{color:#000;opacity:.65;}
 
-/* Photo preview bar */
 .chat-img-preview{
   display:none;padding:10px 14px;background:var(--panel2);border-top:1px solid var(--border);
   gap:10px;align-items:center;
@@ -398,7 +402,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 }
 .chat-window-input .send-btn:hover{filter:brightness(1.08);}
 
-/* ============ ACTIVITY / TIMELINE ============ */
 .timeline{position:relative;padding-left:28px;}
 .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);}
 .tl-item{position:relative;padding:0 0 22px 0;}
@@ -432,7 +435,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 }
 .tl-btn-view:hover{background:var(--gold);color:#000;}
 
-/* ============ SETTINGS ============ */
 .settings-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;max-width:640px;}
 .security-note{
   display:flex;gap:10px;align-items:flex-start;margin-top:18px;padding:14px;
@@ -440,7 +442,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 }
 .security-note svg{width:18px;height:18px;fill:var(--gold);flex-shrink:0;margin-top:1px;}
 
-/* ============ FULLSCREEN & LOADING & NOTIF ============ */
 .fs-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:2000;justify-content:center;align-items:center;padding:15px;cursor:zoom-out;}
 .fs-overlay.active{display:flex;}
 .fs-overlay img{max-width:100%;max-height:100%;border-radius:10px;border:2px solid var(--gold);}
@@ -457,11 +458,10 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 .neo-notif.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .neo-notif.success{border-color:var(--green);}
 .neo-notif.error{border-color:var(--red);}
+.neo-notif.warn{border-color:var(--amber);}
 
-/* sidebar overlay mobile */
 .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;}
 
-/* ============ RESPONSIVE ============ */
 @media(max-width:1100px){
   .dash-grid{grid-template-columns:1fr;}
   .detail-grid{grid-template-columns:1fr;}
@@ -504,7 +504,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
 <div class="app">
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="logo">NEO189</div>
@@ -549,9 +548,7 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
     </div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main">
-    <!-- HEADER -->
     <header class="topbar">
       <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
         <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
@@ -566,7 +563,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       </button>
     </header>
 
-    <!-- ============ DASHBOARD ============ -->
     <section class="page active" id="content-dashboard">
       <div class="stats-grid">
         <div class="stat-card">
@@ -633,7 +629,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       </div>
     </section>
 
-    <!-- ============ USERS ============ -->
     <section class="page" id="content-users">
       <div class="table-toolbar">
         <div class="search-box">
@@ -658,7 +653,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       <div id="userList" style="display:none;"></div>
     </section>
 
-    <!-- ============ USER DETAIL ============ -->
     <section class="page" id="content-userdetail">
       <div class="detail-page-header" style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--gold);">
         <button class="back-btn" onclick="closeUserDetail()" style="background:var(--panel);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:9px;font-weight:700;">← Kembali</button>
@@ -757,8 +751,11 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       </div>
     </section>
 
-    <!-- ============ INBOX ============ -->
     <section class="page" id="content-inbox">
+      <div class="inbox-status-bar" id="inboxStatusBar">
+        <span>Total pending: <b id="inboxTotalPending">0</b> · Ditampilkan: <b id="inboxShownCount">0</b><span id="inboxHiddenWrap" style="display:none;"> · Disembunyikan: <b id="inboxHiddenCount" style="color:var(--amber);">0</b> <button class="btn-reset-hidden" onclick="resetHiddenPending()">Reset</button></span></span>
+        <span class="types" id="inboxTypesSeen">-</span>
+      </div>
       <div class="sub-tabs">
         <div class="sub-tab active" id="subTabDeposit" onclick="switchSubTab('deposit')">INBOX DEPOSIT <span class="badge" id="depositBadge">0</span></div>
         <div class="sub-tab" id="subTabWithdraw" onclick="switchSubTab('withdraw')">INBOX WITHDRAW <span class="badge" id="withdrawBadge">0</span></div>
@@ -767,7 +764,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       <div id="withdrawInboxContainer" style="display:none;"></div>
     </section>
 
-    <!-- ============ CHAT ============ -->
     <section class="page" id="content-chat">
       <div class="chat-layout">
         <div class="chat-sidebar">
@@ -806,7 +802,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       </div>
     </section>
 
-    <!-- ============ ACTIVITY ============ -->
     <section class="page" id="content-activity">
       <div class="panel">
         <div class="panel-title">
@@ -819,7 +814,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       </div>
     </section>
 
-    <!-- ============ SETTINGS ============ -->
     <section class="page" id="content-settings">
       <div class="settings-card">
         <div class="section-title" style="margin-top:0;">
@@ -850,12 +844,8 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 <input type="file" id="chatImageInput" accept="image/*" style="display:none;" onchange="handleChatImageSelect(event)">
 
 <script>
-// ============================================================
-// ⚠️ GANTI KEY DI BAWAH DENGAN ANON KEY ANDA (SAMA SEPERTI DI neo189.html)
-// ============================================================
 var SUPABASE_URL = 'https://cvgpgysveeeisawydjza.supabase.co';
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2Z3BneXN2ZWVlaXNhd3lkanphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5Njc1MTcsImV4cCI6MjEwNzU0MzUxN30.PG7CXEyhtXYmfQj5KDbwKuRHObBz5tGsV5KRoM9v_iU';
-// ============================================================
 
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -868,15 +858,58 @@ var chatWindowInterval = null;
 var lastChatTimestamp = null;
 var currentChatFilter = 'all';
 var pendingChatImage = null;
+var lastPendingIds = {};
+var USER_DETAIL_FORM_HTML = null;
 
-var PAGE_META = {
-    dashboard: { title: 'Dashboard', desc: 'Ringkasan statistik dan aktivitas sistem' },
-    users:     { title: 'Manajemen Pengguna', desc: 'Kelola seluruh data pengguna terdaftar' },
-    inbox:     { title: 'Inbox Permintaan', desc: 'Proses deposit dan withdraw masuk' },
-    chat:      { title: 'Pusat Chat', desc: 'Balas pesan dari pengguna secara langsung' },
-    activity:  { title: 'Aktivitas', desc: 'Riwayat aktivitas sistem terbaru' },
-    settings:  { title: 'Pengaturan', desc: 'Konfigurasi sistem dan keamanan' }
-};
+var HIDDEN_PENDING_KEY = 'neo189_hidden_pending_v1';
+
+/* ============ LOCAL STORAGE: HIDDEN PENDING ============ */
+function getHiddenPendingIds() {
+    try {
+        var raw = localStorage.getItem(HIDDEN_PENDING_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch(e) { return []; }
+}
+function hidePendingLocally(id) {
+    var arr = getHiddenPendingIds();
+    var sid = String(id);
+    if (arr.map(String).indexOf(sid) === -1) {
+        arr.push(sid);
+        try { localStorage.setItem(HIDDEN_PENDING_KEY, JSON.stringify(arr)); } catch(e) {}
+    }
+}
+function isPendingHidden(id) {
+    return getHiddenPendingIds().map(String).indexOf(String(id)) !== -1;
+}
+function resetHiddenPending() {
+    if (!confirm('Reset cache hidden? Item yang sudah di-approve/reject akan MUNCUL LAGI di Inbox jika masih ada di database.')) return;
+    localStorage.removeItem(HIDDEN_PENDING_KEY);
+    showNotif('Cache hidden dibersihkan', 'info');
+    loadPending();
+}
+
+/* ============ NORMALIZE FIELD ============ */
+function getPendingType(p) {
+    var raw = (p.type != null ? p.type : p.tipe != null ? p.tipe : p.jenis != null ? p.jenis : p.kategori != null ? p.kategori : '');
+    var s = String(raw).toLowerCase().trim();
+    if (s === 'deposit' || s === 'setor' || s === 'setoran' || s === 'topup' || s === 'top-up' || s === 'top up' || s === 'dep' || s === 'd' || s === 'masuk') return 'deposit';
+    if (s === 'withdraw' || s === 'wd' || s === 'tarik' || s === 'penarikan' || s === 'w' || s === 'keluar') return 'withdraw';
+    return 'unknown';
+}
+function getPendingRawType(p) {
+    return p.type != null ? p.type : p.tipe != null ? p.tipe : p.jenis != null ? p.jenis : '?';
+}
+function getPendingUser(p) {
+    return p.username || p.user || p.nama || p.username_user || 'Unknown';
+}
+function getPendingNominal(p) {
+    var n = p.nominal != null ? p.nominal : p.jumlah != null ? p.jumlah : p.amount != null ? p.amount : 0;
+    return parseFloat(n) || 0;
+}
+function getPendingDate(p) {
+    var d = p.tanggal || p.created_at || p.timestamp || null;
+    return d ? new Date(d) : new Date();
+}
 
 function showNotif(message, type) {
     type = type || 'info';
@@ -888,7 +921,7 @@ function showNotif(message, type) {
     notif.innerHTML = '<span>' + message + '</span>';
     document.body.appendChild(notif);
     setTimeout(function() { notif.classList.add('show'); }, 50);
-    setTimeout(function() { notif.classList.remove('show'); setTimeout(function() { notif.remove(); }, 400); }, 3200);
+    setTimeout(function() { notif.classList.remove('show'); setTimeout(function() { notif.remove(); }, 400); }, 4000);
 }
 
 function toggleSidebar() {
@@ -942,6 +975,15 @@ function switchSubTab(type) {
 function formatRupiah(angka) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
 }
+
+var PAGE_META = {
+    dashboard: { title: 'Dashboard', desc: 'Ringkasan statistik dan aktivitas sistem' },
+    users:     { title: 'Manajemen Pengguna', desc: 'Kelola seluruh data pengguna terdaftar' },
+    inbox:     { title: 'Inbox Permintaan', desc: 'Proses deposit dan withdraw masuk' },
+    chat:      { title: 'Pusat Chat', desc: 'Balas pesan dari pengguna secara langsung' },
+    activity:  { title: 'Aktivitas', desc: 'Riwayat aktivitas sistem terbaru' },
+    settings:  { title: 'Pengaturan', desc: 'Konfigurasi sistem dan keamanan' }
+};
 
 function refreshAll() {
     loadUsers();
@@ -1099,6 +1141,10 @@ function filterUsers() {
 }
 
 function openUserDetail(username) {
+    // Restore form HTML kalau sebelumnya ketimpa detail pending
+    var panel = document.querySelector('#content-userdetail .panel');
+    if (panel && USER_DETAIL_FORM_HTML) panel.innerHTML = USER_DETAIL_FORM_HTML;
+
     var user = allUsers.find(function(u) { return u.username === username; });
     if (!user) return;
     currentEditingUser = user;
@@ -1140,6 +1186,8 @@ function openUserDetail(username) {
 }
 
 function closeUserDetail() {
+    var panel = document.querySelector('#content-userdetail .panel');
+    if (panel && USER_DETAIL_FORM_HTML) panel.innerHTML = USER_DETAIL_FORM_HTML;
     currentEditingUser = null;
     switchTab('users');
 }
@@ -1205,20 +1253,105 @@ async function deleteUser() {
 async function loadPending() {
     try {
         var res = await supabase.from('pending').select('*').order('tanggal', { ascending: false });
-        if (res.error) throw res.error;
-        allPending = res.data || [];
-        var deposits = allPending.filter(function(p) { return p.type === 'deposit'; });
-        var withdraws = allPending.filter(function(p) { return p.type === 'withdraw'; });
+        if (res.error) {
+            res = await supabase.from('pending').select('*');
+            if (res.error) throw res.error;
+        }
+        var rawAll = res.data || [];
+        var hiddenCount = 0;
+
+        // Filter: buang yang sudah di-hide lokal
+        allPending = rawAll.filter(function(p) {
+            if (isPendingHidden(p.id)) { hiddenCount++; return false; }
+            return true;
+        });
+
+        var deposits = [];
+        var withdraws = [];
+        allPending.forEach(function(p) {
+            var t = getPendingType(p);
+            if (t === 'deposit') deposits.push(p);
+            else if (t === 'withdraw') withdraws.push(p);
+            else deposits.push(p);
+        });
+
+        function safeSort(a, b) { return getPendingDate(b) - getPendingDate(a); }
+        deposits.sort(safeSort);
+        withdraws.sort(safeSort);
 
         document.getElementById('inboxBadge').innerText = allPending.length;
         document.getElementById('depositBadge').innerText = deposits.length;
         document.getElementById('withdrawBadge').innerText = withdraws.length;
         if (document.getElementById('dashPending')) document.getElementById('dashPending').innerText = allPending.length;
 
+        // Status bar
+        if (document.getElementById('inboxTotalPending')) document.getElementById('inboxTotalPending').innerText = rawAll.length;
+        if (document.getElementById('inboxShownCount')) document.getElementById('inboxShownCount').innerText = allPending.length;
+        var hiddenWrap = document.getElementById('inboxHiddenWrap');
+        if (hiddenWrap) {
+            if (hiddenCount > 0) {
+                hiddenWrap.style.display = 'inline';
+                document.getElementById('inboxHiddenCount').innerText = hiddenCount;
+            } else {
+                hiddenWrap.style.display = 'none';
+            }
+        }
+        var rawTypes = {};
+        rawAll.forEach(function(p) { rawTypes[getPendingRawType(p)] = (rawTypes[getPendingRawType(p)] || 0) + 1; });
+        var typesStr = Object.keys(rawTypes).map(function(k){ return k + ':' + rawTypes[k]; }).join(' · ') || 'kosong';
+        if (document.getElementById('inboxTypesSeen')) document.getElementById('inboxTypesSeen').innerText = typesStr;
+
+        // Notif pending baru
+        var newIds = [];
+        allPending.forEach(function(p) {
+            if (!lastPendingIds[p.id]) newIds.push(p);
+        });
+        if (newIds.length > 0 && Object.keys(lastPendingIds).length > 0) {
+            newIds.forEach(function(np) {
+                showNotif('🔔 Permintaan ' + getPendingType(np).toUpperCase() + ' baru: ' + getPendingUser(np) + ' — ' + formatRupiah(getPendingNominal(np)), 'success');
+            });
+        }
+        lastPendingIds = {};
+        allPending.forEach(function(p) { lastPendingIds[p.id] = true; });
+
         renderDepositInbox(deposits);
         renderWithdrawInbox(withdraws);
         renderDashboardStats();
-    } catch (e) {}
+    } catch (e) {
+        console.error('[loadPending]', e);
+        var statusBar = document.getElementById('inboxStatusBar');
+        if (statusBar) {
+            statusBar.classList.add('error');
+            statusBar.innerHTML = '<span>⚠ Gagal memuat pending: ' + (e.message || 'unknown error') + '</span>';
+        }
+        showNotif('Gagal memuat inbox: ' + e.message, 'error');
+    }
+}
+
+function renderPendingCard(p) {
+    var type = getPendingType(p);
+    var rawType = getPendingRawType(p);
+    var user = getPendingUser(p);
+    var nominal = getPendingNominal(p);
+    var d = getPendingDate(p);
+
+    var cls = type === 'withdraw' ? ' withdraw' : (type === 'unknown' ? ' unknown' : '');
+    var avatarCls = type === 'withdraw' ? ' withdraw' : (type === 'unknown' ? ' unknown' : '');
+    var nomCls = type === 'withdraw' ? ' withdraw' : '';
+    var warning = '';
+    if (type === 'unknown') {
+        warning = '<span class="type-warning">Tipe: ' + escapeHtml(String(rawType)) + '</span>';
+    }
+
+    return '<div class="pending-item' + cls + '" onclick="openDepositDetail(' + p.id + ')">' +
+        '<div class="pending-info">' +
+        '<div class="pending-avatar' + avatarCls + '">' + (user ? user.charAt(0).toUpperCase() : '?') + '</div>' +
+        '<div><h3>' + escapeHtml(user) + warning + '</h3><p>' + (type === 'withdraw' ? 'Klik untuk lihat detail' : 'Klik untuk lihat bukti') + '</p></div>' +
+        '</div>' +
+        '<div class="pending-nominal">' +
+        '<div class="nom' + nomCls + '">' + formatRupiah(nominal) + '</div>' +
+        '<div class="time">' + d.toLocaleString('id-ID') + '</div>' +
+        '</div></div>';
 }
 
 function renderDepositInbox(deposits) {
@@ -1229,15 +1362,7 @@ function renderDepositInbox(deposits) {
     }
     container.innerHTML = '';
     deposits.forEach(function(p) {
-        container.innerHTML += '<div class="deposit-user-card" onclick="openDepositDetail(' + p.id + ')">' +
-            '<div class="deposit-user-info">' +
-            '<div class="deposit-user-avatar">' + p.username.charAt(0).toUpperCase() + '</div>' +
-            '<div><h3>' + p.username + '</h3><p>Klik untuk lihat bukti</p></div>' +
-            '</div>' +
-            '<div class="deposit-user-nominal">' +
-            '<div class="nom">' + formatRupiah(p.nominal) + '</div>' +
-            '<div class="time">' + new Date(p.tanggal).toLocaleString('id-ID') + '</div>' +
-            '</div></div>';
+        container.innerHTML += renderPendingCard(p);
     });
 }
 
@@ -1245,36 +1370,41 @@ function openDepositDetail(pendingId) {
     var p = allPending.find(function(x) { return x.id === pendingId; });
     if (!p) return;
 
+    var type = getPendingType(p);
+    var user = getPendingUser(p);
+    var nominal = getPendingNominal(p);
+    var d = getPendingDate(p);
+
     document.querySelectorAll('.page').forEach(function(pg) { pg.classList.remove('active'); });
     document.getElementById('content-userdetail').classList.add('active');
-    document.getElementById('pageTitle').innerText = 'Detail ' + (p.type === 'deposit' ? 'Deposit' : 'Withdraw');
+    document.getElementById('pageTitle').innerText = 'Detail ' + (type === 'withdraw' ? 'Withdraw' : 'Deposit');
     document.getElementById('pageDesc').innerText = 'Verifikasi permintaan pengguna';
 
-    document.getElementById('detailAvatar').innerText = p.username.charAt(0).toUpperCase();
-    document.getElementById('detailProfileName').innerText = p.username;
-    document.getElementById('detailProfileEmail').innerText = 'Permohonan ' + p.type;
-    document.getElementById('detailProfileStatus').innerText = (p.type || '').toUpperCase();
+    document.getElementById('detailAvatar').innerText = user.charAt(0).toUpperCase();
+    document.getElementById('detailProfileName').innerText = user;
+    document.getElementById('detailProfileEmail').innerText = 'Permohonan ' + type;
+    document.getElementById('detailProfileStatus').innerText = type.toUpperCase();
     document.getElementById('detailProfileBank').innerText = p.bank || '-';
     document.getElementById('detailProfileRek').innerText = p.no_rekening || '-';
-    document.getElementById('detailSubtitle').innerText = 'Permohonan ' + p.type;
-    document.getElementById('statSaldo').innerText = formatRupiah(p.nominal);
-    document.getElementById('statLevel').innerText = (p.type || '').toUpperCase();
-    document.getElementById('statDeposit').innerText = new Date(p.tanggal).toLocaleString('id-ID');
-    document.getElementById('statMaxWin').innerText = p.username;
+    document.getElementById('detailSubtitle').innerText = 'Permohonan ' + type;
+    document.getElementById('statSaldo').innerText = formatRupiah(nominal);
+    document.getElementById('statLevel').innerText = type.toUpperCase();
+    document.getElementById('statDeposit').innerText = d.toLocaleString('id-ID');
+    document.getElementById('statMaxWin').innerText = user;
 
-    var buktiUrl = p.bukti_url || '';
+    var buktiUrl = p.bukti_url || p.bukti || p.gambar || '';
     var html = '<div class="section-title">Bukti Transfer</div>' +
         (buktiUrl ? '<img src="' + buktiUrl + '" class="bukti-thumb" onclick="openFullscreen(\'' + buktiUrl + '\')" onerror="this.style.display=\'none\'">' : '<p style="color:var(--muted);font-size:12px;">Tidak ada bukti</p>') +
         '<div class="section-title">Detail Permintaan</div>' +
         '<div class="withdraw-detail">' +
-        '<div class="withdraw-row"><span class="label">USERNAME</span><span class="value">' + p.username + '</span></div>' +
-        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:' + (p.type === 'deposit' ? 'var(--green)' : '#ff9800') + ';">' + formatRupiah(p.nominal) + '</span></div>' +
-        '<div class="withdraw-row"><span class="label">TANGGAL</span><span class="value">' + new Date(p.tanggal).toLocaleString('id-ID') + '</span></div>' +
+        '<div class="withdraw-row"><span class="label">USERNAME</span><span class="value">' + escapeHtml(user) + '</span></div>' +
+        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:' + (type === 'withdraw' ? 'var(--amber)' : 'var(--green)') + ';">' + formatRupiah(nominal) + '</span></div>' +
+        '<div class="withdraw-row"><span class="label">TANGGAL</span><span class="value">' + d.toLocaleString('id-ID') + '</span></div>' +
         '</div>' +
         '<div class="inbox-actions">' +
-        (p.type === 'deposit'
-            ? '<button class="inbox-btn setujui" onclick="approveDeposit(' + p.id + ');">SETUJUI</button>'
-            : '<button class="inbox-btn setujui" onclick="approveWithdraw(' + p.id + ');">SETUJUI</button>') +
+        (type === 'withdraw'
+            ? '<button class="inbox-btn setujui" onclick="approveWithdraw(' + p.id + ');">SETUJUI</button>'
+            : '<button class="inbox-btn setujui" onclick="approveDeposit(' + p.id + ');">SETUJUI</button>') +
         '<button class="inbox-btn tolak" onclick="rejectPending(' + p.id + ');">TOLAK</button>' +
         '</div>';
 
@@ -1293,13 +1423,15 @@ function renderWithdrawInbox(withdraws) {
     }
     container.innerHTML = '';
     withdraws.forEach(function(p) {
-        container.innerHTML += '<div class="inbox-item withdraw">' +
+        var user = getPendingUser(p);
+        var nominal = getPendingNominal(p);
+        container.innerHTML += '<div class="inbox-item">' +
             '<div class="inbox-header">' +
-            '<span class="inbox-user">' + p.username + '</span>' +
+            '<span class="inbox-user">' + escapeHtml(user) + '</span>' +
             '<span class="inbox-type withdraw">WITHDRAW</span>' +
             '</div>' +
             '<div class="withdraw-detail">' +
-            '<div class="withdraw-row"><span class="label">TOTAL WITHDRAW</span><span class="value" style="color:#ff9800;">' + formatRupiah(p.nominal) + '</span></div>' +
+            '<div class="withdraw-row"><span class="label">TOTAL WITHDRAW</span><span class="value" style="color:var(--amber);">' + formatRupiah(nominal) + '</span></div>' +
             '<div class="withdraw-row"><span class="label">NAMA REK</span><span class="value">' + (p.username_bank || '-') + '</span></div>' +
             '<div class="withdraw-row"><span class="label">NO REK</span><span class="value">' + (p.no_rekening || '-') + '</span></div>' +
             '<div class="withdraw-row"><span class="label">BANK</span><span class="value">' + (p.bank || '-') + '</span></div>' +
@@ -1312,20 +1444,61 @@ function renderWithdrawInbox(withdraws) {
     });
 }
 
+/* ============ HELPER: PASTIKAN PENDING TERHAPUS ============ */
+/* Return true kalau pending sudah hilang dari DB. False kalau harus di-hide lokal. */
+async function ensurePendingDeleted(pendingId) {
+    // Cek apakah masih ada
+    try {
+        var check = await supabase.from('pending').select('id').eq('id', pendingId);
+        if (check.error) throw check.error;
+        var stillExists = check.data && check.data.length > 0;
+        if (!stillExists) return true; // RPC sudah hapus
+    } catch (e) {
+        console.warn('[ensurePendingDeleted] check failed:', e);
+        return false; // Gagal cek → coba delete
+    }
+
+    // Coba delete
+    try {
+        var del = await supabase.from('pending').delete().eq('id', pendingId).select();
+        if (del.error) {
+            console.warn('[ensurePendingDeleted] delete error:', del.error);
+            return false;
+        }
+        if (del.data && del.data.length > 0) return true; // Berhasil hapus
+        // data kosong → RLS block
+        console.warn('[ensurePendingDeleted] RLS block: 0 rows deleted for id', pendingId);
+        return false;
+    } catch (e) {
+        console.warn('[ensurePendingDeleted] delete exception:', e);
+        return false;
+    }
+}
+
 async function approveDeposit(pendingId) {
     var p = allPending.find(function(x) { return x.id === pendingId; });
     if (!p) return;
 
     document.getElementById('loading').style.display = 'flex';
     try {
+        // 1. RPC approve (update saldo di server)
         var res = await supabase.rpc('approve_deposit', {
-            p_username: p.username,
-            p_nominal: p.nominal,
+            p_username: getPendingUser(p),
+            p_nominal: getPendingNominal(p),
             p_pending_id: p.id
         });
         if (res.error) throw res.error;
+
+        // 2. Pastikan pending benar-benar terhapus
+        var deleted = await ensurePendingDeleted(p.id);
         document.getElementById('loading').style.display = 'none';
-        showNotif('Deposit disetujui!', 'success');
+
+        if (deleted) {
+            showNotif('✓ Deposit disetujui & dihapus dari pending', 'success');
+        } else {
+            hidePendingLocally(p.id);
+            showNotif('✓ Deposit disetujui & saldo ditambahkan. Pending di DB tidak bisa dihapus (RLS) — item disembunyikan dari tampilan.', 'warn');
+        }
         loadPending();
         loadUsers();
         switchTab('inbox');
@@ -1342,13 +1515,21 @@ async function approveWithdraw(pendingId) {
     document.getElementById('loading').style.display = 'flex';
     try {
         var res = await supabase.rpc('approve_withdraw', {
-            p_username: p.username,
-            p_nominal: p.nominal,
+            p_username: getPendingUser(p),
+            p_nominal: getPendingNominal(p),
             p_pending_id: p.id
         });
         if (res.error) throw res.error;
+
+        var deleted = await ensurePendingDeleted(p.id);
         document.getElementById('loading').style.display = 'none';
-        showNotif('Withdraw disetujui!', 'success');
+
+        if (deleted) {
+            showNotif('✓ Withdraw disetujui & dihapus dari pending', 'success');
+        } else {
+            hidePendingLocally(p.id);
+            showNotif('✓ Withdraw disetujui. Pending di DB tidak bisa dihapus (RLS) — item disembunyikan dari tampilan.', 'warn');
+        }
         loadPending();
         loadUsers();
         switchTab('inbox');
@@ -1361,18 +1542,32 @@ async function approveWithdraw(pendingId) {
 async function rejectPending(pendingId) {
     var p = allPending.find(function(x) { return x.id === pendingId; });
     if (!p) return;
+    if (!confirm('Yakin tolak permintaan ' + getPendingUser(p) + ' (' + formatRupiah(getPendingNominal(p)) + ')?')) return;
 
+    var type = getPendingType(p);
     document.getElementById('loading').style.display = 'flex';
     try {
-        await supabase.from('transactions').insert({
-            username: p.username, type: p.type,
-            pesan: (p.type === 'deposit' ? 'Deposit' : 'Withdraw') + ' Ditolak',
-            nominal: p.nominal
-        });
-        var res = await supabase.from('pending').delete().eq('id', p.id);
-        if (res.error) throw res.error;
+        // 1. Log ke transactions (opsional, kalau gagal tidak menghentikan proses)
+        try {
+            await supabase.from('transactions').insert({
+                username: getPendingUser(p), type: type,
+                pesan: (type === 'deposit' ? 'Deposit' : 'Withdraw') + ' Ditolak',
+                nominal: getPendingNominal(p)
+            });
+        } catch (logErr) {
+            console.warn('[rejectPending] log gagal:', logErr);
+        }
+
+        // 2. Delete dari pending
+        var deleted = await ensurePendingDeleted(p.id);
         document.getElementById('loading').style.display = 'none';
-        showNotif('Permintaan ditolak', 'info');
+
+        if (deleted) {
+            showNotif('✓ Permintaan ditolak & dihapus dari pending', 'success');
+        } else {
+            hidePendingLocally(p.id);
+            showNotif('✓ Permintaan ditolak. Pending di DB tidak bisa dihapus (RLS) — item disembunyikan dari tampilan.', 'warn');
+        }
         loadPending();
         loadUsers();
         switchTab('inbox');
@@ -1388,7 +1583,6 @@ function setChatFilter(f) {
     document.querySelectorAll('.chat-filter-tab').forEach(function(t) {
         t.classList.toggle('active', t.getAttribute('data-filter') === f);
     });
-    // re-render dari data yang sudah ada (tanpa fetch ulang untuk responsiveness)
     rebuildChatListFromCache();
 }
 
@@ -1471,7 +1665,6 @@ function renderChatList(list) {
     var container = document.getElementById('chatList');
     if (!container) return;
 
-    // filter
     var filtered = list.slice();
     if (currentChatFilter === 'unreplied') {
         filtered = filtered.filter(function(c) { return c.last_from === 'user'; });
@@ -1479,7 +1672,6 @@ function renderChatList(list) {
         filtered = filtered.filter(function(c) { return c.last_from === 'admin'; });
     }
 
-    // sort: unreplied dulu, lalu by last_time desc
     filtered.sort(function(a, b) {
         if (a.last_from !== b.last_from) return a.last_from === 'user' ? -1 : 1;
         return new Date(b.last_time) - new Date(a.last_time);
@@ -1601,7 +1793,6 @@ async function sendAdminChat() {
     }
 }
 
-/* ========= IMAGE HANDLING ========= */
 function handleChatImageSelect(evt) {
     if (!currentChatUser) {
         showNotif('Pilih percakapan dulu', 'error');
@@ -1668,7 +1859,6 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-/* ===== Buka chat dari Aktivitas ===== */
 function openChatFromActivity(username) {
     switchTab('chat');
     setTimeout(function() {
@@ -1688,14 +1878,15 @@ async function loadActivity() {
     var items = [];
 
     allPending.forEach(function(p) {
+        var type = getPendingType(p);
         items.push({
             kind: 'pending',
             pendingId: p.id,
-            username: p.username,
-            title: (p.type === 'deposit' ? 'Permintaan Deposit' : 'Permintaan Withdraw') + ' — ' + p.username,
-            desc: formatRupiah(p.nominal),
-            time: new Date(p.tanggal).toLocaleString('id-ID'),
-            rawTime: new Date(p.tanggal),
+            username: getPendingUser(p),
+            title: (type === 'deposit' ? 'Permintaan Deposit' : type === 'withdraw' ? 'Permintaan Withdraw' : 'Permintaan ' + getPendingRawType(p)) + ' — ' + getPendingUser(p),
+            desc: formatRupiah(getPendingNominal(p)),
+            time: getPendingDate(p).toLocaleString('id-ID'),
+            rawTime: getPendingDate(p),
             isUnreplied: false
         });
     });
@@ -1774,7 +1965,7 @@ async function loadActivity() {
     el.innerHTML = html;
 }
 
-/* ================= POLL NEW MESSAGES ================= */
+/* ================= POLLING ================= */
 async function pollForNewMessages() {
     try {
         var res = await supabase.from('chats').select('*')
@@ -1811,12 +2002,16 @@ async function pollForNewMessages() {
 /* ================= INIT ================= */
 setInterval(function() {
     pollForNewMessages();
-    if (document.getElementById('content-inbox').classList.contains('active')) loadPending();
+    loadPending();
     if (document.getElementById('content-chat').classList.contains('active')) loadChatList();
     if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
 }, 5000);
 
 window.addEventListener('DOMContentLoaded', function() {
+    // Simpan form asli user detail supaya bisa dipulihkan setelah ketimpa detail pending
+    var panel = document.querySelector('#content-userdetail .panel');
+    if (panel) USER_DETAIL_FORM_HTML = panel.innerHTML;
+
     loadUsers();
     loadPending();
     loadChatList();
@@ -1827,4 +2022,4 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
-          </html>
+        </html>
