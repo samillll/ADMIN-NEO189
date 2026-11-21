@@ -522,10 +522,14 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       <div class="nav-item" data-nav="inbox" onclick="switchTab('inbox')">
         <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
         <span>Inbox</span>
+        <!-- FIX: Badge notif ditambahkan kembali -->
+        <span class="nav-badge" id="inboxBadge" style="display:none;">0</span>
       </div>
       <div class="nav-item" data-nav="chat" onclick="switchTab('chat')">
         <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
         <span>Chat</span>
+        <!-- FIX: Badge notif ditambahkan kembali -->
+        <span class="nav-badge" id="chatBadge" style="display:none;">0</span>
       </div>
       <div class="nav-item" data-nav="activity" onclick="switchTab('activity')">
         <svg viewBox="0 0 24 24"><path d="M13 2.05v9.95l6.36 3.67-1 1.73L11 13V4h2v-1.95zM12 20c4.42 0 8-3.58 8-8h2c0 5.52-4.48 10-10 10S2 17.52 2 12c0-4.97 3.64-9.09 8.42-9.88v2.03C6.55 4.94 4 8.16 4 12c0 4.42 3.58 8 8 8z"/></svg>
@@ -1141,7 +1145,6 @@ function filterUsers() {
 }
 
 function openUserDetail(username) {
-    // Restore form HTML kalau sebelumnya ketimpa detail pending
     var panel = document.querySelector('#content-userdetail .panel');
     if (panel && USER_DETAIL_FORM_HTML) panel.innerHTML = USER_DETAIL_FORM_HTML;
 
@@ -1260,7 +1263,6 @@ async function loadPending() {
         var rawAll = res.data || [];
         var hiddenCount = 0;
 
-        // Filter: buang yang sudah di-hide lokal
         allPending = rawAll.filter(function(p) {
             if (isPendingHidden(p.id)) { hiddenCount++; return false; }
             return true;
@@ -1279,14 +1281,20 @@ async function loadPending() {
         deposits.sort(safeSort);
         withdraws.sort(safeSort);
 
-        document.getElementById('inboxBadge').innerText = allPending.length;
-        document.getElementById('depositBadge').innerText = deposits.length;
-        document.getElementById('withdrawBadge').innerText = withdraws.length;
-        if (document.getElementById('dashPending')) document.getElementById('dashPending').innerText = allPending.length;
+        // SAFE NULL CHECKS
+        var elInboxBadge = document.getElementById('inboxBadge');
+        if (elInboxBadge) { elInboxBadge.innerText = allPending.length; elInboxBadge.style.display = allPending.length > 0 ? 'inline-block' : 'none'; }
 
-        // Status bar
+        var elDepBadge = document.getElementById('depositBadge');
+        if (elDepBadge) elDepBadge.innerText = deposits.length;
+
+        var elWdBadge = document.getElementById('withdrawBadge');
+        if (elWdBadge) elWdBadge.innerText = withdraws.length;
+
+        if (document.getElementById('dashPending')) document.getElementById('dashPending').innerText = allPending.length;
         if (document.getElementById('inboxTotalPending')) document.getElementById('inboxTotalPending').innerText = rawAll.length;
         if (document.getElementById('inboxShownCount')) document.getElementById('inboxShownCount').innerText = allPending.length;
+
         var hiddenWrap = document.getElementById('inboxHiddenWrap');
         if (hiddenWrap) {
             if (hiddenCount > 0) {
@@ -1301,7 +1309,6 @@ async function loadPending() {
         var typesStr = Object.keys(rawTypes).map(function(k){ return k + ':' + rawTypes[k]; }).join(' · ') || 'kosong';
         if (document.getElementById('inboxTypesSeen')) document.getElementById('inboxTypesSeen').innerText = typesStr;
 
-        // Notif pending baru
         var newIds = [];
         allPending.forEach(function(p) {
             if (!lastPendingIds[p.id]) newIds.push(p);
@@ -1356,6 +1363,7 @@ function renderPendingCard(p) {
 
 function renderDepositInbox(deposits) {
     var container = document.getElementById('depositInboxContainer');
+    if (!container) return;
     if (deposits.length === 0) {
         container.innerHTML = '<div class="empty-inbox"><p>Tidak ada permohonan deposit</p></div>';
         return;
@@ -1417,6 +1425,7 @@ function openDepositDetail(pendingId) {
 
 function renderWithdrawInbox(withdraws) {
     var container = document.getElementById('withdrawInboxContainer');
+    if (!container) return;
     if (withdraws.length === 0) {
         container.innerHTML = '<div class="empty-inbox"><p>Tidak ada permohonan withdraw</p></div>';
         return;
@@ -1444,33 +1453,22 @@ function renderWithdrawInbox(withdraws) {
     });
 }
 
-/* ============ HELPER: PASTIKAN PENDING TERHAPUS ============ */
-/* Return true kalau pending sudah hilang dari DB. False kalau harus di-hide lokal. */
 async function ensurePendingDeleted(pendingId) {
-    // Cek apakah masih ada
     try {
         var check = await supabase.from('pending').select('id').eq('id', pendingId);
         if (check.error) throw check.error;
         var stillExists = check.data && check.data.length > 0;
-        if (!stillExists) return true; // RPC sudah hapus
+        if (!stillExists) return true;
     } catch (e) {
         console.warn('[ensurePendingDeleted] check failed:', e);
-        return false; // Gagal cek → coba delete
     }
 
-    // Coba delete
     try {
         var del = await supabase.from('pending').delete().eq('id', pendingId).select();
-        if (del.error) {
-            console.warn('[ensurePendingDeleted] delete error:', del.error);
-            return false;
-        }
-        if (del.data && del.data.length > 0) return true; // Berhasil hapus
-        // data kosong → RLS block
-        console.warn('[ensurePendingDeleted] RLS block: 0 rows deleted for id', pendingId);
+        if (del.error) return false;
+        if (del.data && del.data.length > 0) return true;
         return false;
     } catch (e) {
-        console.warn('[ensurePendingDeleted] delete exception:', e);
         return false;
     }
 }
@@ -1481,7 +1479,6 @@ async function approveDeposit(pendingId) {
 
     document.getElementById('loading').style.display = 'flex';
     try {
-        // 1. RPC approve (update saldo di server)
         var res = await supabase.rpc('approve_deposit', {
             p_username: getPendingUser(p),
             p_nominal: getPendingNominal(p),
@@ -1489,7 +1486,6 @@ async function approveDeposit(pendingId) {
         });
         if (res.error) throw res.error;
 
-        // 2. Pastikan pending benar-benar terhapus
         var deleted = await ensurePendingDeleted(p.id);
         document.getElementById('loading').style.display = 'none';
 
@@ -1497,7 +1493,7 @@ async function approveDeposit(pendingId) {
             showNotif('✓ Deposit disetujui & dihapus dari pending', 'success');
         } else {
             hidePendingLocally(p.id);
-            showNotif('✓ Deposit disetujui & saldo ditambahkan. Pending di DB tidak bisa dihapus (RLS) — item disembunyikan dari tampilan.', 'warn');
+            showNotif('✓ Deposit disetujui. Pending di DB tidak bisa dihapus (RLS) — item disembunyikan dari tampilan.', 'warn');
         }
         loadPending();
         loadUsers();
@@ -1547,7 +1543,6 @@ async function rejectPending(pendingId) {
     var type = getPendingType(p);
     document.getElementById('loading').style.display = 'flex';
     try {
-        // 1. Log ke transactions (opsional, kalau gagal tidak menghentikan proses)
         try {
             await supabase.from('transactions').insert({
                 username: getPendingUser(p), type: type,
@@ -1558,7 +1553,6 @@ async function rejectPending(pendingId) {
             console.warn('[rejectPending] log gagal:', logErr);
         }
 
-        // 2. Delete dari pending
         var deleted = await ensurePendingDeleted(p.id);
         document.getElementById('loading').style.display = 'none';
 
@@ -1636,7 +1630,9 @@ async function loadChatList() {
 
         var chatList = Object.values(users);
         var totalUnread = chatList.reduce(function(sum, c) { return sum + c.unread; }, 0);
-        document.getElementById('chatBadge').innerText = totalUnread;
+        
+        var elChatBadge = document.getElementById('chatBadge');
+        if (elChatBadge) { elChatBadge.innerText = totalUnread; elChatBadge.style.display = totalUnread > 0 ? 'inline-block' : 'none'; }
 
         updateChatFilterCounts(chatList);
         renderChatList(chatList);
@@ -2008,7 +2004,6 @@ setInterval(function() {
 }, 5000);
 
 window.addEventListener('DOMContentLoaded', function() {
-    // Simpan form asli user detail supaya bisa dipulihkan setelah ketimpa detail pending
     var panel = document.querySelector('#content-userdetail .panel');
     if (panel) USER_DETAIL_FORM_HTML = panel.innerHTML;
 
@@ -2022,4 +2017,4 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
-        </html>
+  </html>
