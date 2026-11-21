@@ -43,6 +43,10 @@ button{cursor:pointer;font-family:inherit;}
   color:var(--gold);border-color:rgba(212,175,55,.25);
 }
 .nav-item.active svg{opacity:1;}
+.nav-item .nav-badge{
+  margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:10px;min-width:18px;text-align:center;line-height:1.4;
+}
 .sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border);}
 .admin-chip{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--panel);}
 .admin-avatar{
@@ -339,10 +343,34 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 .tl-item::before{
   content:'';position:absolute;left:-28px;top:4px;width:12px;height:12px;border-radius:50%;
   background:var(--gold);box-shadow:0 0 0 4px rgba(212,175,55,.15);
+  transition:all .3s ease;
 }
+.tl-item.unreplied::before{
+  background:var(--red);
+  box-shadow:0 0 0 4px rgba(239,100,100,.18),0 0 12px rgba(239,100,100,.45);
+  animation:pulseDot 2s infinite;
+}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.55;transform:scale(1.15);}}
 .tl-item .tl-title{font-size:13px;font-weight:700;}
-.tl-item .tl-desc{font-size:12px;color:var(--muted);margin-top:3px;}
+.tl-item.unreplied .tl-title{color:var(--gold);}
+.tl-item .tl-desc{font-size:12px;color:var(--muted);margin-top:3px;word-break:break-word;}
 .tl-item .tl-time{font-size:10.5px;color:var(--muted);margin-top:5px;letter-spacing:.3px;}
+
+/* Activity actions (Balas / Lihat) — mengikuti style tema */
+.tl-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.tl-btn-reply{
+  padding:7px 16px;border-radius:8px;font-size:12px;font-weight:800;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;
+  border:none;cursor:pointer;transition:.2s;letter-spacing:.2px;
+  box-shadow:0 2px 10px rgba(212,175,55,.3);
+}
+.tl-btn-reply:hover{filter:brightness(1.08);box-shadow:0 4px 16px rgba(212,175,55,.5);transform:translateY(-1px);}
+.tl-btn-view{
+  padding:7px 14px;border-radius:8px;font-size:11.5px;font-weight:700;
+  background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.3);
+  color:var(--gold);cursor:pointer;transition:.2s;
+}
+.tl-btn-view:hover{background:var(--gold);color:#000;}
 
 /* ============ SETTINGS ============ */
 .settings-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;max-width:640px;}
@@ -441,6 +469,7 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       <div class="nav-item" data-nav="activity" onclick="switchTab('activity')">
         <svg viewBox="0 0 24 24"><path d="M13 2.05v9.95l6.36 3.67-1 1.73L11 13V4h2v-1.95zM12 20c4.42 0 8-3.58 8-8h2c0 5.52-4.48 10-10 10S2 17.52 2 12c0-4.97 3.64-9.09 8.42-9.88v2.03C6.55 4.94 4 8.16 4 12c0 4.42 3.58 8 8 8z"/></svg>
         <span>Aktivitas</span>
+        <span class="nav-badge" id="activityBadge" style="display:none;">0</span>
       </div>
       <div class="nav-item" data-nav="settings" onclick="switchTab('settings')">
         <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.33-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -520,6 +549,7 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
           </div>
           <div class="info-row"><span class="k">Koneksi Database</span><span class="v"><span class="badge-live"><span class="dot-online"></span>Terhubung</span></span></div>
           <div class="info-row"><span class="k">Status Data Chat</span><span class="v" id="dashChatStatus">0 pesan</span></div>
+          <div class="info-row"><span class="k">Chat Belum Dibalas</span><span class="v" id="dashUnreplied" style="color:var(--red);">0</span></div>
           <div class="info-row"><span class="k">Permintaan Pending</span><span class="v" id="dashPending">0</span></div>
           <div class="info-row"><span class="k">Terakhir Diperbarui</span><span class="v" id="dashUpdated">-</span></div>
         </div>
@@ -758,6 +788,7 @@ var allChats = [];
 var currentChatUser = null;
 var currentEditingUser = null;
 var chatWindowInterval = null;
+var lastChatTimestamp = null;
 
 var PAGE_META = {
     dashboard: { title: 'Dashboard', desc: 'Ringkasan statistik dan aktivitas sistem' },
@@ -778,7 +809,7 @@ function showNotif(message, type) {
     notif.innerHTML = '<span>' + message + '</span>';
     document.body.appendChild(notif);
     setTimeout(function() { notif.classList.add('show'); }, 50);
-    setTimeout(function() { notif.classList.remove('show'); setTimeout(function() { notif.remove(); }, 400); }, 3000);
+    setTimeout(function() { notif.classList.remove('show'); setTimeout(function() { notif.remove(); }, 400); }, 3200);
 }
 
 function toggleSidebar() {
@@ -895,18 +926,51 @@ function renderUsers(users) {
     tbody.innerHTML = html;
 }
 
+/* Cek siapa saja user yang chat terakhirnya dari 'user' (belum dibalas) */
+function getUnrepliedList() {
+    var byUser = {};
+    allChats.forEach(function(c) {
+        if (!byUser[c.username]) byUser[c.username] = [];
+        byUser[c.username].push(c);
+    });
+    var result = [];
+    for (var user in byUser) {
+        var msgs = byUser[user].slice().sort(function(a,b){ return new Date(a.tanggal) - new Date(b.tanggal); });
+        var last = msgs[msgs.length - 1];
+        if (last && last.from_user === 'user') {
+            result.push({ username: user, lastMessage: last.message, lastTime: last.tanggal });
+        }
+    }
+    return result;
+}
+
 function renderDashboardStats() {
     var total = allUsers.length;
     var active = allUsers.filter(function(u) { return (u.status || 'Aktif').toLowerCase() === 'aktif'; }).length;
     var inactive = total - active;
     var totalActivity = allPending.length + allChats.length;
+    var unreplied = getUnrepliedList().length;
+
     if (document.getElementById('dashTotalUsers')) document.getElementById('dashTotalUsers').innerText = total;
     if (document.getElementById('dashActiveUsers')) document.getElementById('dashActiveUsers').innerText = active;
     if (document.getElementById('dashInactiveUsers')) document.getElementById('dashInactiveUsers').innerText = inactive;
     if (document.getElementById('dashTotalActivity')) document.getElementById('dashTotalActivity').innerText = totalActivity;
     if (document.getElementById('dashPending')) document.getElementById('dashPending').innerText = allPending.length;
+    if (document.getElementById('dashUnreplied')) document.getElementById('dashUnreplied').innerText = unreplied;
     if (document.getElementById('dashChatStatus')) document.getElementById('dashChatStatus').innerText = allChats.length + ' pesan';
     if (document.getElementById('dashUpdated')) document.getElementById('dashUpdated').innerText = new Date().toLocaleTimeString('id-ID');
+
+    // Sidebar activity badge
+    var actBadge = document.getElementById('activityBadge');
+    if (actBadge) {
+        if (unreplied > 0) {
+            actBadge.innerText = unreplied;
+            actBadge.style.display = 'inline-block';
+        } else {
+            actBadge.style.display = 'none';
+        }
+    }
+
     renderGrowthChart(total);
 }
 
@@ -922,9 +986,7 @@ function renderGrowthChart(total) {
         var h = Math.max(8, Math.round(base * factors[i] / base * maxH));
         html += '<div class="chart-bar" style="height:' + h + 'px;" title="' + labels[i] + '"></div>';
     }
-    // append labels separately via CSS bottom - just add label spans inside
     wrap.innerHTML = html;
-    // add labels row using pseudo via inline spans overlay
     var lblHtml = '<div style="display:flex;gap:10px;margin-top:24px;">';
     labels.forEach(function(l) { lblHtml += '<div style="flex:1;text-align:center;font-size:10px;color:var(--muted);">' + l + '</div>'; });
     lblHtml += '</div>';
@@ -1033,7 +1095,6 @@ async function saveUser() {
         if (res.error) throw res.error;
         showNotif('Data user berhasil disimpan!', 'success');
         for (var key in updatedData) currentEditingUser[key] = updatedData[key];
-        // refresh profile meta
         document.getElementById('detailProfileStatus').innerText = updatedData.status;
         document.getElementById('detailProfileBank').innerText = updatedData.bank || '-';
         document.getElementById('detailProfileRek').innerText = updatedData.no_rekening || '-';
@@ -1110,18 +1171,18 @@ function openDepositDetail(pendingId) {
 
     document.querySelectorAll('.page').forEach(function(pg) { pg.classList.remove('active'); });
     document.getElementById('content-userdetail').classList.add('active');
-    document.getElementById('pageTitle').innerText = 'Detail Deposit';
-    document.getElementById('pageDesc').innerText = 'Verifikasi bukti transfer pengguna';
+    document.getElementById('pageTitle').innerText = 'Detail ' + (p.type === 'deposit' ? 'Deposit' : 'Withdraw');
+    document.getElementById('pageDesc').innerText = 'Verifikasi permintaan pengguna';
 
     document.getElementById('detailAvatar').innerText = p.username.charAt(0).toUpperCase();
     document.getElementById('detailProfileName').innerText = p.username;
-    document.getElementById('detailProfileEmail').innerText = 'Permohonan Deposit';
-    document.getElementById('detailProfileStatus').innerText = 'DEPOSIT';
-    document.getElementById('detailProfileBank').innerText = '-';
-    document.getElementById('detailProfileRek').innerText = '-';
-    document.getElementById('detailSubtitle').innerText = 'Permohonan Deposit';
+    document.getElementById('detailProfileEmail').innerText = 'Permohonan ' + p.type;
+    document.getElementById('detailProfileStatus').innerText = (p.type || '').toUpperCase();
+    document.getElementById('detailProfileBank').innerText = p.bank || '-';
+    document.getElementById('detailProfileRek').innerText = p.no_rekening || '-';
+    document.getElementById('detailSubtitle').innerText = 'Permohonan ' + p.type;
     document.getElementById('statSaldo').innerText = formatRupiah(p.nominal);
-    document.getElementById('statLevel').innerText = 'DEPOSIT';
+    document.getElementById('statLevel').innerText = (p.type || '').toUpperCase();
     document.getElementById('statDeposit').innerText = new Date(p.tanggal).toLocaleString('id-ID');
     document.getElementById('statMaxWin').innerText = p.username;
 
@@ -1131,16 +1192,17 @@ function openDepositDetail(pendingId) {
         '<div class="section-title">Detail Permintaan</div>' +
         '<div class="withdraw-detail">' +
         '<div class="withdraw-row"><span class="label">USERNAME</span><span class="value">' + p.username + '</span></div>' +
-        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:var(--green);">' + formatRupiah(p.nominal) + '</span></div>' +
+        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:' + (p.type === 'deposit' ? 'var(--green)' : '#ff9800') + ';">' + formatRupiah(p.nominal) + '</span></div>' +
         '<div class="withdraw-row"><span class="label">TANGGAL</span><span class="value">' + new Date(p.tanggal).toLocaleString('id-ID') + '</span></div>' +
         '</div>' +
         '<div class="inbox-actions">' +
-        '<button class="inbox-btn setujui" onclick="approveDeposit(' + p.id + ');">SETUJUI</button>' +
+        (p.type === 'deposit'
+            ? '<button class="inbox-btn setujui" onclick="approveDeposit(' + p.id + ');">SETUJUI</button>'
+            : '<button class="inbox-btn setujui" onclick="approveWithdraw(' + p.id + ');">SETUJUI</button>') +
         '<button class="inbox-btn tolak" onclick="rejectPending(' + p.id + ');">TOLAK</button>' +
         '</div>';
 
     var detailGrid = document.querySelector('#content-userdetail .detail-grid');
-    // Replace the right panel content
     var panel = detailGrid.querySelector('.panel');
     if (panel) panel.innerHTML = html;
 
@@ -1213,6 +1275,7 @@ async function approveWithdraw(pendingId) {
         showNotif('Withdraw disetujui!', 'success');
         loadPending();
         loadUsers();
+        switchTab('inbox');
     } catch (e) {
         document.getElementById('loading').style.display = 'none';
         showNotif('Gagal: ' + e.message, 'error');
@@ -1264,7 +1327,25 @@ async function loadChatList() {
         document.getElementById('chatBadge').innerText = totalUnread;
         renderChatList(chatList);
         renderDashboardStats();
+
+        // Refresh aktivitas badge kalau sedang tidak di tab activity
+        if (!document.getElementById('content-activity').classList.contains('active')) {
+            updateActivityBadgeOnly();
+        }
     } catch (e) {}
+}
+
+function updateActivityBadgeOnly() {
+    var unreplied = getUnrepliedList().length;
+    var actBadge = document.getElementById('activityBadge');
+    if (actBadge) {
+        if (unreplied > 0) {
+            actBadge.innerText = unreplied;
+            actBadge.style.display = 'inline-block';
+        } else {
+            actBadge.style.display = 'none';
+        }
+    }
 }
 
 function renderChatList(list) {
@@ -1292,7 +1373,6 @@ function openChatWindow(user) {
     if (chatWindowInterval) clearInterval(chatWindowInterval);
     chatWindowInterval = setInterval(loadChatMessages, 3000);
     supabase.from('chats').update({ read_status: true }).eq('username', user).eq('from_user', 'user').then(function() { loadChatList(); });
-    // re-render list to highlight active
     loadChatList();
 }
 
@@ -1317,6 +1397,12 @@ async function loadChatMessages() {
         container.innerHTML += '<div class="chat-msg ' + cls + '">' + escapeHtml(c.message) + '<span class="time">' + (c.time || '') + '</span></div>';
     });
     container.scrollTop = container.scrollHeight;
+
+    // Tandai pesan user sebagai sudah dibaca selama admin viewing
+    try {
+        await supabase.from('chats').update({ read_status: true })
+            .eq('username', currentChatUser).eq('from_user', 'user').eq('read_status', false);
+    } catch (e) {}
 }
 
 async function sendAdminChat() {
@@ -1330,50 +1416,165 @@ async function sendAdminChat() {
         username: currentChatUser, from_user: 'admin', message: msg, time: timeStr, read_status: true
     });
     loadChatMessages();
+    loadChatList();
+    // Refresh activity supaya status user berubah jadi "replied"
+    if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
+    else updateActivityBadgeOnly();
 }
 
 function escapeHtml(text) {
     var div = document.createElement('div');
-    div.textContent = text;
+    div.textContent = text == null ? '' : text;
     return div.innerHTML;
+}
+
+/* ===== Buka chat langsung dari halaman Aktivitas ===== */
+function openChatFromActivity(username) {
+    switchTab('chat');
+    setTimeout(function() {
+        openChatWindow(username);
+        setTimeout(function() {
+            var input = document.getElementById('chatWindowInput');
+            if (input) input.focus();
+        }, 120);
+    }, 200);
 }
 
 /* ================= ACTIVITY ================= */
 async function loadActivity() {
     var el = document.getElementById('activityTimeline');
     if (!el) return;
-    // Build timeline from pending and chats
+
     var items = [];
+
+    // Pending requests
     allPending.forEach(function(p) {
         items.push({
-            title: (p.type === 'deposit' ? 'Permintaan Deposit' : 'Permintaan Withdraw') + ' - ' + p.username,
+            kind: 'pending',
+            pendingId: p.id,
+            pendingType: p.type,
+            username: p.username,
+            title: (p.type === 'deposit' ? 'Permintaan Deposit' : 'Permintaan Withdraw') + ' — ' + p.username,
             desc: formatRupiah(p.nominal),
-            time: new Date(p.tanggal).toLocaleString('id-ID')
+            time: new Date(p.tanggal).toLocaleString('id-ID'),
+            rawTime: new Date(p.tanggal),
+            isUnreplied: false
         });
     });
-    allChats.slice(0, 20).forEach(function(c) {
+
+    // Group chats by user, ambil pesan terakhir
+    var byUser = {};
+    allChats.forEach(function(c) {
+        if (!byUser[c.username]) byUser[c.username] = [];
+        byUser[c.username].push(c);
+    });
+
+    var unrepliedCount = 0;
+    for (var user in byUser) {
+        var msgs = byUser[user].slice().sort(function(a,b){ return new Date(a.tanggal) - new Date(b.tanggal); });
+        var last = msgs[msgs.length - 1];
+        var isUnreplied = last.from_user === 'user';
+        if (isUnreplied) unrepliedCount++;
         items.push({
-            title: 'Chat dari ' + c.username,
-            desc: c.message,
-            time: new Date(c.tanggal).toLocaleString('id-ID')
+            kind: 'chat',
+            username: user,
+            title: (isUnreplied ? 'Pesan Baru dari ' : 'Percakapan dengan ') + user,
+            desc: last.message,
+            time: new Date(last.tanggal).toLocaleString('id-ID'),
+            rawTime: new Date(last.tanggal),
+            isUnreplied: isUnreplied
         });
-    });
+    }
+
+    // Update sidebar badge
+    var actBadge = document.getElementById('activityBadge');
+    if (actBadge) {
+        if (unrepliedCount > 0) {
+            actBadge.innerText = unrepliedCount;
+            actBadge.style.display = 'inline-block';
+        } else {
+            actBadge.style.display = 'none';
+        }
+    }
+
     if (items.length === 0) {
         el.innerHTML = '<div class="empty-inbox"><p>Belum ada aktivitas tercatat.</p></div>';
         return;
     }
-    items.sort(function(a, b) { return new Date(b.time) - new Date(a.time); });
+
+    items.sort(function(a, b) { return b.rawTime - a.rawTime; });
+
     var html = '';
-    items.slice(0, 30).forEach(function(it) {
-        html += '<div class="tl-item"><div class="tl-title">' + it.title + '</div><div class="tl-desc">' + it.desc + '</div><div class="tl-time">' + it.time + '</div></div>';
+    items.slice(0, 40).forEach(function(it) {
+        var cls = 'tl-item' + (it.kind === 'chat' && it.isUnreplied ? ' unreplied' : '');
+        var safeUser = String(it.username || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+        var actions = '';
+        if (it.kind === 'chat') {
+            if (it.isUnreplied) {
+                actions = '<div class="tl-actions">' +
+                    '<button class="tl-btn-reply" onclick="openChatFromActivity(\'' + safeUser + '\')">Balas Sekarang</button>' +
+                    '</div>';
+            } else {
+                actions = '<div class="tl-actions">' +
+                    '<button class="tl-btn-view" onclick="openChatFromActivity(\'' + safeUser + '\')">Lihat Percakapan</button>' +
+                    '</div>';
+            }
+        } else if (it.kind === 'pending') {
+            actions = '<div class="tl-actions">' +
+                '<button class="tl-btn-view" onclick="openDepositDetail(' + it.pendingId + ')">Lihat Detail</button>' +
+                '</div>';
+        }
+
+        html += '<div class="' + cls + '">' +
+            '<div class="tl-title">' + escapeHtml(it.title) + '</div>' +
+            '<div class="tl-desc">' + escapeHtml(it.desc || '') + '</div>' +
+            '<div class="tl-time">' + it.time + '</div>' +
+            actions +
+            '</div>';
     });
     el.innerHTML = html;
 }
 
+/* ================= AUTO-DETECT NEW MESSAGES ================= */
+async function pollForNewMessages() {
+    try {
+        var res = await supabase.from('chats').select('*')
+            .eq('from_user', 'user')
+            .order('tanggal', { ascending: false })
+            .limit(5);
+        if (res.error || !res.data || res.data.length === 0) return;
+
+        var newest = res.data[0];
+        if (lastChatTimestamp === null) {
+            lastChatTimestamp = newest.tanggal;
+            return;
+        }
+
+        if (new Date(newest.tanggal) > new Date(lastChatTimestamp)) {
+            var newMsgs = res.data.filter(function(c) {
+                return new Date(c.tanggal) > new Date(lastChatTimestamp);
+            });
+            if (newMsgs.length > 0) {
+                var latest = newMsgs[0];
+                var preview = (latest.message || '').substring(0, 55);
+                if ((latest.message || '').length > 55) preview += '…';
+                showNotif('💬 ' + latest.username + ': ' + preview, 'success');
+            }
+            lastChatTimestamp = newest.tanggal;
+            loadChatList();
+            if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
+            else updateActivityBadgeOnly();
+        }
+    } catch (e) {}
+}
+
 /* ================= INIT ================= */
 setInterval(function() {
+    pollForNewMessages();
     if (document.getElementById('content-inbox').classList.contains('active')) loadPending();
     if (document.getElementById('content-chat').classList.contains('active')) loadChatList();
+    if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
 }, 5000);
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -1381,7 +1582,7 @@ window.addEventListener('DOMContentLoaded', function() {
     loadPending();
     loadChatList();
     loadActivity();
-    // set initial settings inputs
+    pollForNewMessages(); // set marker awal supaya tidak spam notif untuk pesan lama
     document.getElementById('setUrl').value = SUPABASE_URL;
     document.getElementById('setKey').value = SUPABASE_ANON_KEY;
 });
