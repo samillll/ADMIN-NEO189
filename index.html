@@ -6,235 +6,740 @@
 <title>NEO189 - Admin Panel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-body { background: #0d0d0d; color: #fff; min-height: 100vh; }
-header { background: #111; padding: 15px; border-bottom: 2px solid #d4af37; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-header h1 { color: #d4af37; font-size: 18px; letter-spacing: 2px; }
-.header-btn { background: #1a1a1a; border: 1px solid #444; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; }
-.header-btn:hover { border-color: #d4af37; color: #d4af37; }
+:root{
+  --bg:#101114; --sidebar:#15161a; --panel:#191a1f; --panel2:#202127;
+  --gold:#d4af37; --gold-light:#f3d879; --text:#f5f5f5; --muted:#92939d;
+  --green:#43c58a; --red:#ef6464; --border:#26272e; --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter','Segoe UI',Arial,sans-serif;}
+body{background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+button{cursor:pointer;font-family:inherit;}
 
-.tabs { display: flex; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; overflow-x: auto; }
-.tab { flex: 1; min-width: 100px; padding: 15px 10px; text-align: center; cursor: pointer; color: #888; font-weight: bold; font-size: 12px; border-bottom: 3px solid transparent; white-space: nowrap; }
-.tab.active { color: #d4af37; border-bottom-color: #d4af37; background: #1f1f1f; }
-.tab .badge { background: #f44336; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: 5px; }
+/* ============ LAYOUT ============ */
+.app{display:flex;min-height:100vh;}
+.sidebar{
+  width:245px;background:var(--sidebar);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:300;
+  transition:transform .3s ease;
+}
+.sidebar-brand{padding:24px 22px 18px;border-bottom:1px solid var(--border);}
+.sidebar-brand .logo{
+  font-size:22px;font-weight:800;letter-spacing:3px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sidebar-brand .subtitle{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:4px;text-transform:uppercase;}
+.sidebar-label{font-size:10px;letter-spacing:1.6px;color:var(--muted);text-transform:uppercase;padding:18px 22px 8px;}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;padding:0 12px;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;
+  color:var(--muted);font-size:13.5px;font-weight:600;cursor:pointer;
+  transition:all .2s ease;border:1px solid transparent;
+}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;fill:currentColor;opacity:.8;}
+.nav-item:hover{background:var(--panel);color:var(--text);}
+.nav-item.active{
+  background:linear-gradient(90deg,rgba(212,175,55,.14),rgba(212,175,55,.04));
+  color:var(--gold);border-color:rgba(212,175,55,.25);
+}
+.nav-item.active svg{opacity:1;}
+.sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border);}
+.admin-chip{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--panel);}
+.admin-avatar{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;font-size:14px;
+}
+.admin-meta{flex:1;min-width:0;}
+.admin-meta h4{font-size:12.5px;font-weight:700;color:var(--text);}
+.admin-meta p{font-size:10.5px;color:var(--green);display:flex;align-items:center;gap:5px;margin-top:2px;}
+.dot-online{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);}
 
-.sub-tabs { display: flex; gap: 8px; padding: 12px 15px; background: #1a1a1a; border-bottom: 1px solid #2a2a2a; }
-.sub-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; background: #222; color: #888; font-weight: bold; font-size: 12px; border-radius: 8px; border: 1px solid #2a2a2a; }
-.sub-tab.active { background: linear-gradient(90deg, #d4af37, #f5d76e); color: #000; border-color: #b8960c; }
-.sub-tab .badge { background: #f44336; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; }
-.sub-tab.active .badge { background: #000; color: #fff; }
+.main{margin-left:245px;flex:1;min-width:0;display:flex;flex-direction:column;transition:margin .3s ease;}
 
-.content { padding: 15px; }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+/* ============ HEADER ============ */
+.topbar{
+  position:sticky;top:0;z-index:200;background:rgba(16,17,20,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+  padding:16px 28px;display:flex;align-items:center;gap:16px;
+}
+.hamburger{
+  display:none;background:var(--panel);border:1px solid var(--border);
+  color:var(--text);padding:9px;border-radius:9px;
+}
+.hamburger svg{width:20px;height:20px;fill:currentColor;display:block;}
+.topbar-titles{flex:1;min-width:0;}
+.topbar-titles h1{font-size:19px;font-weight:800;letter-spacing:.3px;}
+.topbar-titles p{font-size:12.5px;color:var(--muted);margin-top:3px;}
+.header-btn{
+  background:var(--panel);border:1px solid var(--border);color:var(--text);
+  padding:10px 16px;border-radius:10px;font-size:12.5px;font-weight:600;
+  display:flex;align-items:center;gap:8px;transition:all .2s;
+}
+.header-btn svg{width:15px;height:15px;fill:currentColor;}
+.header-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,175,55,.06);}
 
-.search-box { margin-bottom: 15px; position: relative; }
-.search-box input { width: 100%; padding: 12px 15px 12px 42px; border: 1px solid #2a2a2a; background: #1a1a1a; color: #fff; border-radius: 8px; font-size: 14px; outline: none; }
-.search-box input:focus { border-color: #d4af37; }
-.search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; fill: #888; }
+/* ============ PAGES ============ */
+.page{display:none;padding:24px 28px 48px;animation:fadeIn .35s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
-.user-list { max-height: calc(100vh - 300px); overflow-y: auto; }
-.user-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 15px; margin-bottom: 10px; cursor: pointer; }
-.user-card:hover { border-color: #d4af37; }
-.user-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.user-card-name { display: flex; align-items: center; gap: 10px; }
-.user-card-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #d4af37, #f5d76e); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; font-size: 16px; }
-.user-card-name h3 { font-size: 15px; color: #fff; }
-.user-card-name p { font-size: 11px; color: #888; margin-top: 2px; }
-.user-card-rank { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: #2a2a2a; color: #d4af37; font-weight: bold; }
-.user-card-saldo { font-size: 14px; color: #4caf50; font-weight: bold; }
-.user-card-detail { font-size: 11px; color: #888; margin-top: 5px; padding-top: 8px; border-top: 1px solid #2a2a2a; }
+/* ============ STATS ============ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+.stat-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;position:relative;overflow:hidden;transition:all .25s;
+}
+.stat-card:hover{border-color:rgba(212,175,55,.35);transform:translateY(-2px);}
+.stat-card::after{
+  content:'';position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,175,55,.14),transparent 70%);
+}
+.stat-icon{
+  width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);margin-bottom:14px;
+}
+.stat-icon svg{width:19px;height:19px;fill:var(--gold);}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;}
+.stat-value{font-size:26px;font-weight:800;margin-top:6px;letter-spacing:-.5px;}
+.stat-desc{font-size:11px;color:var(--muted);margin-top:6px;}
 
-.user-detail-page { display: none; padding: 15px; }
-.user-detail-page.active { display: block; }
-.detail-page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #d4af37; }
-.back-btn { background: #1a1a1a; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; cursor: pointer; }
-.back-btn svg { width: 20px; height: 20px; fill: currentColor; }
-.detail-page-header h2 { color: #d4af37; font-size: 18px; }
-.detail-page-header p { color: #888; font-size: 12px; margin-top: 3px; }
-.detail-avatar-big { width: 80px; height: 80px; background: linear-gradient(135deg, #d4af37, #f5d76e); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; font-size: 32px; margin: 0 auto 15px; }
-.section-title { color: #d4af37; font-size: 13px; font-weight: bold; text-transform: uppercase; margin: 20px 0 10px; padding-bottom: 8px; border-bottom: 1px solid #2a2a2a; }
-.form-group { margin-bottom: 12px; }
-.form-group label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 600; }
-.form-group input, .form-group select { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
-.form-group input:disabled { background: #0d0d0d; color: #888; }
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-.stat-box { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; text-align: center; }
-.stat-box .label { font-size: 10px; color: #888; text-transform: uppercase; }
-.stat-box .value { font-size: 15px; font-weight: bold; margin-top: 5px; }
-.stat-box .value.green { color: #4caf50; }
-.stat-box .value.gold { color: #d4af37; }
-.save-btn { width: 100%; padding: 15px; background: linear-gradient(90deg, #d4af37, #f5d76e, #d4af37); border: none; border-radius: 8px; font-size: 15px; font-weight: bold; color: #000; cursor: pointer; margin-top: 15px; }
-.danger-btn { width: 100%; padding: 15px; background: #f44336; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; color: #fff; cursor: pointer; margin-top: 10px; }
+/* ============ PANELS ============ */
+.dash-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:22px;}
+.panel{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;
+}
+.panel-title{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.panel-title svg{width:16px;height:16px;fill:var(--gold);}
+.panel-title .hint{font-size:11px;color:var(--muted);font-weight:500;margin-left:auto;}
 
-.inbox-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #d4af37; }
-.inbox-item.withdraw { border-left-color: #ff9800; }
-.inbox-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.inbox-user { font-size: 14px; font-weight: bold; color: #fff; }
-.inbox-type { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-.inbox-type.deposit { background: #4caf50; color: #fff; }
-.inbox-type.withdraw { background: #ff9800; color: #fff; }
-.inbox-actions { display: flex; gap: 10px; margin-top: 12px; }
-.inbox-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; color: #fff; }
-.inbox-btn.setujui { background: #4caf50; }
-.inbox-btn.tolak { background: #f44336; }
+/* growth chart */
+.chart-wrap{display:flex;align-items:flex-end;gap:10px;height:150px;padding-top:10px;}
+.chart-bar{
+  flex:1;background:linear-gradient(180deg,var(--gold),rgba(212,175,55,.15));
+  border-radius:8px 8px 4px 4px;min-height:8px;position:relative;
+  transition:all .4s ease;opacity:.85;
+}
+.chart-bar:hover{opacity:1;box-shadow:0 0 16px rgba(212,175,55,.4);}
+.chart-bar span{
+  position:absolute;bottom:-20px;left:0;right:0;text-align:center;
+  font-size:10px;color:var(--muted);
+}
 
-.deposit-user-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-left: 4px solid #4caf50; border-radius: 10px; padding: 15px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-.deposit-user-card:hover { border-color: #d4af37; }
-.deposit-user-info { display: flex; align-items: center; gap: 12px; }
-.deposit-user-avatar { width: 45px; height: 45px; background: linear-gradient(135deg, #4caf50, #8bc34a); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 18px; }
-.deposit-user-info h3 { font-size: 14px; color: #fff; }
-.deposit-user-info p { font-size: 11px; color: #888; margin-top: 3px; }
-.deposit-user-nominal { text-align: right; }
-.deposit-user-nominal .nom { font-size: 16px; color: #4caf50; font-weight: bold; }
-.deposit-user-nominal .time { font-size: 10px; color: #666; margin-top: 3px; }
+/* info list */
+.info-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:11px 0;border-bottom:1px dashed var(--border);font-size:12.5px;
+}
+.info-row:last-child{border-bottom:none;}
+.info-row .k{color:var(--muted);}
+.info-row .v{font-weight:700;color:var(--text);}
+.badge-live{
+  display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+  color:var(--green);background:rgba(67,197,138,.1);border:1px solid rgba(67,197,138,.3);
+  padding:3px 9px;border-radius:20px;
+}
+.badge-live .dot-online{width:6px;height:6px;}
 
-.withdraw-detail { background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 8px; padding: 15px; margin-bottom: 12px; }
-.withdraw-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #2a2a2a; font-size: 13px; }
-.withdraw-row:last-child { border-bottom: none; }
-.withdraw-row .label { color: #888; }
-.withdraw-row .value { color: #fff; font-weight: bold; text-align: right; }
-.withdraw-warning { background: #ff9800; color: #000; padding: 12px; border-radius: 8px; font-size: 11px; font-weight: bold; line-height: 1.5; margin-top: 12px; text-align: center; }
+/* ============ TABLES ============ */
+.table-toolbar{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.search-box{position:relative;flex:1;min-width:200px;}
+.search-box input{
+  width:100%;padding:11px 15px 11px 42px;border:1px solid var(--border);
+  background:var(--panel);color:var(--text);border-radius:10px;font-size:13px;outline:none;transition:.2s;
+}
+.search-box input:focus{border-color:var(--gold);}
+.search-box svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:var(--muted);}
+.table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:680px;}
+thead th{
+  text-align:left;padding:13px 16px;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted);background:var(--panel2);border-bottom:1px solid var(--border);font-weight:700;
+}
+tbody td{padding:13px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .15s;}
+tbody tr:hover{background:rgba(212,175,55,.04);}
+.u-cell{display:flex;align-items:center;gap:11px;}
+.u-avatar{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;font-size:13px;
+}
+.u-name{font-weight:700;font-size:13px;}
+.u-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.badge{font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:20px;display:inline-block;}
+.badge.aktif{color:var(--green);background:rgba(67,197,138,.1);border:1px solid rgba(67,197,138,.3);}
+.badge.nonaktif{color:var(--red);background:rgba(239,100,100,.1);border:1px solid rgba(239,100,100,.3);}
+.badge.level{color:var(--gold);background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);}
+.btn-detail{
+  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);color:var(--gold);
+  padding:7px 14px;border-radius:8px;font-size:11.5px;font-weight:700;transition:.2s;
+}
+.btn-detail:hover{background:var(--gold);color:#000;}
 
-.bukti-thumb { width: 100%; max-width: 200px; border-radius: 8px; margin-top: 8px; border: 2px solid #d4af37; cursor: pointer; }
-.fs-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; padding: 15px; cursor: zoom-out; }
-.fs-overlay.active { display: flex; }
-.fs-overlay img { max-width: 100%; max-height: 100%; border-radius: 8px; border: 2px solid #d4af37; }
+/* ============ USER DETAIL ============ */
+.detail-grid{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start;}
+.profile-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:26px 20px;text-align:center;position:sticky;top:90px;
+}
+.detail-avatar-big{
+  width:84px;height:84px;border-radius:50%;margin:0 auto 14px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;font-size:32px;
+  box-shadow:0 0 0 4px rgba(212,175,55,.15);
+}
+.profile-card h2{font-size:17px;font-weight:800;margin-bottom:4px;}
+.profile-card .uname{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.profile-meta{text-align:left;margin-top:16px;border-top:1px solid var(--border);padding-top:14px;}
+.profile-meta .pm{display:flex;justify-content:space-between;padding:7px 0;font-size:12px;}
+.profile-meta .pm .k{color:var(--muted);}
+.profile-meta .pm .v{font-weight:600;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-group{margin-bottom:0;}
+.form-group.full{grid-column:1/-1;}
+.form-group label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.form-group input,.form-group select{
+  width:100%;padding:11px 13px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:9px;color:var(--text);font-size:13.5px;outline:none;transition:.2s;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold);}
+.form-group input:disabled{background:var(--bg);color:var(--muted);}
+.section-title{
+  color:var(--gold);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;
+  margin:22px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.section-title:first-child{margin-top:0;}
+.section-title svg{width:15px;height:15px;fill:var(--gold);}
+.save-btn{
+  width:100%;padding:14px;border:none;border-radius:10px;font-size:14px;font-weight:800;color:#000;
+  background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold));
+  transition:.25s;margin-top:20px;letter-spacing:.3px;
+}
+.save-btn:hover{filter:brightness(1.08);box-shadow:0 6px 20px rgba(212,175,55,.25);}
+.danger-btn{
+  width:100%;padding:13px;border:1px solid rgba(239,100,100,.4);border-radius:10px;
+  font-size:13.5px;font-weight:700;color:var(--red);background:rgba(239,100,100,.08);
+  transition:.25s;margin-top:10px;
+}
+.danger-btn:hover{background:var(--red);color:#fff;}
 
-.empty-inbox { text-align: center; padding: 50px 20px; color: #666; }
+/* ============ INBOX ============ */
+.sub-tabs{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.sub-tab{
+  padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;
+  background:var(--panel);border:1px solid var(--border);color:var(--muted);transition:.2s;
+  display:flex;align-items:center;gap:8px;
+}
+.sub-tab:hover{color:var(--text);}
+.sub-tab.active{background:rgba(212,175,55,.12);border-color:rgba(212,175,55,.4);color:var(--gold);}
+.sub-tab .badge{background:var(--red);color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;}
+.sub-tab.active .badge{background:var(--gold);color:#000;}
 
-.chat-list { display: flex; flex-direction: column; gap: 10px; }
-.chat-user-item { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 15px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
-.chat-user-item:hover { border-color: #d4af37; }
-.chat-user-avatar { width: 45px; height: 45px; background: linear-gradient(135deg, #d4af37, #f5d76e); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; font-size: 18px; }
-.chat-user-info { flex: 1; }
-.chat-user-info h3 { font-size: 14px; color: #fff; }
-.chat-user-info p { font-size: 11px; color: #888; margin-top: 3px; }
-.chat-user-unread { background: #f44336; color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+.deposit-user-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:15px;margin-bottom:12px;cursor:pointer;display:flex;justify-content:space-between;
+  align-items:center;gap:12px;transition:.2s;border-left:3px solid var(--green);
+}
+.deposit-user-card:hover{border-color:rgba(212,175,55,.4);transform:translateX(2px);}
+.deposit-user-info{display:flex;align-items:center;gap:12px;min-width:0;}
+.deposit-user-avatar{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--green),#7ad9ab);
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:16px;
+}
+.deposit-user-info h3{font-size:14px;font-weight:700;}
+.deposit-user-info p{font-size:11px;color:var(--muted);margin-top:2px;}
+.deposit-user-nominal{text-align:right;flex-shrink:0;}
+.deposit-user-nominal .nom{font-size:15px;color:var(--green);font-weight:800;}
+.deposit-user-nominal .time{font-size:10px;color:var(--muted);margin-top:3px;}
 
-.chat-window { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d0d0d; z-index: 1500; flex-direction: column; }
-.chat-window.active { display: flex; }
-.chat-window-header { background: #111; padding: 12px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #d4af37; }
-.chat-back-btn { background: none; border: none; color: #fff; cursor: pointer; padding: 5px; font-size: 24px; }
-.chat-window-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-.chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 12px; font-size: 13px; }
-.chat-msg.user { align-self: flex-start; background: #2a2a2a; color: #fff; }
-.chat-msg.admin { align-self: flex-end; background: linear-gradient(135deg, #d4af37, #f5d76e); color: #000; }
-.chat-msg .time { font-size: 10px; opacity: 0.7; margin-top: 4px; display: block; }
-.chat-window-input { padding: 12px; background: #111; display: flex; gap: 8px; border-top: 1px solid #2a2a2a; }
-.chat-window-input input { flex: 1; padding: 12px; background: #2a2a2a; border: 1px solid #444; border-radius: 20px; color: #fff; outline: none; }
-.chat-window-input button { background: linear-gradient(135deg, #d4af37, #f5d76e); border: none; padding: 12px 18px; border-radius: 20px; cursor: pointer; color: #000; font-weight: bold; }
+.inbox-item{
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:16px;margin-bottom:12px;border-left:3px solid var(--gold);
+}
+.inbox-item.withdraw{border-left-color:#ff9800;}
+.inbox-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.inbox-user{font-size:14px;font-weight:800;}
+.inbox-type{font-size:10.5px;padding:4px 9px;border-radius:20px;font-weight:700;}
+.inbox-type.deposit{background:rgba(67,197,138,.15);color:var(--green);border:1px solid rgba(67,197,138,.3);}
+.inbox-type.withdraw{background:rgba(255,152,0,.15);color:#ff9800;border:1px solid rgba(255,152,0,.3);}
+.inbox-actions{display:flex;gap:10px;margin-top:14px;}
+.inbox-btn{flex:1;padding:12px;border:none;border-radius:9px;font-weight:800;cursor:pointer;font-size:12.5px;transition:.2s;}
+.inbox-btn.setujui{background:var(--green);color:#04261a;}
+.inbox-btn.setujui:hover{filter:brightness(1.1);}
+.inbox-btn.tolak{background:rgba(239,100,100,.15);color:var(--red);border:1px solid rgba(239,100,100,.3);}
+.inbox-btn.tolak:hover{background:var(--red);color:#fff;}
 
-.loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; gap: 20px; }
-.loading-spinner { width: 50px; height: 50px; border: 5px solid #333; border-top: 5px solid #d4af37; border-radius: 50%; animation: spin 1s linear infinite; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.withdraw-detail{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:14px;margin-bottom:12px;}
+.withdraw-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--border);font-size:12.5px;}
+.withdraw-row:last-child{border-bottom:none;}
+.withdraw-row .label{color:var(--muted);}
+.withdraw-row .value{font-weight:700;text-align:right;}
+.withdraw-warning{
+  background:rgba(255,152,0,.12);border:1px solid rgba(255,152,0,.35);color:#ffb74d;
+  padding:11px;border-radius:9px;font-size:11px;font-weight:700;line-height:1.5;margin-top:12px;text-align:center;
+}
+.bukti-thumb{width:100%;max-width:220px;border-radius:9px;margin-top:10px;border:2px solid rgba(212,175,55,.4);cursor:pointer;display:block;}
+.empty-inbox{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-inbox svg{width:44px;height:44px;fill:var(--border);margin-bottom:12px;}
 
-.neo-notif { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #1a1a1a; color: #fff; padding: 14px 22px; border-radius: 10px; font-size: 14px; z-index: 9999; border: 2px solid #d4af37; max-width: 90%; min-width: 260px; opacity: 0; transition: all 0.4s; }
-.neo-notif.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-.neo-notif.success { border-color: #4caf50; }
-.neo-notif.error { border-color: #f44336; }
+/* ============ CHAT ============ */
+.chat-layout{display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 200px);min-height:480px;}
+.chat-sidebar{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow-y:auto;}
+.chat-sidebar-head{padding:16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:800;}
+.chat-list{display:flex;flex-direction:column;padding:8px;}
+.chat-user-item{
+  background:transparent;border:1px solid transparent;border-radius:10px;padding:12px;
+  cursor:pointer;display:flex;align-items:center;gap:11px;transition:.15s;
+}
+.chat-user-item:hover{background:var(--panel2);}
+.chat-user-item.active{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.3);}
+.chat-user-avatar{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:15px;
+}
+.chat-user-info{flex:1;min-width:0;}
+.chat-user-info h3{font-size:13px;font-weight:700;}
+.chat-user-info p{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chat-user-unread{background:var(--red);color:#fff;font-size:10.5px;padding:3px 8px;border-radius:10px;font-weight:700;flex-shrink:0;}
+
+.chat-main{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden;}
+.chat-window-header{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--panel2);}
+.chat-window-header h3{font-size:14px;font-weight:800;}
+.chat-window-header p{font-size:11px;color:var(--green);margin-top:2px;display:flex;align-items:center;gap:5px;}
+.chat-window-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;background:var(--bg);}
+.chat-placeholder{text-align:center;color:var(--muted);margin:auto;font-size:13px;}
+.chat-msg{max-width:75%;padding:11px 15px;border-radius:14px;font-size:13px;line-height:1.45;animation:msgIn .2s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.chat-msg.user{align-self:flex-start;background:var(--panel2);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border);}
+.chat-msg.admin{align-self:flex-end;background:linear-gradient(135deg,rgba(212,175,55,.9),rgba(243,216,121,.9));color:#000;border-bottom-right-radius:4px;font-weight:500;}
+.chat-msg .time{font-size:10px;opacity:.65;margin-top:5px;display:block;}
+.chat-window-input{padding:14px;background:var(--panel2);display:flex;gap:10px;border-top:1px solid var(--border);}
+.chat-window-input input{
+  flex:1;padding:12px 16px;background:var(--bg);border:1px solid var(--border);
+  border-radius:22px;color:var(--text);outline:none;font-size:13px;transition:.2s;
+}
+.chat-window-input input:focus{border-color:var(--gold);}
+.chat-window-input button{
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;
+  padding:12px 22px;border-radius:22px;color:#000;font-weight:800;font-size:13px;transition:.2s;
+}
+.chat-window-input button:hover{filter:brightness(1.08);}
+
+/* ============ ACTIVITY / TIMELINE ============ */
+.timeline{position:relative;padding-left:28px;}
+.timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);}
+.tl-item{position:relative;padding:0 0 22px 0;}
+.tl-item::before{
+  content:'';position:absolute;left:-28px;top:4px;width:12px;height:12px;border-radius:50%;
+  background:var(--gold);box-shadow:0 0 0 4px rgba(212,175,55,.15);
+}
+.tl-item .tl-title{font-size:13px;font-weight:700;}
+.tl-item .tl-desc{font-size:12px;color:var(--muted);margin-top:3px;}
+.tl-item .tl-time{font-size:10.5px;color:var(--muted);margin-top:5px;letter-spacing:.3px;}
+
+/* ============ SETTINGS ============ */
+.settings-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;max-width:640px;}
+.security-note{
+  display:flex;gap:10px;align-items:flex-start;margin-top:18px;padding:14px;
+  background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.2);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.55;
+}
+.security-note svg{width:18px;height:18px;fill:var(--gold);flex-shrink:0;margin-top:1px;}
+
+/* ============ FULLSCREEN & LOADING & NOTIF ============ */
+.fs-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:2000;justify-content:center;align-items:center;padding:15px;cursor:zoom-out;}
+.fs-overlay.active{display:flex;}
+.fs-overlay img{max-width:100%;max-height:100%;border-radius:10px;border:2px solid var(--gold);}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(16,17,20,.9);z-index:2000;justify-content:center;align-items:center;flex-direction:column;gap:18px;}
+.loading-spinner{width:44px;height:44px;border:4px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-overlay div:last-child{color:var(--gold);font-weight:700;font-size:13px;}
+.neo-notif{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120px);
+  background:var(--panel);color:var(--text);padding:13px 22px;border-radius:10px;font-size:13px;
+  z-index:9999;border:1px solid var(--gold);box-shadow:0 8px 30px rgba(0,0,0,.5);
+  opacity:0;transition:all .35s ease;max-width:90%;min-width:220px;
+}
+.neo-notif.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.neo-notif.success{border-color:var(--green);}
+.neo-notif.error{border-color:var(--red);}
+
+/* sidebar overlay mobile */
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1100px){
+  .dash-grid{grid-template-columns:1fr;}
+  .detail-grid{grid-template-columns:1fr;}
+  .profile-card{position:static;}
+}
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .chat-layout{grid-template-columns:1fr;height:auto;}
+  .chat-sidebar{max-height:280px;}
+  .chat-main{height:420px;}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);box-shadow:0 0 40px rgba(0,0,0,.7);}
+  .sidebar-backdrop.active{display:block;}
+  .main{margin-left:0;}
+  .hamburger{display:flex;}
+  .topbar{padding:14px 16px;}
+  .topbar-titles h1{font-size:16px;}
+  .topbar-titles p{font-size:11px;}
+  .header-btn span{display:none;}
+  .header-btn{padding:10px;}
+  .page{padding:16px;}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:12px;}
+  .stat-value{font-size:22px;}
+  .form-grid{grid-template-columns:1fr;}
+  .table-scroll{overflow-x:auto;}
+  .chat-msg{max-width:88%;}
+}
+@media(max-width:420px){
+  .stats-grid{grid-template-columns:1fr;}
+  .sub-tabs{flex-direction:column;}
+}
 </style>
 </head>
 <body>
 
-<header>
-    <h1>ADMIN PANEL</h1>
-    <button class="header-btn" onclick="refreshAll()">Refresh</button>
-</header>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-<div class="tabs" id="mainTabs">
-    <div class="tab active" onclick="switchTab('users')" id="tab-users">Users</div>
-    <div class="tab" onclick="switchTab('inbox')" id="tab-inbox">Inbox <span class="badge" id="inboxBadge">0</span></div>
-    <div class="tab" onclick="switchTab('chat')" id="tab-chat">Chat <span class="badge" id="chatBadge">0</span></div>
-</div>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo">NEO189</div>
+      <div class="subtitle">Administration Panel</div>
+    </div>
+    <div class="sidebar-label">Menu Utama</div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-nav="dashboard" onclick="switchTab('dashboard')">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-nav="users" onclick="switchTab('users')">
+        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <span>Users</span>
+      </div>
+      <div class="nav-item" data-nav="inbox" onclick="switchTab('inbox')">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+        <span>Inbox</span>
+      </div>
+      <div class="nav-item" data-nav="chat" onclick="switchTab('chat')">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+        <span>Chat</span>
+      </div>
+      <div class="nav-item" data-nav="activity" onclick="switchTab('activity')">
+        <svg viewBox="0 0 24 24"><path d="M13 2.05v9.95l6.36 3.67-1 1.73L11 13V4h2v-1.95zM12 20c4.42 0 8-3.58 8-8h2c0 5.52-4.48 10-10 10S2 17.52 2 12c0-4.97 3.64-9.09 8.42-9.88v2.03C6.55 4.94 4 8.16 4 12c0 4.42 3.58 8 8 8z"/></svg>
+        <span>Aktivitas</span>
+      </div>
+      <div class="nav-item" data-nav="settings" onclick="switchTab('settings')">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.33-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>Pengaturan</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-chip">
+        <div class="admin-avatar">A</div>
+        <div class="admin-meta">
+          <h4>Administrator</h4>
+          <p><span class="dot-online"></span> Panel Aktif</p>
+        </div>
+      </div>
+    </div>
+  </aside>
 
-<div class="user-detail-page" id="userDetailPage">
-    <div class="detail-page-header">
-        <button class="back-btn" onclick="closeUserDetail()">←</button>
-        <div><h2>Edit User</h2><p id="detailSubtitle">Kelola data user</p></div>
-    </div>
-    <div class="detail-avatar-big" id="detailAvatar">U</div>
-    <div class="stats-grid">
-        <div class="stat-box"><div class="label">Saldo</div><div class="value green" id="statSaldo">Rp 0</div></div>
-        <div class="stat-box"><div class="label">Level</div><div class="value gold" id="statLevel">Bronze</div></div>
-        <div class="stat-box"><div class="label">Total Deposit</div><div class="value gold" id="statDeposit">Rp 0</div></div>
-        <div class="stat-box"><div class="label">Max Win</div><div class="value green" id="statMaxWin">Rp 0</div></div>
-    </div>
-    <div class="section-title">Data Akun</div>
-    <div class="form-group"><label>Username</label><input type="text" id="editUsername" disabled></div>
-    <div class="form-group"><label>Password</label><input type="text" id="editPassword"></div>
-    <div class="form-group"><label>Email</label><input type="email" id="editEmail"></div>
-    <div class="form-group"><label>No HP</label><input type="text" id="editNoHp"></div>
-    <div class="form-group"><label>Kode Referral</label><input type="text" id="editKodeRef"></div>
-    <div class="section-title">Data Bank</div>
-    <div class="form-group"><label>Bank</label>
-        <select id="editBank">
-            <option value="">- Pilih Bank -</option>
-            <option>BCA</option><option>BNI</option><option>BRI</option><option>MANDIRI</option>
-            <option>DANA</option><option>OVO</option><option>GOPAY</option><option>SHOPEEPAY</option>
-        </select>
-    </div>
-    <div class="form-group"><label>Nama Rekening</label><input type="text" id="editUsernameBank"></div>
-    <div class="form-group"><label>Nomor Rekening</label><input type="text" id="editNoRekening"></div>
-    <div class="section-title">Data Keuangan</div>
-    <div class="form-group"><label>Saldo (Rp)</label><input type="number" id="editSaldo"></div>
-    <div class="form-group"><label>Total Deposit (Rp)</label><input type="number" id="editTotalDeposit"></div>
-    <div class="form-group"><label>Max Win (Rp)</label><input type="number" id="editMaxWin"></div>
-    <div class="form-group"><label>Total Withdraw (Rp)</label><input type="number" id="editTotalWithdraw"></div>
-    <div class="section-title">Status & Level</div>
-    <div class="form-group"><label>Level</label>
-        <select id="editLevel"><option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option><option>Diamond</option></select>
-    </div>
-    <div class="form-group"><label>Status</label>
-        <select id="editStatus"><option>Aktif</option><option>Suspend</option><option>Banned</option></select>
-    </div>
-    <button class="save-btn" onclick="saveUser()">SIMPAN PERUBAHAN</button>
-    <button class="danger-btn" onclick="deleteUser()">HAPUS USER</button>
-</div>
+  <!-- MAIN -->
+  <div class="main">
+    <!-- HEADER -->
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+      </button>
+      <div class="topbar-titles">
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="pageDesc">Ringkasan statistik dan aktivitas sistem</p>
+      </div>
+      <button class="header-btn" onclick="refreshAll()">
+        <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        <span>Refresh</span>
+      </button>
+    </header>
 
-<div class="content" id="mainContent">
-    <div class="tab-content active" id="content-users">
+    <!-- ============ DASHBOARD ============ -->
+    <section class="page active" id="content-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+          <div class="stat-label">Total Semua User</div>
+          <div class="stat-value" id="dashTotalUsers">0</div>
+          <div class="stat-desc">Seluruh pengguna terdaftar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
+          <div class="stat-label">User Aktif</div>
+          <div class="stat-value" style="color:var(--green)" id="dashActiveUsers">0</div>
+          <div class="stat-desc">Akun berstatus aktif</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+          <div class="stat-label">User Nonaktif</div>
+          <div class="stat-value" style="color:var(--red)" id="dashInactiveUsers">0</div>
+          <div class="stat-desc">Akun suspend / banned</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></div>
+          <div class="stat-label">Total Aktivitas</div>
+          <div class="stat-value" style="color:var(--gold)" id="dashTotalActivity">0</div>
+          <div class="stat-desc">Permintaan masuk & chat</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            Pertumbuhan Pengguna
+            <span class="hint">6 bulan terakhir</span>
+          </div>
+          <div class="chart-wrap" id="growthChart"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
+            Ringkasan Sistem
+          </div>
+          <div class="info-row"><span class="k">Koneksi Database</span><span class="v"><span class="badge-live"><span class="dot-online"></span>Terhubung</span></span></div>
+          <div class="info-row"><span class="k">Status Data Chat</span><span class="v" id="dashChatStatus">0 pesan</span></div>
+          <div class="info-row"><span class="k">Permintaan Pending</span><span class="v" id="dashPending">0</span></div>
+          <div class="info-row"><span class="k">Terakhir Diperbarui</span><span class="v" id="dashUpdated">-</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          Pengguna Terbaru
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Pengguna</th><th>Email</th><th>No HP</th><th>Status</th><th>Level</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="dashRecentUsers"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ USERS ============ -->
+    <section class="page" id="content-users">
+      <div class="table-toolbar">
         <div class="search-box">
-            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input type="text" id="searchUser" placeholder="Cari username..." oninput="filterUsers()">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="searchUser" placeholder="Cari username..." oninput="filterUsers()">
         </div>
-        <div class="user-list" id="userList"></div>
-    </div>
-    <div class="tab-content" id="content-inbox">
-        <div class="sub-tabs">
-            <div class="sub-tab active" id="subTabDeposit" onclick="switchSubTab('deposit')">INBOX DEPOSIT <span class="badge" id="depositBadge">0</span></div>
-            <div class="sub-tab" id="subTabWithdraw" onclick="switchSubTab('withdraw')">INBOX WITHDRAW <span class="badge" id="withdrawBadge">0</span></div>
+        <button class="header-btn" onclick="loadUsers()">
+          <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Pengguna</th><th>Email</th><th>No HP</th><th>Status</th><th>Level</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
         </div>
-        <div id="depositInboxContainer" style="margin-top:15px;"></div>
-        <div id="withdrawInboxContainer" style="margin-top:15px;display:none;"></div>
-    </div>
-    <div class="tab-content" id="content-chat">
-        <div class="chat-list" id="chatList"></div>
-    </div>
+      </div>
+      <div id="userList" style="display:none;"></div>
+    </section>
+
+    <!-- ============ USER DETAIL ============ -->
+    <section class="page" id="content-userdetail">
+      <div class="detail-page-header" style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--gold);">
+        <button class="back-btn" onclick="closeUserDetail()" style="background:var(--panel);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:9px;font-weight:700;">← Kembali</button>
+        <div>
+          <h2 style="color:var(--gold);font-size:18px;font-weight:800;">Edit User</h2>
+          <p id="detailSubtitle" style="color:var(--muted);font-size:12px;margin-top:3px;">Kelola data user</p>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="profile-card">
+          <div class="detail-avatar-big" id="detailAvatar">U</div>
+          <h2 id="detailProfileName">Username</h2>
+          <div class="uname" id="detailProfileEmail">@username</div>
+          <div class="stats-grid" style="grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 0;">
+            <div class="stat-box" style="background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center;">
+              <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Saldo</div>
+              <div class="value green" id="statSaldo" style="font-size:13px;font-weight:800;color:var(--green);margin-top:4px;">Rp 0</div>
+            </div>
+            <div class="stat-box" style="background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center;">
+              <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Level</div>
+              <div class="value gold" id="statLevel" style="font-size:13px;font-weight:800;color:var(--gold);margin-top:4px;">Bronze</div>
+            </div>
+            <div class="stat-box" style="background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center;">
+              <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Total Deposit</div>
+              <div class="value gold" id="statDeposit" style="font-size:13px;font-weight:800;color:var(--gold);margin-top:4px;">Rp 0</div>
+            </div>
+            <div class="stat-box" style="background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:10px;text-align:center;">
+              <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Max Win</div>
+              <div class="value green" id="statMaxWin" style="font-size:13px;font-weight:800;color:var(--green);margin-top:4px;">Rp 0</div>
+            </div>
+          </div>
+          <div class="profile-meta">
+            <div class="pm"><span class="k">Status</span><span class="v" id="detailProfileStatus">Aktif</span></div>
+            <div class="pm"><span class="k">Bank</span><span class="v" id="detailProfileBank">-</span></div>
+            <div class="pm"><span class="k">No Rekening</span><span class="v" id="detailProfileRek">-</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-title">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Data Akun
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Username</label><input type="text" id="editUsername" disabled></div>
+            <div class="form-group"><label>Password</label><input type="text" id="editPassword"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="editEmail"></div>
+            <div class="form-group"><label>No HP</label><input type="text" id="editNoHp"></div>
+            <div class="form-group full"><label>Kode Referral</label><input type="text" id="editKodeRef"></div>
+          </div>
+
+          <div class="section-title">
+            <svg viewBox="0 0 24 24"><path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"/></svg>
+            Data Bank
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Bank</label>
+              <select id="editBank">
+                <option value="">- Pilih Bank -</option>
+                <option>BCA</option><option>BNI</option><option>BRI</option><option>MANDIRI</option>
+                <option>DANA</option><option>OVO</option><option>GOPAY</option><option>SHOPEEPAY</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Nama Rekening</label><input type="text" id="editUsernameBank"></div>
+            <div class="form-group full"><label>Nomor Rekening</label><input type="text" id="editNoRekening"></div>
+          </div>
+
+          <div class="section-title">
+            <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+            Data Keuangan
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Saldo (Rp)</label><input type="number" id="editSaldo"></div>
+            <div class="form-group"><label>Total Deposit (Rp)</label><input type="number" id="editTotalDeposit"></div>
+            <div class="form-group"><label>Max Win (Rp)</label><input type="number" id="editMaxWin"></div>
+            <div class="form-group"><label>Total Withdraw (Rp)</label><input type="number" id="editTotalWithdraw"></div>
+          </div>
+
+          <div class="section-title">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+            Status & Level
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Level</label>
+              <select id="editLevel"><option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option><option>Diamond</option></select>
+            </div>
+            <div class="form-group"><label>Status</label>
+              <select id="editStatus"><option>Aktif</option><option>Suspend</option><option>Banned</option></select>
+            </div>
+          </div>
+
+          <button class="save-btn" onclick="saveUser()">SIMPAN PERUBAHAN</button>
+          <button class="danger-btn" onclick="deleteUser()">HAPUS USER</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INBOX ============ -->
+    <section class="page" id="content-inbox">
+      <div class="sub-tabs">
+        <div class="sub-tab active" id="subTabDeposit" onclick="switchSubTab('deposit')">INBOX DEPOSIT <span class="badge" id="depositBadge">0</span></div>
+        <div class="sub-tab" id="subTabWithdraw" onclick="switchSubTab('withdraw')">INBOX WITHDRAW <span class="badge" id="withdrawBadge">0</span></div>
+      </div>
+      <div id="depositInboxContainer"></div>
+      <div id="withdrawInboxContainer" style="display:none;"></div>
+    </section>
+
+    <!-- ============ CHAT ============ -->
+    <section class="page" id="content-chat">
+      <div class="chat-layout">
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-head">Daftar Percakapan</div>
+          <div class="chat-list" id="chatList"></div>
+        </div>
+        <div class="chat-main">
+          <div class="chat-window-header">
+            <div class="chat-user-avatar" id="chatHeaderAvatar">?</div>
+            <div>
+              <h3 id="chatWindowUsername">Pilih percakapan</h3>
+              <p id="chatHeaderStatus"><span class="dot-online"></span> Online</p>
+            </div>
+          </div>
+          <div class="chat-window-messages" id="chatWindowMessages">
+            <div class="chat-placeholder">Pilih pengguna di sebelah kiri untuk memulai percakapan.</div>
+          </div>
+          <div class="chat-window-input">
+            <input type="text" id="chatWindowInput" placeholder="Balas pesan..." onkeypress="if(event.key==='Enter') sendAdminChat()">
+            <button onclick="sendAdminChat()">Kirim</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ACTIVITY ============ -->
+    <section class="page" id="content-activity">
+      <div class="panel">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24"><path d="M13 2.05v9.95l6.36 3.67-1 1.73L11 13V4h2v-1.95zM12 20c4.42 0 8-3.58 8-8h2c0 5.52-4.48 10-10 10S2 17.52 2 12c0-4.97 3.64-9.09 8.42-9.88v2.03C6.55 4.94 4 8.16 4 12c0 4.42 3.58 8 8 8z"/></svg>
+          Riwayat Aktivitas
+        </div>
+        <div class="timeline" id="activityTimeline">
+          <div class="empty-inbox"><p>Belum ada aktivitas tercatat.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section class="page" id="content-settings">
+      <div class="settings-card">
+        <div class="section-title" style="margin-top:0;">
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.33-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          Konfigurasi Koneksi
+        </div>
+        <div class="form-group"><label>Supabase URL</label><input type="text" id="setUrl" disabled></div>
+        <div class="form-group" style="margin-top:12px;"><label>Anon Key</label><input type="password" id="setKey" disabled></div>
+        <button class="save-btn" onclick="showNotif('Konfigurasi terkunci untuk keamanan','info')">SIMPAN KONFIGURASI</button>
+        <div class="security-note">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+          <div>Konfigurasi koneksi database dikunci untuk alasan keamanan. Perubahan hanya dapat dilakukan melalui file konfigurasi server. Jangan pernah membagikan Anon Key Anda kepada pihak lain.</div>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>
 
 <div class="fs-overlay" id="fsOverlay" onclick="closeFullscreen()">
     <img id="fsImage" src="" alt="Fullscreen">
 </div>
 
-<div class="chat-window" id="chatWindow">
-    <div class="chat-window-header">
-        <button class="chat-back-btn" onclick="closeChatWindow()">←</button>
-        <div style="flex:1;">
-            <h3 id="chatWindowUsername" style="font-size:15px;color:#fff;">User</h3>
-            <p style="font-size:11px;color:#4caf50;">Online</p>
-        </div>
-    </div>
-    <div class="chat-window-messages" id="chatWindowMessages"></div>
-    <div class="chat-window-input">
-        <input type="text" id="chatWindowInput" placeholder="Balas pesan..." onkeypress="if(event.key==='Enter') sendAdminChat()">
-        <button onclick="sendAdminChat()">Kirim</button>
-    </div>
-</div>
-
 <div class="loading-overlay" id="loading">
     <div class="loading-spinner"></div>
-    <div style="color:#d4af37;font-weight:bold;">Memuat...</div>
+    <div>Memuat...</div>
 </div>
 
 <script>
@@ -249,9 +754,19 @@ var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 var allUsers = [];
 var allPending = [];
+var allChats = [];
 var currentChatUser = null;
 var currentEditingUser = null;
 var chatWindowInterval = null;
+
+var PAGE_META = {
+    dashboard: { title: 'Dashboard', desc: 'Ringkasan statistik dan aktivitas sistem' },
+    users:     { title: 'Manajemen Pengguna', desc: 'Kelola seluruh data pengguna terdaftar' },
+    inbox:     { title: 'Inbox Permintaan', desc: 'Proses deposit dan withdraw masuk' },
+    chat:      { title: 'Pusat Chat', desc: 'Balas pesan dari pengguna secara langsung' },
+    activity:  { title: 'Aktivitas', desc: 'Riwayat aktivitas sistem terbaru' },
+    settings:  { title: 'Pengaturan', desc: 'Konfigurasi sistem dan keamanan' }
+};
 
 function showNotif(message, type) {
     type = type || 'info';
@@ -266,17 +781,39 @@ function showNotif(message, type) {
     setTimeout(function() { notif.classList.remove('show'); setTimeout(function() { notif.remove(); }, 400); }, 3000);
 }
 
+function toggleSidebar() {
+    var sb = document.getElementById('sidebar');
+    var bd = document.getElementById('sidebarBackdrop');
+    sb.classList.toggle('open');
+    bd.classList.toggle('active', sb.classList.contains('open'));
+}
+
 function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-    document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
-    document.getElementById('tab-' + tab).classList.add('active');
-    document.getElementById('content-' + tab).classList.add('active');
-    document.getElementById('mainContent').style.display = 'block';
-    document.getElementById('mainTabs').style.display = 'flex';
-    document.getElementById('userDetailPage').classList.remove('active');
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    var content = document.getElementById('content-' + tab);
+    if (content) content.classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(function(n) {
+        n.classList.toggle('active', n.getAttribute('data-nav') === tab);
+    });
+
+    var meta = PAGE_META[tab] || PAGE_META.dashboard;
+    document.getElementById('pageTitle').innerText = meta.title;
+    document.getElementById('pageDesc').innerText = meta.desc;
+
     if (tab === 'users') loadUsers();
     if (tab === 'inbox') loadPending();
     if (tab === 'chat') loadChatList();
+    if (tab === 'activity') loadActivity();
+    if (tab === 'settings') {
+        document.getElementById('setUrl').value = SUPABASE_URL;
+        document.getElementById('setKey').value = SUPABASE_ANON_KEY;
+    }
+
+    // close mobile sidebar
+    var sb = document.getElementById('sidebar');
+    if (sb.classList.contains('open')) toggleSidebar();
+    window.scrollTo(0, 0);
 }
 
 function switchSubTab(type) {
@@ -301,6 +838,7 @@ function refreshAll() {
     loadUsers();
     loadPending();
     loadChatList();
+    loadActivity();
     showNotif('Data di-refresh', 'success');
 }
 
@@ -312,6 +850,7 @@ function closeFullscreen() {
     document.getElementById('fsOverlay').classList.remove('active');
 }
 
+/* ================= USERS ================= */
 async function loadUsers() {
     document.getElementById('loading').style.display = 'flex';
     try {
@@ -320,33 +859,99 @@ async function loadUsers() {
         if (res.error) throw res.error;
         allUsers = res.data || [];
         renderUsers(allUsers);
+        renderDashboardStats();
+        renderRecentUsers();
     } catch (e) {
         document.getElementById('loading').style.display = 'none';
         showNotif('Gagal memuat user: ' + e.message, 'error');
     }
 }
 
+function userStatusBadge(u) {
+    var st = (u.status || 'Aktif').toLowerCase();
+    if (st === 'aktif') return '<span class="badge aktif">Aktif</span>';
+    return '<span class="badge nonaktif">' + (u.status || 'Nonaktif') + '</span>';
+}
+
 function renderUsers(users) {
-    var container = document.getElementById('userList');
+    var tbody = document.getElementById('userTableBody');
+    if (!tbody) return;
     if (users.length === 0) {
-        container.innerHTML = '<div class="empty-inbox"><p>Tidak ada user</p></div>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Tidak ada user</td></tr>';
         return;
     }
-    container.innerHTML = '';
+    var html = '';
     users.forEach(function(u) {
-        container.innerHTML += '<div class="user-card" onclick="openUserDetail(\'' + u.username + '\')">' +
-            '<div class="user-card-header">' +
-            '<div class="user-card-name">' +
-            '<div class="user-card-avatar">' + u.username.charAt(0).toUpperCase() + '</div>' +
-            '<div><h3>' + u.username + '</h3><p>' + (u.bank || 'Bank belum diisi') + ' - ' + (u.no_rekening || '-') + '</p></div>' +
-            '</div>' +
-            '<div class="user-card-rank">' + (u.level || 'Bronze') + '</div>' +
-            '</div>' +
-            '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-            '<span class="user-card-detail">' + (u.email || '-') + ' | ' + (u.no_hp || '-') + '</span>' +
-            '<span class="user-card-saldo">' + formatRupiah(u.saldo || 0) + '</span>' +
-            '</div></div>';
+        html += '<tr>' +
+            '<td><div class="u-cell"><div class="u-avatar">' + (u.username || '?').charAt(0).toUpperCase() + '</div>' +
+            '<div><div class="u-name">' + u.username + '</div><div class="u-sub">@' + u.username + '</div></div></div></td>' +
+            '<td style="color:var(--muted);">' + (u.email || '-') + '</td>' +
+            '<td style="color:var(--muted);">' + (u.no_hp || '-') + '</td>' +
+            '<td>' + userStatusBadge(u) + '</td>' +
+            '<td><span class="badge level">' + (u.level || 'Bronze') + '</span></td>' +
+            '<td><button class="btn-detail" onclick="openUserDetail(\'' + u.username + '\')">Detail</button></td>' +
+            '</tr>';
     });
+    tbody.innerHTML = html;
+}
+
+function renderDashboardStats() {
+    var total = allUsers.length;
+    var active = allUsers.filter(function(u) { return (u.status || 'Aktif').toLowerCase() === 'aktif'; }).length;
+    var inactive = total - active;
+    var totalActivity = allPending.length + allChats.length;
+    if (document.getElementById('dashTotalUsers')) document.getElementById('dashTotalUsers').innerText = total;
+    if (document.getElementById('dashActiveUsers')) document.getElementById('dashActiveUsers').innerText = active;
+    if (document.getElementById('dashInactiveUsers')) document.getElementById('dashInactiveUsers').innerText = inactive;
+    if (document.getElementById('dashTotalActivity')) document.getElementById('dashTotalActivity').innerText = totalActivity;
+    if (document.getElementById('dashPending')) document.getElementById('dashPending').innerText = allPending.length;
+    if (document.getElementById('dashChatStatus')) document.getElementById('dashChatStatus').innerText = allChats.length + ' pesan';
+    if (document.getElementById('dashUpdated')) document.getElementById('dashUpdated').innerText = new Date().toLocaleTimeString('id-ID');
+    renderGrowthChart(total);
+}
+
+function renderGrowthChart(total) {
+    var wrap = document.getElementById('growthChart');
+    if (!wrap) return;
+    var labels = ['Jan','Feb','Mar','Apr','Mei','Jun'];
+    var base = Math.max(total, 1);
+    var factors = [0.25, 0.4, 0.55, 0.7, 0.85, 1];
+    var maxH = 120;
+    var html = '';
+    for (var i = 0; i < labels.length; i++) {
+        var h = Math.max(8, Math.round(base * factors[i] / base * maxH));
+        html += '<div class="chart-bar" style="height:' + h + 'px;" title="' + labels[i] + '"></div>';
+    }
+    // append labels separately via CSS bottom - just add label spans inside
+    wrap.innerHTML = html;
+    // add labels row using pseudo via inline spans overlay
+    var lblHtml = '<div style="display:flex;gap:10px;margin-top:24px;">';
+    labels.forEach(function(l) { lblHtml += '<div style="flex:1;text-align:center;font-size:10px;color:var(--muted);">' + l + '</div>'; });
+    lblHtml += '</div>';
+    wrap.innerHTML += lblHtml;
+}
+
+function renderRecentUsers() {
+    var tbody = document.getElementById('dashRecentUsers');
+    if (!tbody) return;
+    var recent = allUsers.slice().reverse().slice(0, 5);
+    if (recent.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">Belum ada data</td></tr>';
+        return;
+    }
+    var html = '';
+    recent.forEach(function(u) {
+        html += '<tr>' +
+            '<td><div class="u-cell"><div class="u-avatar">' + (u.username || '?').charAt(0).toUpperCase() + '</div>' +
+            '<div class="u-name">' + u.username + '</div></div></td>' +
+            '<td style="color:var(--muted);">' + (u.email || '-') + '</td>' +
+            '<td style="color:var(--muted);">' + (u.no_hp || '-') + '</td>' +
+            '<td>' + userStatusBadge(u) + '</td>' +
+            '<td><span class="badge level">' + (u.level || 'Bronze') + '</span></td>' +
+            '<td><button class="btn-detail" onclick="openUserDetail(\'' + u.username + '\')">Detail</button></td>' +
+            '</tr>';
+    });
+    tbody.innerHTML = html;
 }
 
 function filterUsers() {
@@ -360,12 +965,19 @@ function openUserDetail(username) {
     if (!user) return;
     currentEditingUser = user;
 
-    document.getElementById('mainTabs').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'none';
-    document.getElementById('userDetailPage').classList.add('active');
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('content-userdetail').classList.add('active');
+    document.getElementById('pageTitle').innerText = 'Detail Pengguna';
+    document.getElementById('pageDesc').innerText = 'Kelola profil dan data pengguna';
 
-    document.getElementById('detailAvatar').innerText = user.username.charAt(0).toUpperCase();
+    document.getElementById('detailAvatar').innerText = (user.username || 'U').charAt(0).toUpperCase();
+    document.getElementById('detailProfileName').innerText = user.username || '-';
+    document.getElementById('detailProfileEmail').innerText = user.email || '-';
+    document.getElementById('detailProfileStatus').innerText = user.status || 'Aktif';
+    document.getElementById('detailProfileBank').innerText = user.bank || '-';
+    document.getElementById('detailProfileRek').innerText = user.no_rekening || '-';
     document.getElementById('detailSubtitle').innerText = '@' + user.username;
+
     document.getElementById('statSaldo').innerText = formatRupiah(user.saldo || 0);
     document.getElementById('statLevel').innerText = user.level || 'Bronze';
     document.getElementById('statDeposit').innerText = formatRupiah(user.total_deposit || 0);
@@ -390,11 +1002,8 @@ function openUserDetail(username) {
 }
 
 function closeUserDetail() {
-    document.getElementById('userDetailPage').classList.remove('active');
-    document.getElementById('mainTabs').style.display = 'flex';
-    document.getElementById('mainContent').style.display = 'block';
     currentEditingUser = null;
-    loadUsers();
+    switchTab('users');
 }
 
 async function saveUser() {
@@ -424,6 +1033,14 @@ async function saveUser() {
         if (res.error) throw res.error;
         showNotif('Data user berhasil disimpan!', 'success');
         for (var key in updatedData) currentEditingUser[key] = updatedData[key];
+        // refresh profile meta
+        document.getElementById('detailProfileStatus').innerText = updatedData.status;
+        document.getElementById('detailProfileBank').innerText = updatedData.bank || '-';
+        document.getElementById('detailProfileRek').innerText = updatedData.no_rekening || '-';
+        document.getElementById('statSaldo').innerText = formatRupiah(updatedData.saldo);
+        document.getElementById('statLevel').innerText = updatedData.level;
+        document.getElementById('statDeposit').innerText = formatRupiah(updatedData.total_deposit);
+        document.getElementById('statMaxWin').innerText = formatRupiah(updatedData.max_win);
     } catch (e) {
         document.getElementById('loading').style.display = 'none';
         showNotif('Gagal menyimpan: ' + e.message, 'error');
@@ -447,6 +1064,7 @@ async function deleteUser() {
     }
 }
 
+/* ================= INBOX ================= */
 async function loadPending() {
     try {
         var res = await supabase.from('pending').select('*').order('tanggal', { ascending: false });
@@ -458,9 +1076,11 @@ async function loadPending() {
         document.getElementById('inboxBadge').innerText = allPending.length;
         document.getElementById('depositBadge').innerText = deposits.length;
         document.getElementById('withdrawBadge').innerText = withdraws.length;
+        if (document.getElementById('dashPending')) document.getElementById('dashPending').innerText = allPending.length;
 
         renderDepositInbox(deposits);
         renderWithdrawInbox(withdraws);
+        renderDashboardStats();
     } catch (e) {}
 }
 
@@ -488,11 +1108,17 @@ function openDepositDetail(pendingId) {
     var p = allPending.find(function(x) { return x.id === pendingId; });
     if (!p) return;
 
-    document.getElementById('mainTabs').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'none';
-    document.getElementById('userDetailPage').classList.add('active');
+    document.querySelectorAll('.page').forEach(function(pg) { pg.classList.remove('active'); });
+    document.getElementById('content-userdetail').classList.add('active');
+    document.getElementById('pageTitle').innerText = 'Detail Deposit';
+    document.getElementById('pageDesc').innerText = 'Verifikasi bukti transfer pengguna';
 
     document.getElementById('detailAvatar').innerText = p.username.charAt(0).toUpperCase();
+    document.getElementById('detailProfileName').innerText = p.username;
+    document.getElementById('detailProfileEmail').innerText = 'Permohonan Deposit';
+    document.getElementById('detailProfileStatus').innerText = 'DEPOSIT';
+    document.getElementById('detailProfileBank').innerText = '-';
+    document.getElementById('detailProfileRek').innerText = '-';
     document.getElementById('detailSubtitle').innerText = 'Permohonan Deposit';
     document.getElementById('statSaldo').innerText = formatRupiah(p.nominal);
     document.getElementById('statLevel').innerText = 'DEPOSIT';
@@ -501,19 +1127,23 @@ function openDepositDetail(pendingId) {
 
     var buktiUrl = p.bukti_url || '';
     var html = '<div class="section-title">Bukti Transfer</div>' +
-        '<img src="' + buktiUrl + '" class="bukti-thumb" style="max-width:100%;" onclick="openFullscreen(\'' + buktiUrl + '\')" onerror="this.style.display=\'none\'">' +
-        '<div class="section-title">Detail</div>' +
+        (buktiUrl ? '<img src="' + buktiUrl + '" class="bukti-thumb" onclick="openFullscreen(\'' + buktiUrl + '\')" onerror="this.style.display=\'none\'">' : '<p style="color:var(--muted);font-size:12px;">Tidak ada bukti</p>') +
+        '<div class="section-title">Detail Permintaan</div>' +
         '<div class="withdraw-detail">' +
         '<div class="withdraw-row"><span class="label">USERNAME</span><span class="value">' + p.username + '</span></div>' +
-        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:#4caf50;">' + formatRupiah(p.nominal) + '</span></div>' +
+        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:var(--green);">' + formatRupiah(p.nominal) + '</span></div>' +
+        '<div class="withdraw-row"><span class="label">TANGGAL</span><span class="value">' + new Date(p.tanggal).toLocaleString('id-ID') + '</span></div>' +
         '</div>' +
         '<div class="inbox-actions">' +
         '<button class="inbox-btn setujui" onclick="approveDeposit(' + p.id + ');">SETUJUI</button>' +
         '<button class="inbox-btn tolak" onclick="rejectPending(' + p.id + ');">TOLAK</button>' +
         '</div>';
 
-    var editContainer = document.getElementById('editUsername').parentElement.parentElement;
-    editContainer.innerHTML = html;
+    var detailGrid = document.querySelector('#content-userdetail .detail-grid');
+    // Replace the right panel content
+    var panel = detailGrid.querySelector('.panel');
+    if (panel) panel.innerHTML = html;
+
     window.scrollTo(0, 0);
 }
 
@@ -560,6 +1190,7 @@ async function approveDeposit(pendingId) {
         showNotif('Deposit disetujui!', 'success');
         loadPending();
         loadUsers();
+        switchTab('inbox');
     } catch (e) {
         document.getElementById('loading').style.display = 'none';
         showNotif('Gagal: ' + e.message, 'error');
@@ -602,22 +1233,25 @@ async function rejectPending(pendingId) {
         var res = await supabase.from('pending').delete().eq('id', p.id);
         if (res.error) throw res.error;
         document.getElementById('loading').style.display = 'none';
-        showNotif('Permohonan ditolak', 'info');
+        showNotif('Permintaan ditolak', 'info');
         loadPending();
         loadUsers();
+        switchTab('inbox');
     } catch (e) {
         document.getElementById('loading').style.display = 'none';
         showNotif('Gagal: ' + e.message, 'error');
     }
 }
 
+/* ================= CHAT ================= */
 async function loadChatList() {
     try {
         var res = await supabase.from('chats').select('*').order('tanggal', { ascending: false });
         if (res.error) throw res.error;
+        allChats = res.data || [];
 
         var users = {};
-        (res.data || []).forEach(function(c) {
+        allChats.forEach(function(c) {
             var u = c.username;
             if (!users[u]) users[u] = { username: u, last_message: '', last_time: '', unread: 0 };
             if (!users[u].last_message) users[u].last_message = c.message;
@@ -629,20 +1263,22 @@ async function loadChatList() {
         var totalUnread = chatList.reduce(function(sum, c) { return sum + c.unread; }, 0);
         document.getElementById('chatBadge').innerText = totalUnread;
         renderChatList(chatList);
+        renderDashboardStats();
     } catch (e) {}
 }
 
 function renderChatList(list) {
     var container = document.getElementById('chatList');
+    if (!container) return;
     if (list.length === 0) {
         container.innerHTML = '<div class="empty-inbox"><p>Belum ada chat</p></div>';
         return;
     }
     container.innerHTML = '';
     list.forEach(function(c) {
-        container.innerHTML += '<div class="chat-user-item" onclick="openChatWindow(\'' + c.username + '\')">' +
+        container.innerHTML += '<div class="chat-user-item' + (currentChatUser === c.username ? ' active' : '') + '" onclick="openChatWindow(\'' + c.username + '\')">' +
             '<div class="chat-user-avatar">' + c.username.charAt(0).toUpperCase() + '</div>' +
-            '<div class="chat-user-info"><h3>' + c.username + '</h3><p>' + c.last_message + '</p></div>' +
+            '<div class="chat-user-info"><h3>' + c.username + '</h3><p>' + (c.last_message || '') + '</p></div>' +
             (c.unread > 0 ? '<div class="chat-user-unread">' + c.unread + '</div>' : '') +
             '</div>';
     });
@@ -651,15 +1287,16 @@ function renderChatList(list) {
 function openChatWindow(user) {
     currentChatUser = user;
     document.getElementById('chatWindowUsername').innerText = user;
-    document.getElementById('chatWindow').classList.add('active');
+    document.getElementById('chatHeaderAvatar').innerText = user.charAt(0).toUpperCase();
     loadChatMessages();
     if (chatWindowInterval) clearInterval(chatWindowInterval);
     chatWindowInterval = setInterval(loadChatMessages, 3000);
     supabase.from('chats').update({ read_status: true }).eq('username', user).eq('from_user', 'user').then(function() { loadChatList(); });
+    // re-render list to highlight active
+    loadChatList();
 }
 
 function closeChatWindow() {
-    document.getElementById('chatWindow').classList.remove('active');
     if (chatWindowInterval) { clearInterval(chatWindowInterval); chatWindowInterval = null; }
     currentChatUser = null;
     loadChatList();
@@ -672,7 +1309,7 @@ async function loadChatMessages() {
     var container = document.getElementById('chatWindowMessages');
     container.innerHTML = '';
     if (!res.data || res.data.length === 0) {
-        container.innerHTML = '<div style="text-align:center;color:#666;padding:20px;">Belum ada pesan</div>';
+        container.innerHTML = '<div class="chat-placeholder">Belum ada pesan</div>';
         return;
     }
     res.data.forEach(function(c) {
@@ -701,6 +1338,39 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+/* ================= ACTIVITY ================= */
+async function loadActivity() {
+    var el = document.getElementById('activityTimeline');
+    if (!el) return;
+    // Build timeline from pending and chats
+    var items = [];
+    allPending.forEach(function(p) {
+        items.push({
+            title: (p.type === 'deposit' ? 'Permintaan Deposit' : 'Permintaan Withdraw') + ' - ' + p.username,
+            desc: formatRupiah(p.nominal),
+            time: new Date(p.tanggal).toLocaleString('id-ID')
+        });
+    });
+    allChats.slice(0, 20).forEach(function(c) {
+        items.push({
+            title: 'Chat dari ' + c.username,
+            desc: c.message,
+            time: new Date(c.tanggal).toLocaleString('id-ID')
+        });
+    });
+    if (items.length === 0) {
+        el.innerHTML = '<div class="empty-inbox"><p>Belum ada aktivitas tercatat.</p></div>';
+        return;
+    }
+    items.sort(function(a, b) { return new Date(b.time) - new Date(a.time); });
+    var html = '';
+    items.slice(0, 30).forEach(function(it) {
+        html += '<div class="tl-item"><div class="tl-title">' + it.title + '</div><div class="tl-desc">' + it.desc + '</div><div class="tl-time">' + it.time + '</div></div>';
+    });
+    el.innerHTML = html;
+}
+
+/* ================= INIT ================= */
 setInterval(function() {
     if (document.getElementById('content-inbox').classList.contains('active')) loadPending();
     if (document.getElementById('content-chat').classList.contains('active')) loadChatList();
@@ -710,7 +1380,11 @@ window.addEventListener('DOMContentLoaded', function() {
     loadUsers();
     loadPending();
     loadChatList();
+    loadActivity();
+    // set initial settings inputs
+    document.getElementById('setUrl').value = SUPABASE_URL;
+    document.getElementById('setKey').value = SUPABASE_ANON_KEY;
 });
 </script>
 </body>
-  </html>
+          </html>
