@@ -294,24 +294,49 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 
 /* ============ CHAT ============ */
 .chat-layout{display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 200px);min-height:480px;}
-.chat-sidebar{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow-y:auto;}
+.chat-sidebar{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow-y:auto;display:flex;flex-direction:column;}
 .chat-sidebar-head{padding:16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:800;}
-.chat-list{display:flex;flex-direction:column;padding:8px;}
+
+/* Filter tabs chat */
+.chat-filters{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg);}
+.chat-filter-tab{
+  flex:1;padding:7px 8px;border-radius:8px;font-size:10.5px;font-weight:700;cursor:pointer;
+  background:var(--panel);color:var(--muted);border:1px solid var(--border);transition:.2s;
+  text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.chat-filter-tab:hover{color:var(--text);}
+.chat-filter-tab.active{background:rgba(212,175,55,.12);color:var(--gold);border-color:rgba(212,175,55,.4);}
+.chat-filter-tab .cnt{
+  font-size:9.5px;background:rgba(255,255,255,.08);color:var(--muted);
+  padding:1px 6px;border-radius:8px;font-weight:800;min-width:16px;
+}
+.chat-filter-tab.active .cnt{background:rgba(212,175,55,.25);color:var(--gold-light);}
+.chat-filter-tab[data-filter="unreplied"] .cnt{background:rgba(239,100,100,.18);color:var(--red);}
+.chat-filter-tab.active[data-filter="unreplied"] .cnt{background:var(--red);color:#fff;}
+
+.chat-list{display:flex;flex-direction:column;padding:8px;flex:1;}
 .chat-user-item{
-  background:transparent;border:1px solid transparent;border-radius:10px;padding:12px;
-  cursor:pointer;display:flex;align-items:center;gap:11px;transition:.15s;
+  background:transparent;border:1px solid transparent;border-radius:10px;padding:11px 12px;
+  cursor:pointer;display:flex;align-items:center;gap:11px;transition:.15s;margin-bottom:2px;
 }
 .chat-user-item:hover{background:var(--panel2);}
 .chat-user-item.active{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.3);}
+.chat-user-item.is-unreplied{border-left:2px solid var(--red);}
 .chat-user-avatar{
   width:40px;height:40px;border-radius:50%;flex-shrink:0;
   background:linear-gradient(135deg,var(--gold),var(--gold-light));
   display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:15px;
 }
 .chat-user-info{flex:1;min-width:0;}
-.chat-user-info h3{font-size:13px;font-weight:700;}
-.chat-user-info p{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chat-user-info h3{font-size:13px;font-weight:700;margin-bottom:2px;}
+.chat-user-info p{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .chat-user-unread{background:var(--red);color:#fff;font-size:10.5px;padding:3px 8px;border-radius:10px;font-weight:700;flex-shrink:0;}
+.chat-status-badge{
+  display:inline-block;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;
+  margin-top:4px;letter-spacing:.2px;
+}
+.chat-status-badge.unreplied{background:rgba(239,100,100,.15);color:var(--red);border:1px solid rgba(239,100,100,.35);}
+.chat-status-badge.replied{background:rgba(67,197,138,.12);color:var(--green);border:1px solid rgba(67,197,138,.3);}
 
 .chat-main{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden;}
 .chat-window-header{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--panel2);}
@@ -319,22 +344,59 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 .chat-window-header p{font-size:11px;color:var(--green);margin-top:2px;display:flex;align-items:center;gap:5px;}
 .chat-window-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;background:var(--bg);}
 .chat-placeholder{text-align:center;color:var(--muted);margin:auto;font-size:13px;}
-.chat-msg{max-width:75%;padding:11px 15px;border-radius:14px;font-size:13px;line-height:1.45;animation:msgIn .2s ease;}
+.chat-msg{max-width:75%;padding:11px 15px;border-radius:14px;font-size:13px;line-height:1.45;animation:msgIn .2s ease;word-break:break-word;}
 @keyframes msgIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 .chat-msg.user{align-self:flex-start;background:var(--panel2);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border);}
 .chat-msg.admin{align-self:flex-end;background:linear-gradient(135deg,rgba(212,175,55,.9),rgba(243,216,121,.9));color:#000;border-bottom-right-radius:4px;font-weight:500;}
 .chat-msg .time{font-size:10px;opacity:.65;margin-top:5px;display:block;}
-.chat-window-input{padding:14px;background:var(--panel2);display:flex;gap:10px;border-top:1px solid var(--border);}
-.chat-window-input input{
+
+/* Image message */
+.chat-msg.img-only{padding:5px;background:var(--panel2) !important;border:1px solid var(--border) !important;}
+.chat-msg.admin.img-only{background:rgba(212,175,55,.15) !important;border-color:rgba(212,175,55,.35) !important;}
+.chat-img{
+  display:block;max-width:240px;max-height:240px;border-radius:10px;
+  cursor:pointer;border:1px solid var(--border);transition:.2s;object-fit:cover;
+}
+.chat-img:hover{filter:brightness(1.06);}
+.chat-msg.img-only .time{padding:3px 6px 2px;color:var(--muted);}
+.chat-msg.admin.img-only .time{color:#000;opacity:.65;}
+
+/* Photo preview bar */
+.chat-img-preview{
+  display:none;padding:10px 14px;background:var(--panel2);border-top:1px solid var(--border);
+  gap:10px;align-items:center;
+}
+.chat-img-preview.active{display:flex;}
+.chat-img-preview img{
+  width:52px;height:52px;border-radius:8px;object-fit:cover;
+  border:1px solid var(--gold);flex-shrink:0;
+}
+.chat-img-preview .file-info{flex:1;font-size:11.5px;color:var(--muted);font-weight:600;}
+.chat-img-preview .remove-img{
+  background:var(--red);color:#fff;border:none;width:26px;height:26px;border-radius:50%;
+  cursor:pointer;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;
+  transition:.2s;
+}
+.chat-img-preview .remove-img:hover{filter:brightness(1.15);}
+
+.chat-window-input{padding:14px;background:var(--panel2);display:flex;gap:10px;border-top:1px solid var(--border);align-items:center;}
+.chat-photo-btn{
+  background:var(--panel);border:1px solid var(--border);color:var(--muted);
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;cursor:pointer;transition:.2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.chat-photo-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,175,55,.06);}
+.chat-photo-btn svg{width:18px;height:18px;fill:currentColor;}
+.chat-window-input input[type="text"]{
   flex:1;padding:12px 16px;background:var(--bg);border:1px solid var(--border);
   border-radius:22px;color:var(--text);outline:none;font-size:13px;transition:.2s;
 }
-.chat-window-input input:focus{border-color:var(--gold);}
-.chat-window-input button{
+.chat-window-input input[type="text"]:focus{border-color:var(--gold);}
+.chat-window-input .send-btn{
   background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;
   padding:12px 22px;border-radius:22px;color:#000;font-weight:800;font-size:13px;transition:.2s;
 }
-.chat-window-input button:hover{filter:brightness(1.08);}
+.chat-window-input .send-btn:hover{filter:brightness(1.08);}
 
 /* ============ ACTIVITY / TIMELINE ============ */
 .timeline{position:relative;padding-left:28px;}
@@ -355,8 +417,6 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 .tl-item.unreplied .tl-title{color:var(--gold);}
 .tl-item .tl-desc{font-size:12px;color:var(--muted);margin-top:3px;word-break:break-word;}
 .tl-item .tl-time{font-size:10.5px;color:var(--muted);margin-top:5px;letter-spacing:.3px;}
-
-/* Activity actions (Balas / Lihat) — mengikuti style tema */
 .tl-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
 .tl-btn-reply{
   padding:7px 16px;border-radius:8px;font-size:12px;font-weight:800;
@@ -410,8 +470,8 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 @media(max-width:900px){
   .stats-grid{grid-template-columns:repeat(2,1fr);}
   .chat-layout{grid-template-columns:1fr;height:auto;}
-  .chat-sidebar{max-height:280px;}
-  .chat-main{height:420px;}
+  .chat-sidebar{max-height:340px;}
+  .chat-main{height:440px;}
 }
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%);}
@@ -434,6 +494,8 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 @media(max-width:420px){
   .stats-grid{grid-template-columns:1fr;}
   .sub-tabs{flex-direction:column;}
+  .chat-filters{gap:4px;}
+  .chat-filter-tab{font-size:9.5px;padding:6px 4px;}
 }
 </style>
 </head>
@@ -710,6 +772,11 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       <div class="chat-layout">
         <div class="chat-sidebar">
           <div class="chat-sidebar-head">Daftar Percakapan</div>
+          <div class="chat-filters">
+            <div class="chat-filter-tab active" data-filter="all" onclick="setChatFilter('all')">Semua <span class="cnt" id="chatFilterAllCount">0</span></div>
+            <div class="chat-filter-tab" data-filter="unreplied" onclick="setChatFilter('unreplied')">Belum <span class="cnt" id="chatFilterUnrepliedCount">0</span></div>
+            <div class="chat-filter-tab" data-filter="replied" onclick="setChatFilter('replied')">Sudah <span class="cnt" id="chatFilterRepliedCount">0</span></div>
+          </div>
           <div class="chat-list" id="chatList"></div>
         </div>
         <div class="chat-main">
@@ -723,9 +790,17 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
           <div class="chat-window-messages" id="chatWindowMessages">
             <div class="chat-placeholder">Pilih pengguna di sebelah kiri untuk memulai percakapan.</div>
           </div>
+          <div class="chat-img-preview" id="chatImgPreview">
+            <img id="chatImgPreviewImg" src="" alt="preview">
+            <div class="file-info" id="chatImgPreviewInfo">Foto siap dikirim</div>
+            <button class="remove-img" onclick="cancelChatImage()" title="Batal">✕</button>
+          </div>
           <div class="chat-window-input">
+            <button class="chat-photo-btn" onclick="document.getElementById('chatImageInput').click()" title="Kirim Foto">
+              <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            </button>
             <input type="text" id="chatWindowInput" placeholder="Balas pesan..." onkeypress="if(event.key==='Enter') sendAdminChat()">
-            <button onclick="sendAdminChat()">Kirim</button>
+            <button class="send-btn" onclick="sendAdminChat()">Kirim</button>
           </div>
         </div>
       </div>
@@ -772,6 +847,8 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
     <div>Memuat...</div>
 </div>
 
+<input type="file" id="chatImageInput" accept="image/*" style="display:none;" onchange="handleChatImageSelect(event)">
+
 <script>
 // ============================================================
 // ⚠️ GANTI KEY DI BAWAH DENGAN ANON KEY ANDA (SAMA SEPERTI DI neo189.html)
@@ -789,6 +866,8 @@ var currentChatUser = null;
 var currentEditingUser = null;
 var chatWindowInterval = null;
 var lastChatTimestamp = null;
+var currentChatFilter = 'all';
+var pendingChatImage = null;
 
 var PAGE_META = {
     dashboard: { title: 'Dashboard', desc: 'Ringkasan statistik dan aktivitas sistem' },
@@ -841,7 +920,6 @@ function switchTab(tab) {
         document.getElementById('setKey').value = SUPABASE_ANON_KEY;
     }
 
-    // close mobile sidebar
     var sb = document.getElementById('sidebar');
     if (sb.classList.contains('open')) toggleSidebar();
     window.scrollTo(0, 0);
@@ -926,7 +1004,6 @@ function renderUsers(users) {
     tbody.innerHTML = html;
 }
 
-/* Cek siapa saja user yang chat terakhirnya dari 'user' (belum dibalas) */
 function getUnrepliedList() {
     var byUser = {};
     allChats.forEach(function(c) {
@@ -960,7 +1037,6 @@ function renderDashboardStats() {
     if (document.getElementById('dashChatStatus')) document.getElementById('dashChatStatus').innerText = allChats.length + ' pesan';
     if (document.getElementById('dashUpdated')) document.getElementById('dashUpdated').innerText = new Date().toLocaleTimeString('id-ID');
 
-    // Sidebar activity badge
     var actBadge = document.getElementById('activityBadge');
     if (actBadge) {
         if (unreplied > 0) {
@@ -1307,6 +1383,45 @@ async function rejectPending(pendingId) {
 }
 
 /* ================= CHAT ================= */
+function setChatFilter(f) {
+    currentChatFilter = f;
+    document.querySelectorAll('.chat-filter-tab').forEach(function(t) {
+        t.classList.toggle('active', t.getAttribute('data-filter') === f);
+    });
+    // re-render dari data yang sudah ada (tanpa fetch ulang untuk responsiveness)
+    rebuildChatListFromCache();
+}
+
+function rebuildChatListFromCache() {
+    var users = {};
+    allChats.forEach(function(c) {
+        var u = c.username;
+        if (!users[u]) users[u] = { username: u, last_message: '', last_time: '', last_from: '', unread: 0 };
+        if (!users[u].last_message) {
+            users[u].last_message = c.message || '';
+            users[u].last_time = c.tanggal;
+            users[u].last_from = c.from_user;
+        }
+        if (c.from_user === 'user' && !c.read_status) users[u].unread++;
+    });
+    var list = Object.values(users);
+    updateChatFilterCounts(list);
+    renderChatList(list);
+}
+
+function updateChatFilterCounts(list) {
+    var unreplied = 0, replied = 0;
+    list.forEach(function(c) {
+        if (c.last_from === 'user') unreplied++; else replied++;
+    });
+    var elAll = document.getElementById('chatFilterAllCount');
+    var elUn = document.getElementById('chatFilterUnrepliedCount');
+    var elRe = document.getElementById('chatFilterRepliedCount');
+    if (elAll) elAll.innerText = list.length;
+    if (elUn) elUn.innerText = unreplied;
+    if (elRe) elRe.innerText = replied;
+}
+
 async function loadChatList() {
     try {
         var res = await supabase.from('chats').select('*').order('tanggal', { ascending: false });
@@ -1316,19 +1431,23 @@ async function loadChatList() {
         var users = {};
         allChats.forEach(function(c) {
             var u = c.username;
-            if (!users[u]) users[u] = { username: u, last_message: '', last_time: '', unread: 0 };
-            if (!users[u].last_message) users[u].last_message = c.message;
-            if (!users[u].last_time) users[u].last_time = c.tanggal;
+            if (!users[u]) users[u] = { username: u, last_message: '', last_time: '', last_from: '', unread: 0 };
+            if (!users[u].last_message) {
+                users[u].last_message = c.message || '';
+                users[u].last_time = c.tanggal;
+                users[u].last_from = c.from_user;
+            }
             if (c.from_user === 'user' && !c.read_status) users[u].unread++;
         });
 
         var chatList = Object.values(users);
         var totalUnread = chatList.reduce(function(sum, c) { return sum + c.unread; }, 0);
         document.getElementById('chatBadge').innerText = totalUnread;
+
+        updateChatFilterCounts(chatList);
         renderChatList(chatList);
         renderDashboardStats();
 
-        // Refresh aktivitas badge kalau sedang tidak di tab activity
         if (!document.getElementById('content-activity').classList.contains('active')) {
             updateActivityBadgeOnly();
         }
@@ -1351,18 +1470,49 @@ function updateActivityBadgeOnly() {
 function renderChatList(list) {
     var container = document.getElementById('chatList');
     if (!container) return;
-    if (list.length === 0) {
-        container.innerHTML = '<div class="empty-inbox"><p>Belum ada chat</p></div>';
+
+    // filter
+    var filtered = list.slice();
+    if (currentChatFilter === 'unreplied') {
+        filtered = filtered.filter(function(c) { return c.last_from === 'user'; });
+    } else if (currentChatFilter === 'replied') {
+        filtered = filtered.filter(function(c) { return c.last_from === 'admin'; });
+    }
+
+    // sort: unreplied dulu, lalu by last_time desc
+    filtered.sort(function(a, b) {
+        if (a.last_from !== b.last_from) return a.last_from === 'user' ? -1 : 1;
+        return new Date(b.last_time) - new Date(a.last_time);
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty-inbox"><p>Tidak ada percakapan</p></div>';
         return;
     }
-    container.innerHTML = '';
-    list.forEach(function(c) {
-        container.innerHTML += '<div class="chat-user-item' + (currentChatUser === c.username ? ' active' : '') + '" onclick="openChatWindow(\'' + c.username + '\')">' +
+
+    var html = '';
+    filtered.forEach(function(c) {
+        var preview = c.last_message || '';
+        var isImg = preview.indexOf('[IMG]') === 0;
+        if (isImg) preview = '📷 Foto';
+        if (preview.length > 34) preview = preview.substring(0, 34) + '…';
+        var isUnreplied = c.last_from === 'user';
+
+        html += '<div class="chat-user-item' + (currentChatUser === c.username ? ' active' : '') + (isUnreplied ? ' is-unreplied' : '') + '" onclick="openChatWindow(\'' + escapeSingleQuote(c.username) + '\')">' +
             '<div class="chat-user-avatar">' + c.username.charAt(0).toUpperCase() + '</div>' +
-            '<div class="chat-user-info"><h3>' + c.username + '</h3><p>' + (c.last_message || '') + '</p></div>' +
+            '<div class="chat-user-info">' +
+            '<h3>' + escapeHtml(c.username) + '</h3>' +
+            '<p>' + escapeHtml(preview) + '</p>' +
+            '<span class="chat-status-badge ' + (isUnreplied ? 'unreplied' : 'replied') + '">' + (isUnreplied ? '● Belum Dibalas' : '✓ Sudah Dibalas') + '</span>' +
+            '</div>' +
             (c.unread > 0 ? '<div class="chat-user-unread">' + c.unread + '</div>' : '') +
             '</div>';
     });
+    container.innerHTML = html;
+}
+
+function escapeSingleQuote(s) {
+    return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
 function openChatWindow(user) {
@@ -1373,7 +1523,7 @@ function openChatWindow(user) {
     if (chatWindowInterval) clearInterval(chatWindowInterval);
     chatWindowInterval = setInterval(loadChatMessages, 3000);
     supabase.from('chats').update({ read_status: true }).eq('username', user).eq('from_user', 'user').then(function() { loadChatList(); });
-    loadChatList();
+    rebuildChatListFromCache();
 }
 
 function closeChatWindow() {
@@ -1394,11 +1544,18 @@ async function loadChatMessages() {
     }
     res.data.forEach(function(c) {
         var cls = c.from_user === 'user' ? 'user' : 'admin';
-        container.innerHTML += '<div class="chat-msg ' + cls + '">' + escapeHtml(c.message) + '<span class="time">' + (c.time || '') + '</span></div>';
+        var msg = c.message || '';
+        if (msg.indexOf('[IMG]') === 0) {
+            var src = msg.substring(5);
+            container.innerHTML += '<div class="chat-msg ' + cls + ' img-only">' +
+                '<img src="' + src + '" class="chat-img" onclick="openFullscreen(this.src)" alt="Foto">' +
+                '<span class="time">' + (c.time || '') + '</span></div>';
+        } else {
+            container.innerHTML += '<div class="chat-msg ' + cls + '">' + escapeHtml(msg) + '<span class="time">' + (c.time || '') + '</span></div>';
+        }
     });
     container.scrollTop = container.scrollHeight;
 
-    // Tandai pesan user sebagai sudah dibaca selama admin viewing
     try {
         await supabase.from('chats').update({ read_status: true })
             .eq('username', currentChatUser).eq('from_user', 'user').eq('read_status', false);
@@ -1406,20 +1563,103 @@ async function loadChatMessages() {
 }
 
 async function sendAdminChat() {
+    if (!currentChatUser) { showNotif('Pilih percakapan dulu', 'error'); return; }
     var input = document.getElementById('chatWindowInput');
     var msg = input.value.trim();
-    if (!msg || !currentChatUser) return;
-    input.value = '';
+    if (!msg && !pendingChatImage) return;
+
     var now = new Date();
     var timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-    await supabase.from('chats').insert({
-        username: currentChatUser, from_user: 'admin', message: msg, time: timeStr, read_status: true
+
+    var sends = [];
+    if (pendingChatImage) {
+        sends.push(supabase.from('chats').insert({
+            username: currentChatUser, from_user: 'admin',
+            message: '[IMG]' + pendingChatImage, time: timeStr, read_status: true
+        }));
+    }
+    if (msg) {
+        sends.push(supabase.from('chats').insert({
+            username: currentChatUser, from_user: 'admin', message: msg, time: timeStr, read_status: true
+        }));
+    }
+
+    cancelChatImage();
+    input.value = '';
+
+    try {
+        var results = await Promise.all(sends);
+        for (var i = 0; i < results.length; i++) {
+            if (results[i].error) throw results[i].error;
+        }
+        loadChatMessages();
+        loadChatList();
+        if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
+        else updateActivityBadgeOnly();
+    } catch (e) {
+        showNotif('Gagal kirim: ' + e.message, 'error');
+    }
+}
+
+/* ========= IMAGE HANDLING ========= */
+function handleChatImageSelect(evt) {
+    if (!currentChatUser) {
+        showNotif('Pilih percakapan dulu', 'error');
+        evt.target.value = '';
+        return;
+    }
+    var file = evt.target.files[0];
+    if (!file) return;
+    if (!file.type || file.type.indexOf('image/') !== 0) {
+        showNotif('File harus berupa gambar', 'error');
+        evt.target.value = '';
+        return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+        showNotif('Ukuran gambar maksimal 8MB', 'error');
+        evt.target.value = '';
+        return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        compressImage(e.target.result, 1200, 0.75).then(function(compressed) {
+            pendingChatImage = compressed;
+            document.getElementById('chatImgPreviewImg').src = compressed;
+            var kb = Math.round(compressed.length / 1024);
+            document.getElementById('chatImgPreviewInfo').innerText = 'Foto siap dikirim · ' + kb + ' KB';
+            document.getElementById('chatImgPreview').classList.add('active');
+        });
+    };
+    reader.readAsDataURL(file);
+    evt.target.value = '';
+}
+
+function compressImage(dataUrl, maxSize, quality) {
+    return new Promise(function(resolve) {
+        var img = new Image();
+        img.onload = function() {
+            var w = img.width, h = img.height;
+            if (w > maxSize || h > maxSize) {
+                if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                else { w = Math.round(w * maxSize / h); h = maxSize; }
+            }
+            var canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = function() { resolve(dataUrl); };
+        img.src = dataUrl;
     });
-    loadChatMessages();
-    loadChatList();
-    // Refresh activity supaya status user berubah jadi "replied"
-    if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
-    else updateActivityBadgeOnly();
+}
+
+function cancelChatImage() {
+    pendingChatImage = null;
+    var prev = document.getElementById('chatImgPreview');
+    if (prev) prev.classList.remove('active');
+    var pimg = document.getElementById('chatImgPreviewImg');
+    if (pimg) pimg.src = '';
 }
 
 function escapeHtml(text) {
@@ -1428,7 +1668,7 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-/* ===== Buka chat langsung dari halaman Aktivitas ===== */
+/* ===== Buka chat dari Aktivitas ===== */
 function openChatFromActivity(username) {
     switchTab('chat');
     setTimeout(function() {
@@ -1447,12 +1687,10 @@ async function loadActivity() {
 
     var items = [];
 
-    // Pending requests
     allPending.forEach(function(p) {
         items.push({
             kind: 'pending',
             pendingId: p.id,
-            pendingType: p.type,
             username: p.username,
             title: (p.type === 'deposit' ? 'Permintaan Deposit' : 'Permintaan Withdraw') + ' — ' + p.username,
             desc: formatRupiah(p.nominal),
@@ -1462,7 +1700,6 @@ async function loadActivity() {
         });
     });
 
-    // Group chats by user, ambil pesan terakhir
     var byUser = {};
     allChats.forEach(function(c) {
         if (!byUser[c.username]) byUser[c.username] = [];
@@ -1475,18 +1712,19 @@ async function loadActivity() {
         var last = msgs[msgs.length - 1];
         var isUnreplied = last.from_user === 'user';
         if (isUnreplied) unrepliedCount++;
+        var descText = last.message || '';
+        if (descText.indexOf('[IMG]') === 0) descText = '📷 Foto';
         items.push({
             kind: 'chat',
             username: user,
             title: (isUnreplied ? 'Pesan Baru dari ' : 'Percakapan dengan ') + user,
-            desc: last.message,
+            desc: descText,
             time: new Date(last.tanggal).toLocaleString('id-ID'),
             rawTime: new Date(last.tanggal),
             isUnreplied: isUnreplied
         });
     }
 
-    // Update sidebar badge
     var actBadge = document.getElementById('activityBadge');
     if (actBadge) {
         if (unrepliedCount > 0) {
@@ -1507,7 +1745,7 @@ async function loadActivity() {
     var html = '';
     items.slice(0, 40).forEach(function(it) {
         var cls = 'tl-item' + (it.kind === 'chat' && it.isUnreplied ? ' unreplied' : '');
-        var safeUser = String(it.username || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        var safeUser = escapeSingleQuote(it.username);
 
         var actions = '';
         if (it.kind === 'chat') {
@@ -1536,7 +1774,7 @@ async function loadActivity() {
     el.innerHTML = html;
 }
 
-/* ================= AUTO-DETECT NEW MESSAGES ================= */
+/* ================= POLL NEW MESSAGES ================= */
 async function pollForNewMessages() {
     try {
         var res = await supabase.from('chats').select('*')
@@ -1558,7 +1796,8 @@ async function pollForNewMessages() {
             if (newMsgs.length > 0) {
                 var latest = newMsgs[0];
                 var preview = (latest.message || '').substring(0, 55);
-                if ((latest.message || '').length > 55) preview += '…';
+                if ((latest.message || '').indexOf('[IMG]') === 0) preview = '📷 Foto';
+                else if ((latest.message || '').length > 55) preview += '…';
                 showNotif('💬 ' + latest.username + ': ' + preview, 'success');
             }
             lastChatTimestamp = newest.tanggal;
@@ -1582,7 +1821,7 @@ window.addEventListener('DOMContentLoaded', function() {
     loadPending();
     loadChatList();
     loadActivity();
-    pollForNewMessages(); // set marker awal supaya tidak spam notif untuk pesan lama
+    pollForNewMessages();
     document.getElementById('setUrl').value = SUPABASE_URL;
     document.getElementById('setKey').value = SUPABASE_ANON_KEY;
 });
