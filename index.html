@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
 <title>NEO189 - Admin Panel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -462,6 +463,16 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 
 .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;}
 
+/* Custom Modal Reject */
+.reject-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+.reject-modal-overlay.active { display: flex; }
+.reject-modal-box { background: var(--panel); width: 90%; max-width: 400px; border-radius: 15px; padding: 25px; border: 2px solid var(--red); text-align: center; }
+.reject-modal-box h3 { color: var(--red); font-size: 20px; margin-bottom: 15px; }
+.reject-modal-box p { color: var(--muted); font-size: 13px; margin-bottom: 15px; }
+.reject-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.reject-option { background: var(--panel2); padding: 14px; border-radius: 8px; border: 1px solid var(--border); text-align: left; font-size: 13px; cursor: pointer; transition: 0.2s; color: var(--text); }
+.reject-option:hover { border-color: var(--red); background: rgba(239,100,100,0.1); }
+
 @media(max-width:1100px){
   .dash-grid{grid-template-columns:1fr;}
   .detail-grid{grid-template-columns:1fr;}
@@ -497,11 +508,89 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
   .chat-filters{gap:4px;}
   .chat-filter-tab{font-size:9.5px;padding:6px 4px;}
 }
+
+/* ===== PHOTO SETTING & UPLOAD ===== */
+.games-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;}
+@media(max-width:900px){.games-grid{grid-template-columns:1fr;}}
+.seg{display:flex;gap:6px;margin:10px 0;}
+.seg button{flex:1;padding:9px 6px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:12px;font-weight:700;}
+.seg button.on{background:var(--gold);color:#000;border-color:var(--gold);}
+.file-btn{display:block;text-align:center;padding:11px;border:1px dashed var(--gold);border-radius:10px;color:var(--gold-light);font-size:12.5px;font-weight:700;cursor:pointer;background:rgba(212,175,55,.06);}
+.ph-fname{font-size:11px;color:var(--muted);margin-top:6px;word-break:break-all;}
+.ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;}
+.ph-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.ph-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:10px;}
+.ph-label{font-size:13px;font-weight:700;}
+.ph-hint{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.ph-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(239,100,100,.15);color:var(--red);white-space:nowrap;}
+.ph-badge.ok{background:rgba(67,197,138,.15);color:var(--green);}
+.ph-prev{width:100%;aspect-ratio:16/7;background:var(--bg);border:1px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--muted);font-size:11.5px;}
+.ph-prev.square{aspect-ratio:1/1;max-width:200px;margin:0 auto;}
+.ph-prev.tall{aspect-ratio:3/4;max-width:200px;margin:0 auto;}
+.ph-prev.game{aspect-ratio:16/10;}
+.ph-prev img{width:100%;height:100%;object-fit:contain;}
+.ph-row input[type=text]{width:100%;}
+.ph-actions{display:flex;gap:8px;margin-top:10px;}
+.ph-actions button{flex:1;margin-top:0 !important;}
+.gm-prev{width:100%;height:110px;margin-top:8px;border:1px dashed var(--border);border-radius:10px;background:var(--bg);display:none;align-items:center;justify-content:center;overflow:hidden;}
+.gm-prev img{max-width:100%;max-height:100%;object-fit:contain;}
+
+/* ===== ANTI ZOOM / ANTI HIGHLIGHT ===== */
+*{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior-x:none;}
+body{-webkit-user-select:none;user-select:none;}
+input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text;}
+button,.nav-item,.bnav-item,a,select,input{outline:none;}
+button:focus,.nav-item:focus{outline:none;}
+img{-webkit-user-drag:none;user-drag:none;}
+::selection{background:rgba(212,175,55,.35);color:#fff;}
+.ic{width:15px;height:15px;fill:currentColor;vertical-align:-3px;margin-right:5px;display:inline-block;}
+.btn-ic{display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-ic .ic{margin-right:0;}
+
+/* ===== BANNER & MENU WEB ===== */
+.bn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;}
+.bn-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:10px;}
+.bn-thumb{width:100%;aspect-ratio:16/7;background:var(--bg);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.bn-thumb.tall{aspect-ratio:3/4;max-width:150px;margin:0 auto;}
+.bn-thumb img{width:100%;height:100%;object-fit:cover;}
+.bn-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:var(--muted);}
+.mn-row{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);margin-bottom:8px;}
+.mn-info{flex:1;min-width:0;}
+.mn-info b{font-size:13.5px;display:block;}
+.mn-info span{font-size:11px;color:var(--muted);}
+.icon-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.icon-btn svg{width:17px;height:17px;fill:currentColor;}
+.icon-btn:disabled{opacity:.35;}
+.icon-btn.red{color:var(--red);border-color:rgba(239,100,100,.5);}
+.hint-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:6px;}
+
+/* ===== MENU HP (bottom nav) vs MENU LAPTOP (sidebar) ===== */
+.bnav{display:none;}
+@media(max-width:768px){
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom));}
+  .hamburger{display:none !important;}
+  .bnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:250;background:var(--sidebar);border-top:1px solid var(--border);padding:6px 4px calc(6px + env(safe-area-inset-bottom));}
+  .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:600;color:var(--muted);padding:6px 2px;position:relative;cursor:pointer;border-radius:10px;}
+  .bnav-item svg{width:22px;height:22px;fill:currentColor;}
+  .bnav-item.active{color:var(--gold);}
+  .bnav-badge{display:none;position:absolute;top:1px;left:calc(50% + 6px);background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9px;min-width:16px;text-align:center;}
+  input,select,textarea{font-size:16px !important;}
+}
+@media(min-width:769px){.bnav{display:none !important;}}
 </style>
 </head>
 <body>
 
 <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+<nav class="bnav" id="bnav">
+  <div class="bnav-item active" data-bnav="dashboard" onclick="switchTab('dashboard')"><svg class="" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg><span>Dashboard</span></div>
+  <div class="bnav-item" data-bnav="users" onclick="switchTab('users')"><svg class="" viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>Users</span></div>
+  <div class="bnav-item" data-bnav="inbox" onclick="switchTab('inbox')"><svg class="" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg><span>Inbox</span><b class="bnav-badge" id="bnInbox">0</b></div>
+  <div class="bnav-item" data-bnav="chat" onclick="switchTab('chat')"><svg class="" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg><span>Chat</span><b class="bnav-badge" id="bnChat">0</b></div>
+  <div class="bnav-item" data-bnav="more" onclick="toggleSidebar()"><svg class="" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg><span>Menu</span></div>
+</nav>
 
 <div class="app">
   <aside class="sidebar" id="sidebar">
@@ -519,16 +608,31 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
         <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
         <span>Users</span>
       </div>
+      <!-- MENU BARU: GAMES -->
+      <div class="nav-item" data-nav="games" onclick="switchTab('games')">
+        <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 8 18.5 8s1.5.67 1.5 1.5S19.33 11 18.5 11z"/></svg>
+        <span>Games</span>
+      </div>
+      <div class="nav-item" data-nav="photos" onclick="switchTab('photos')">
+        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        <span>Photo Setting</span>
+      </div>
+      <div class="nav-item" data-nav="banners" onclick="switchTab('banners')">
+        <svg class="" viewBox="0 0 24 24"><path d="M7 19h10V4H7v15zm-5-2h4V6H2v11zM18 6v11h4V6h-4z"/></svg>
+        <span>Banner &amp; Iklan</span>
+      </div>
+      <div class="nav-item" data-nav="menus" onclick="switchTab('menus')">
+        <svg class="" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        <span>Menu Web</span>
+      </div>
       <div class="nav-item" data-nav="inbox" onclick="switchTab('inbox')">
         <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
         <span>Inbox</span>
-        <!-- FIX: Badge notif ditambahkan kembali -->
         <span class="nav-badge" id="inboxBadge" style="display:none;">0</span>
       </div>
       <div class="nav-item" data-nav="chat" onclick="switchTab('chat')">
         <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
         <span>Chat</span>
-        <!-- FIX: Badge notif ditambahkan kembali -->
         <span class="nav-badge" id="chatBadge" style="display:none;">0</span>
       </div>
       <div class="nav-item" data-nav="activity" onclick="switchTab('activity')">
@@ -657,9 +761,141 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
       <div id="userList" style="display:none;"></div>
     </section>
 
+    <!-- MENU BARU: GAMES -->
+    <section class="page" id="content-games">
+      <div class="games-grid">
+        <!-- Form Tambah Game -->
+        <div class="panel">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Tambah / Edit Game
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Judul Game</label>
+            <input type="text" id="gameTitle" placeholder="Contoh: Olympus 1000">
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Kategori</label>
+            <select id="gameCategory">
+              <option value="home">Home (Hot Games)</option>
+              <option value="slot">Slot</option>
+              <option value="crash">Crash</option>
+              <option value="arcade">Arcade</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Foto/Icon Game</label>
+            <div class="seg">
+              <button type="button" class="on" id="gmModeUrl" onclick="setGameImgMode('url')"><svg class="ic" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>URL</button>
+              <button type="button" id="gmModeFile" onclick="setGameImgMode('file')"><svg class="ic" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>Dari HP</button>
+            </div>
+            <div id="gmRowUrl">
+              <input type="text" id="gameImage" placeholder="https://link-foto-game.jpg" oninput="gameUrlPreview()">
+              <p style="font-size:10px;color:var(--muted);margin-top:4px;">*Gunakan link gambar langsung (berakhiran .jpg/.png)</p>
+            </div>
+            <div id="gmRowFile" style="display:none;">
+              <label class="file-btn">Pilih foto dari HP<input type="file" accept="image/*" id="gameImageFile" onchange="gameFilePicked(this)" hidden></label>
+              <div class="ph-fname" id="gameFileName"></div>
+            </div>
+            <div class="gm-prev" id="gameImgPreview"><img id="gameImgPreviewImg" alt=""></div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Link Game (URL Target)</label>
+            <input type="text" id="gameLink" placeholder="https://link-permainan.com/...">
+          </div>
+          <button class="save-btn" onclick="saveGame()" id="btnSaveGame">SIMPAN GAME</button>
+          <button class="danger-btn" onclick="resetGameForm()" id="btnCancelGame" style="display:none;">BATAL EDIT</button>
+        </div>
+
+        <!-- Daftar Game -->
+        <div class="panel">
+          <div class="panel-title">
+            <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 8 18.5 8s1.5.67 1.5 1.5S19.33 11 18.5 11z"/></svg>
+            Daftar Game
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th>Game</th><th>Kategori</th><th>Aksi</th></tr>
+              </thead>
+              <tbody id="gamesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="content-photos">
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="panel-title">
+          <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          Foto yang dipasang di Web Utama
+          <span class="hint" id="phSummary"></span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);line-height:1.5;">Setiap kotak = 1 foto di web utama. Status <b style="color:var(--red)">Belum</b> artinya foto belum dipasang (web utama memakai gambar bawaan). Pilih sumber foto: <b>URL</b> (tempel link) atau <b>Dari HP</b> (upload dari galeri).</p>
+      </div>
+      <div id="photoRoot"><div style="padding:30px;text-align:center;color:var(--muted);">Memuat...</div></div>
+    </section>
+
+    <section class="page" id="content-banners">
+      <div class="games-grid">
+        <div class="panel">
+          <div class="panel-title"><svg class="ic" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Tambah Banner / Iklan</div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Jenis</label>
+            <div class="seg">
+              <button type="button" class="on" id="bnTypeBanner" onclick="setBnType('banner')">Banner Slider</button>
+              <button type="button" id="bnTypeIklan" onclick="setBnType('iklan')">Popup Iklan</button>
+            </div>
+            <p class="hint-note" id="bnTypeHint"></p>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Sumber Foto</label>
+            <div class="seg">
+              <button type="button" class="on" id="bnModeUrl" onclick="setBnMode('url')"><svg class="ic" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>URL</button>
+              <button type="button" id="bnModeFile" onclick="setBnMode('file')"><svg class="ic" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>Dari HP</button>
+            </div>
+            <div id="bnRowUrl"><input type="text" id="bnUrl" placeholder="https://link-foto.jpg" oninput="bnUrlPreview()"></div>
+            <div id="bnRowFile" style="display:none;">
+              <label class="file-btn">Pilih foto dari HP<input type="file" accept="image/*" id="bnFile" onchange="bnFilePicked(this)" hidden></label>
+              <div class="ph-fname" id="bnFileName"></div>
+            </div>
+            <div class="gm-prev" id="bnPreview"><img id="bnPreviewImg" alt=""></div>
+          </div>
+          <button class="save-btn" id="btnAddBanner" onclick="addBanner()">TAMBAH</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="panel"><div class="panel-title">Banner Slider <span class="hint" id="bnCountBanner"></span></div><div class="bn-grid" id="bnListBanner"></div></div>
+          <div class="panel"><div class="panel-title">Popup Iklan <span class="hint" id="bnCountIklan"></span></div><div class="bn-grid" id="bnListIklan"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="content-menus">
+      <div class="games-grid">
+        <div class="panel">
+          <div class="panel-title"><svg class="ic" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Tambah Menu Web</div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Nama Menu</label>
+            <input type="text" id="mnLabel" placeholder="Contoh: Promo, Live Casino">
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Judul Halaman (opsional)</label>
+            <input type="text" id="mnTitle" placeholder="Contoh: Promo Games">
+            <p class="hint-note">Menu baru otomatis muncul di web utama dan jadi pilihan Kategori di menu Games.</p>
+          </div>
+          <button class="save-btn" onclick="addMenu()">TAMBAH MENU</button>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Daftar Menu di Web Utama <span class="hint" id="mnCount"></span></div>
+          <div id="menuList"></div>
+        </div>
+      </div>
+    </section>
+
     <section class="page" id="content-userdetail">
       <div class="detail-page-header" style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--gold);">
-        <button class="back-btn" onclick="closeUserDetail()" style="background:var(--panel);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:9px;font-weight:700;">← Kembali</button>
+        <button class="back-btn" onclick="closeUserDetail()" style="background:var(--panel);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:9px;font-weight:700;"><svg class="ic" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>Kembali</button>
         <div>
           <h2 style="color:var(--gold);font-size:18px;font-weight:800;">Edit User</h2>
           <p id="detailSubtitle" style="color:var(--muted);font-size:12px;margin-top:3px;">Kelola data user</p>
@@ -793,7 +1029,7 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
           <div class="chat-img-preview" id="chatImgPreview">
             <img id="chatImgPreviewImg" src="" alt="preview">
             <div class="file-info" id="chatImgPreviewInfo">Foto siap dikirim</div>
-            <button class="remove-img" onclick="cancelChatImage()" title="Batal">✕</button>
+            <button class="remove-img" onclick="cancelChatImage()" title="Batal"><svg class="ic" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
           </div>
           <div class="chat-window-input">
             <button class="chat-photo-btn" onclick="document.getElementById('chatImageInput').click()" title="Kirim Foto">
@@ -847,6 +1083,20 @@ tbody tr:hover{background:rgba(212,175,55,.04);}
 
 <input type="file" id="chatImageInput" accept="image/*" style="display:none;" onchange="handleChatImageSelect(event)">
 
+<!-- CUSTOM MODAL UNTUK ALASAN REJECT -->
+<div class="reject-modal-overlay" id="rejectModal">
+    <div class="reject-modal-box">
+        <h3>Pilih Alasan Penolakan</h3>
+        <p id="rejectModalDesc">Silakan pilih alasan mengapa permintaan ini ditolak.</p>
+        <div class="reject-options">
+            <div class="reject-option" onclick="confirmReject('Server sedang gangguan')">Server sedang gangguan</div>
+            <div class="reject-option" onclick="confirmReject('Tidak memenuhi Syarat, silahkan menghubungi Admin')">Tidak memenuhi Syarat, silahkan menghubungi Admin</div>
+            <div class="reject-option" onclick="confirmReject('Akun Terkena Banned/Suspend')">Akun Terkena Banned/Suspend</div>
+        </div>
+        <button class="danger-btn" onclick="closeRejectModal()">BATAL</button>
+    </div>
+</div>
+
 <script>
 var SUPABASE_URL = 'https://cvgpgysveeeisawydjza.supabase.co';
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2Z3BneXN2ZWVlaXNhd3lkanphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5Njc1MTcsImV4cCI6MjEwNzU0MzUxN30.PG7CXEyhtXYmfQj5KDbwKuRHObBz5tGsV5KRoM9v_iU';
@@ -856,18 +1106,20 @@ var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 var allUsers = [];
 var allPending = [];
 var allChats = [];
+var allGames = [];
 var currentChatUser = null;
 var currentEditingUser = null;
+var currentEditingGameId = null;
 var chatWindowInterval = null;
 var lastChatTimestamp = null;
 var currentChatFilter = 'all';
 var pendingChatImage = null;
 var lastPendingIds = {};
 var USER_DETAIL_FORM_HTML = null;
+var pendingRejectId = null;
 
 var HIDDEN_PENDING_KEY = 'neo189_hidden_pending_v1';
 
-/* ============ LOCAL STORAGE: HIDDEN PENDING ============ */
 function getHiddenPendingIds() {
     try {
         var raw = localStorage.getItem(HIDDEN_PENDING_KEY);
@@ -892,28 +1144,16 @@ function resetHiddenPending() {
     loadPending();
 }
 
-/* ============ NORMALIZE FIELD ============ */
 function getPendingType(p) {
-    var raw = (p.type != null ? p.type : p.tipe != null ? p.tipe : p.jenis != null ? p.jenis : p.kategori != null ? p.kategori : '');
+    var raw = (p.type != null ? p.type : '');
     var s = String(raw).toLowerCase().trim();
-    if (s === 'deposit' || s === 'setor' || s === 'setoran' || s === 'topup' || s === 'top-up' || s === 'top up' || s === 'dep' || s === 'd' || s === 'masuk') return 'deposit';
-    if (s === 'withdraw' || s === 'wd' || s === 'tarik' || s === 'penarikan' || s === 'w' || s === 'keluar') return 'withdraw';
+    if (s === 'deposit') return 'deposit';
+    if (s === 'withdraw') return 'withdraw';
     return 'unknown';
 }
-function getPendingRawType(p) {
-    return p.type != null ? p.type : p.tipe != null ? p.tipe : p.jenis != null ? p.jenis : '?';
-}
-function getPendingUser(p) {
-    return p.username || p.user || p.nama || p.username_user || 'Unknown';
-}
-function getPendingNominal(p) {
-    var n = p.nominal != null ? p.nominal : p.jumlah != null ? p.jumlah : p.amount != null ? p.amount : 0;
-    return parseFloat(n) || 0;
-}
-function getPendingDate(p) {
-    var d = p.tanggal || p.created_at || p.timestamp || null;
-    return d ? new Date(d) : new Date();
-}
+function getPendingUser(p) { return p.username || 'Unknown'; }
+function getPendingNominal(p) { return parseFloat(p.nominal) || 0; }
+function getPendingDate(p) { return p.tanggal ? new Date(p.tanggal) : new Date(); }
 
 function showNotif(message, type) {
     type = type || 'info';
@@ -935,6 +1175,19 @@ function toggleSidebar() {
     bd.classList.toggle('active', sb.classList.contains('open'));
 }
 
+var PAGE_META = {
+    dashboard: { title: 'Dashboard', desc: 'Ringkasan statistik dan aktivitas sistem' },
+    users:     { title: 'Manajemen Pengguna', desc: 'Kelola seluruh data pengguna terdaftar' },
+    games:     { title: 'Manajemen Game', desc: 'Tambah, edit, dan atur link game' },
+    photos:    { title: 'Photo Setting', desc: 'Atur semua foto yang tampil di web utama' },
+    banners:   { title: 'Banner & Iklan', desc: 'Tambah atau hapus banner slider dan popup iklan' },
+    menus:     { title: 'Menu Web', desc: 'Tambah atau hapus menu di web utama (Home, Crash, dll)' },
+    inbox:     { title: 'Inbox Permintaan', desc: 'Proses deposit dan withdraw masuk' },
+    chat:      { title: 'Pusat Chat', desc: 'Balas pesan dari pengguna secara langsung' },
+    activity:  { title: 'Aktivitas', desc: 'Riwayat aktivitas sistem terbaru' },
+    settings:  { title: 'Pengaturan', desc: 'Konfigurasi sistem dan keamanan' }
+};
+
 function switchTab(tab) {
     document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
     var content = document.getElementById('content-' + tab);
@@ -944,11 +1197,20 @@ function switchTab(tab) {
         n.classList.toggle('active', n.getAttribute('data-nav') === tab);
     });
 
+    var bmap = { dashboard: 1, users: 1, inbox: 1, chat: 1 };
+    document.querySelectorAll('.bnav-item').forEach(function(n) {
+        var t = n.getAttribute('data-bnav');
+        n.classList.toggle('active', t === tab || (t === 'more' && !bmap[tab]));
+    });
     var meta = PAGE_META[tab] || PAGE_META.dashboard;
     document.getElementById('pageTitle').innerText = meta.title;
     document.getElementById('pageDesc').innerText = meta.desc;
 
     if (tab === 'users') loadUsers();
+    if (tab === 'games') { loadGames(); loadMenus(); }
+    if (tab === 'banners') loadBanners();
+    if (tab === 'menus') loadMenusPage();
+    if (tab === 'photos') loadPhotos();
     if (tab === 'inbox') loadPending();
     if (tab === 'chat') loadChatList();
     if (tab === 'activity') loadActivity();
@@ -980,17 +1242,9 @@ function formatRupiah(angka) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
 }
 
-var PAGE_META = {
-    dashboard: { title: 'Dashboard', desc: 'Ringkasan statistik dan aktivitas sistem' },
-    users:     { title: 'Manajemen Pengguna', desc: 'Kelola seluruh data pengguna terdaftar' },
-    inbox:     { title: 'Inbox Permintaan', desc: 'Proses deposit dan withdraw masuk' },
-    chat:      { title: 'Pusat Chat', desc: 'Balas pesan dari pengguna secara langsung' },
-    activity:  { title: 'Aktivitas', desc: 'Riwayat aktivitas sistem terbaru' },
-    settings:  { title: 'Pengaturan', desc: 'Konfigurasi sistem dan keamanan' }
-};
-
 function refreshAll() {
     loadUsers();
+    loadGames();
     loadPending();
     loadChatList();
     loadActivity();
@@ -1003,6 +1257,315 @@ function openFullscreen(src) {
 }
 function closeFullscreen() {
     document.getElementById('fsOverlay').classList.remove('active');
+}
+
+/* ================= GAMES ================= */
+async function loadGames() {
+    try {
+        var res = await supabase.from('games').select('*').order('id', { ascending: true });
+        if (res.error) throw res.error;
+        allGames = res.data || [];
+        
+        var tbody = document.getElementById('gamesTableBody');
+        if (allGames.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted);">Belum ada game</td></tr>';
+            return;
+        }
+        var html = '';
+        allGames.forEach(function(g) {
+            html += '<tr>' +
+                '<td><div class="u-cell"><img src="' + (g.image_url || 'https://placehold.co/40x40') + '" style="width:40px;height:40px;border-radius:6px;object-fit:cover;"><div><div class="u-name">' + g.title + '</div><div class="u-sub">ID: ' + g.id + '</div></div></div></td>' +
+                '<td><span class="badge level">' + g.category.toUpperCase() + '</span></td>' +
+                '<td><button class="btn-detail" onclick="editGame(' + g.id + ')">Edit</button> <button class="btn-detail" style="color:var(--red);border-color:var(--red);" onclick="deleteGame(' + g.id + ')">Hapus</button></td>' +
+                '</tr>';
+        });
+        tbody.innerHTML = html;
+    } catch(e) { showNotif('Gagal load game: ' + e.message, 'error'); }
+}
+
+function resetGameForm() {
+    currentEditingGameId = null;
+    document.getElementById('gameTitle').value = '';
+    document.getElementById('gameCategory').selectedIndex = 0;
+    document.getElementById('gameImage').value = '';
+    document.getElementById('gameLink').value = '';
+    document.getElementById('gameImageFile').value = '';
+    document.getElementById('gameFileName').innerText = '';
+    setGameImgMode('url');
+    gameUrlPreview();
+    document.getElementById('btnSaveGame').innerText = 'SIMPAN GAME';
+    document.getElementById('btnCancelGame').style.display = 'none';
+}
+
+function editGame(id) {
+    var g = allGames.find(function(x) { return x.id === id; });
+    if (!g) return;
+    currentEditingGameId = id;
+    document.getElementById('gameTitle').value = g.title;
+    var gc = document.getElementById('gameCategory');
+    if (!Array.prototype.some.call(gc.options, function(o) { return o.value === g.category; })) {
+        var op = document.createElement('option'); op.value = g.category; op.text = g.category + ' (menu dihapus)'; gc.appendChild(op);
+    }
+    gc.value = g.category;
+    document.getElementById('gameImage').value = g.image_url || '';
+    document.getElementById('gameLink').value = g.game_link || '';
+    document.getElementById('gameImageFile').value = '';
+    document.getElementById('gameFileName').innerText = '';
+    setGameImgMode('url');
+    gameUrlPreview();
+    window.scrollTo(0, 0);
+    document.getElementById('btnSaveGame').innerText = 'UPDATE GAME';
+    document.getElementById('btnCancelGame').style.display = 'block';
+}
+
+async function saveGame() {
+    var title = document.getElementById('gameTitle').value.trim();
+    var category = document.getElementById('gameCategory').value;
+    var image_url = document.getElementById('gameImage').value.trim();
+    var game_link = document.getElementById('gameLink').value.trim();
+
+    if (!title) { showNotif('Judul game wajib diisi', 'error'); return; }
+
+    document.getElementById('loading').style.display = 'flex';
+    try {
+        if (gameImgMode === 'file') {
+            var gf = document.getElementById('gameImageFile').files[0];
+            if (gf) image_url = await uploadImage(gf, 'games', 800);
+        }
+        var data = { title: title, category: category, image_url: image_url, game_link: game_link };
+        var res;
+        if (currentEditingGameId) {
+            res = await supabase.from('games').update(data).eq('id', currentEditingGameId);
+        } else {
+            res = await supabase.from('games').insert(data);
+        }
+        document.getElementById('loading').style.display = 'none';
+        if (res.error) throw res.error;
+        showNotif('Game berhasil disimpan!', 'success');
+        resetGameForm();
+        loadGames();
+    } catch(e) {
+        document.getElementById('loading').style.display = 'none';
+        showNotif('Gagal simpan: ' + e.message, 'error');
+    }
+}
+
+async function deleteGame(id) {
+    if (!confirm('Yakin hapus game ini?')) return;
+    document.getElementById('loading').style.display = 'flex';
+    try {
+        var res = await supabase.from('games').delete().eq('id', id);
+        document.getElementById('loading').style.display = 'none';
+        if (res.error) throw res.error;
+        showNotif('Game dihapus', 'success');
+        loadGames();
+    } catch(e) {
+        document.getElementById('loading').style.display = 'none';
+        showNotif('Gagal hapus: ' + e.message, 'error');
+    }
+}
+
+/* ================= UPLOAD FOTO (URL / HP) ================= */
+var gameImgMode = 'url';
+var IMG_BUCKETS = ['site-images', 'bukti-transfer'];
+
+function escAttr(t) {
+    return String(t == null ? '' : t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function compressImage(file, maxW) {
+    return new Promise(function(resolve, reject) {
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function() {
+            URL.revokeObjectURL(url);
+            var w = img.naturalWidth, h = img.naturalHeight;
+            var scale = Math.min(1, maxW / w);
+            if (scale === 1 && file.size < 400 * 1024) { resolve(file); return; }
+            var c = document.createElement('canvas');
+            c.width = Math.round(w * scale); c.height = Math.round(h * scale);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            var type = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+            c.toBlob(function(b) { b ? resolve(b) : reject(new Error('Gagal memproses gambar')); }, type, 0.88);
+        };
+        img.onerror = function() { URL.revokeObjectURL(url); reject(new Error('Gambar tidak bisa dibaca')); };
+        img.src = url;
+    });
+}
+
+async function uploadImage(file, folder, maxW) {
+    if (!file || String(file.type).indexOf('image/') !== 0) throw new Error('File harus berupa gambar');
+    var blob = await compressImage(file, maxW || 1600);
+    var ext = blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : blob.type === 'image/gif' ? 'gif' : 'jpg';
+    var path = folder + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+    var lastErr = null;
+    for (var i = 0; i < IMG_BUCKETS.length; i++) {
+        var up = await supabase.storage.from(IMG_BUCKETS[i]).upload(path, blob, { contentType: blob.type, cacheControl: '3600' });
+        if (!up.error) return supabase.storage.from(IMG_BUCKETS[i]).getPublicUrl(path).data.publicUrl;
+        lastErr = up.error;
+    }
+    throw lastErr || new Error('Upload gagal');
+}
+
+function setGameImgMode(m) {
+    gameImgMode = m;
+    document.getElementById('gmModeUrl').classList.toggle('on', m === 'url');
+    document.getElementById('gmModeFile').classList.toggle('on', m === 'file');
+    document.getElementById('gmRowUrl').style.display = m === 'url' ? 'block' : 'none';
+    document.getElementById('gmRowFile').style.display = m === 'file' ? 'block' : 'none';
+}
+function gameUrlPreview() {
+    var v = document.getElementById('gameImage').value.trim();
+    var box = document.getElementById('gameImgPreview');
+    if (!v) { box.style.display = 'none'; return; }
+    document.getElementById('gameImgPreviewImg').src = v;
+    box.style.display = 'flex';
+}
+function gameFilePicked(inp) {
+    var f = inp.files && inp.files[0];
+    if (!f) return;
+    document.getElementById('gameFileName').innerText = f.name + ' (' + Math.round(f.size / 1024) + ' KB)';
+    document.getElementById('gameImgPreviewImg').src = URL.createObjectURL(f);
+    document.getElementById('gameImgPreview').style.display = 'flex';
+}
+
+/* ================= PHOTO SETTING ================= */
+var PHOTO_GROUPS = [
+    { group: 'Pembayaran', items: [
+        { key: 'qris', label: 'Foto QRIS', hint: 'Halaman Deposit: kotak "Scan QRIS untuk Deposit"', ratio: 'square', maxW: 1200 }
+    ]},
+    { group: 'Chat', items: [
+        { key: 'chat_avatar', label: 'Foto Admin Chat (CHIKA)', hint: 'Foto profil admin di jendela chat web utama', ratio: 'square', maxW: 400 }
+    ]}
+];
+var photoData = {};
+var PH_CFG = {};
+var phState = {};
+
+async function loadPhotos() {
+    try {
+        var res = await supabase.from('site_photos').select('*');
+        if (res.error) throw res.error;
+        photoData = {};
+        (res.data || []).forEach(function(r) { photoData[r.key] = r; });
+    } catch (e) {
+        showNotif('Gagal load foto: ' + e.message + ' (sudah jalankan file SQL?)', 'error');
+    }
+    try {
+        var g = await supabase.from('games').select('*').order('id', { ascending: true });
+        if (!g.error && g.data) allGames = g.data;
+    } catch (e) {}
+    renderPhotos();
+}
+
+function phCardHtml(c) {
+    var id = c.id, url = c.url || '';
+    phState[id] = { mode: 'url', file: null };
+    var prev = url ? '<img src="' + escAttr(url) + '" alt="" onerror="this.parentNode.innerHTML=\'<span>Gambar gagal dimuat</span>\'">' : '<span>Belum ada foto</span>';
+    return '<div class="ph-card">' +
+        '<div class="ph-head"><div><div class="ph-label">' + escAttr(c.label) + '</div><div class="ph-hint">' + escAttr(c.hint) + '</div></div>' +
+        '<span class="ph-badge ' + (url ? 'ok' : '') + '">' + (url ? 'Terpasang' : 'Belum') + '</span></div>' +
+        '<div class="ph-prev ' + c.ratio + '" id="phv_' + id + '">' + prev + '</div>' +
+        '<div class="seg"><button type="button" class="on" id="phmu_' + id + '" onclick="phMode(\'' + id + '\',\'url\')">' + I_LINK + ' URL</button>' +
+        '<button type="button" id="phmf_' + id + '" onclick="phMode(\'' + id + '\',\'file\')">' + I_PHONE + ' Dari HP</button></div>' +
+        '<div class="ph-row" id="phru_' + id + '"><input type="text" id="phi_' + id + '" value="' + escAttr(url) + '" placeholder="https://link-foto.jpg" oninput="phUrlInput(\'' + id + '\')"></div>' +
+        '<div class="ph-row" id="phrf_' + id + '" style="display:none;"><label class="file-btn">Pilih foto dari HP<input type="file" accept="image/*" hidden onchange="phFilePick(\'' + id + '\',this)"></label><div class="ph-fname" id="phn_' + id + '"></div></div>' +
+        '<div class="ph-actions"><button class="save-btn" id="phs_' + id + '" onclick="phSave(\'' + id + '\')">SIMPAN</button>' +
+        (url ? '<button class="danger-btn" onclick="phClear(\'' + id + '\')">HAPUS</button>' : '') + '</div></div>';
+}
+
+function renderPhotos() {
+    PH_CFG = {}; phState = {};
+    var html = '', total = 0, filled = 0;
+    PHOTO_GROUPS.forEach(function(gr) {
+        var cards = '';
+        gr.items.forEach(function(it) {
+            var row = photoData[it.key];
+            var url = row && row.image_url ? row.image_url : '';
+            PH_CFG[it.key] = { kind: 'site', key: it.key, label: it.label, maxW: it.maxW || 1600 };
+            cards += phCardHtml({ id: it.key, label: it.label, hint: it.hint, ratio: it.ratio, url: url });
+            total++; if (url) filled++;
+        });
+        html += '<div class="panel" style="margin-bottom:16px;"><div class="panel-title">' + gr.group + '</div><div class="ph-grid">' + cards + '</div></div>';
+    });
+    // Foto game
+    var gcards = '';
+    if (allGames.length === 0) {
+        gcards = '<div style="color:var(--muted);font-size:12px;">Belum ada game. Tambahkan dulu di menu Games.</div>';
+    } else {
+        allGames.forEach(function(g) {
+            var id = 'g' + g.id;
+            PH_CFG[id] = { kind: 'game', gameId: g.id, label: g.title, maxW: 800 };
+            gcards += phCardHtml({ id: id, label: g.title, hint: 'Kategori: ' + String(g.category || '').toUpperCase(), ratio: 'game', url: g.image_url || '' });
+            total++; if (g.image_url) filled++;
+        });
+    }
+    html += '<div class="panel"><div class="panel-title">Foto Game <span class="hint">Tambah game baru lewat menu Games</span></div><div class="ph-grid">' + gcards + '</div></div>';
+    document.getElementById('photoRoot').innerHTML = html;
+    document.getElementById('phSummary').innerText = filled + ' / ' + total + ' terpasang';
+}
+
+function phMode(id, m) {
+    phState[id].mode = m;
+    document.getElementById('phmu_' + id).classList.toggle('on', m === 'url');
+    document.getElementById('phmf_' + id).classList.toggle('on', m === 'file');
+    document.getElementById('phru_' + id).style.display = m === 'url' ? 'block' : 'none';
+    document.getElementById('phrf_' + id).style.display = m === 'file' ? 'block' : 'none';
+}
+function phSetPreview(id, src) {
+    var box = document.getElementById('phv_' + id);
+    box.innerHTML = src ? '<img src="' + escAttr(src) + '" alt="">' : '<span>Belum ada foto</span>';
+}
+function phUrlInput(id) { phSetPreview(id, document.getElementById('phi_' + id).value.trim()); }
+function phFilePick(id, inp) {
+    var f = inp.files && inp.files[0];
+    if (!f) return;
+    phState[id].file = f;
+    document.getElementById('phn_' + id).innerText = f.name + ' (' + Math.round(f.size / 1024) + ' KB)';
+    phSetPreview(id, URL.createObjectURL(f));
+}
+
+async function phSave(id) {
+    var cfg = PH_CFG[id], st = phState[id];
+    var btn = document.getElementById('phs_' + id);
+    var url = '';
+    try {
+        if (st.mode === 'file') {
+            if (!st.file) { showNotif('Pilih foto dari HP dulu', 'error'); return; }
+            btn.disabled = true; btn.innerText = 'MENGUPLOAD...';
+            url = await uploadImage(st.file, cfg.kind === 'game' ? 'games' : 'site', cfg.maxW);
+        } else {
+            url = document.getElementById('phi_' + id).value.trim();
+            if (!url) { showNotif('URL foto masih kosong', 'error'); return; }
+            if (!/^https?:\/\//i.test(url)) { showNotif('URL harus diawali http:// atau https://', 'error'); return; }
+            btn.disabled = true; btn.innerText = 'MENYIMPAN...';
+        }
+        var res;
+        if (cfg.kind === 'game') {
+            res = await supabase.from('games').update({ image_url: url }).eq('id', cfg.gameId);
+        } else {
+            res = await supabase.from('site_photos').upsert({ key: cfg.key, label: cfg.label, image_url: url, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+        }
+        if (res.error) throw res.error;
+        showNotif('Foto "' + cfg.label + '" tersimpan', 'success');
+        await loadPhotos();
+    } catch (e) {
+        showNotif('Gagal simpan: ' + e.message, 'error');
+        btn.disabled = false; btn.innerText = 'SIMPAN';
+    }
+}
+
+async function phClear(id) {
+    var cfg = PH_CFG[id];
+    if (!confirm('Hapus foto "' + cfg.label + '"? Web utama akan memakai gambar bawaan.')) return;
+    try {
+        var res;
+        if (cfg.kind === 'game') res = await supabase.from('games').update({ image_url: '' }).eq('id', cfg.gameId);
+        else res = await supabase.from('site_photos').delete().eq('key', cfg.key);
+        if (res.error) throw res.error;
+        showNotif('Foto dihapus', 'success');
+        await loadPhotos();
+    } catch (e) { showNotif('Gagal hapus: ' + e.message, 'error'); }
 }
 
 /* ================= USERS ================= */
@@ -1281,7 +1844,6 @@ async function loadPending() {
         deposits.sort(safeSort);
         withdraws.sort(safeSort);
 
-        // SAFE NULL CHECKS
         var elInboxBadge = document.getElementById('inboxBadge');
         if (elInboxBadge) { elInboxBadge.innerText = allPending.length; elInboxBadge.style.display = allPending.length > 0 ? 'inline-block' : 'none'; }
 
@@ -1304,8 +1866,9 @@ async function loadPending() {
                 hiddenWrap.style.display = 'none';
             }
         }
+        
         var rawTypes = {};
-        rawAll.forEach(function(p) { rawTypes[getPendingRawType(p)] = (rawTypes[getPendingRawType(p)] || 0) + 1; });
+        rawAll.forEach(function(p) { rawTypes[getPendingType(p)] = (rawTypes[getPendingType(p)] || 0) + 1; });
         var typesStr = Object.keys(rawTypes).map(function(k){ return k + ':' + rawTypes[k]; }).join(' · ') || 'kosong';
         if (document.getElementById('inboxTypesSeen')) document.getElementById('inboxTypesSeen').innerText = typesStr;
 
@@ -1315,7 +1878,7 @@ async function loadPending() {
         });
         if (newIds.length > 0 && Object.keys(lastPendingIds).length > 0) {
             newIds.forEach(function(np) {
-                showNotif('🔔 Permintaan ' + getPendingType(np).toUpperCase() + ' baru: ' + getPendingUser(np) + ' — ' + formatRupiah(getPendingNominal(np)), 'success');
+                showNotif('Permintaan ' + getPendingType(np).toUpperCase() + ' baru: ' + getPendingUser(np) + ' — ' + formatRupiah(getPendingNominal(np)), 'success');
             });
         }
         lastPendingIds = {};
@@ -1329,7 +1892,7 @@ async function loadPending() {
         var statusBar = document.getElementById('inboxStatusBar');
         if (statusBar) {
             statusBar.classList.add('error');
-            statusBar.innerHTML = '<span>⚠ Gagal memuat pending: ' + (e.message || 'unknown error') + '</span>';
+            statusBar.innerHTML = '<span>Gagal memuat pending: ' + (e.message || 'unknown error') + '</span>';
         }
         showNotif('Gagal memuat inbox: ' + e.message, 'error');
     }
@@ -1337,23 +1900,18 @@ async function loadPending() {
 
 function renderPendingCard(p) {
     var type = getPendingType(p);
-    var rawType = getPendingRawType(p);
     var user = getPendingUser(p);
     var nominal = getPendingNominal(p);
     var d = getPendingDate(p);
 
-    var cls = type === 'withdraw' ? ' withdraw' : (type === 'unknown' ? ' unknown' : '');
-    var avatarCls = type === 'withdraw' ? ' withdraw' : (type === 'unknown' ? ' unknown' : '');
+    var cls = type === 'withdraw' ? ' withdraw' : '';
+    var avatarCls = type === 'withdraw' ? ' withdraw' : '';
     var nomCls = type === 'withdraw' ? ' withdraw' : '';
-    var warning = '';
-    if (type === 'unknown') {
-        warning = '<span class="type-warning">Tipe: ' + escapeHtml(String(rawType)) + '</span>';
-    }
 
     return '<div class="pending-item' + cls + '" onclick="openDepositDetail(' + p.id + ')">' +
         '<div class="pending-info">' +
         '<div class="pending-avatar' + avatarCls + '">' + (user ? user.charAt(0).toUpperCase() : '?') + '</div>' +
-        '<div><h3>' + escapeHtml(user) + warning + '</h3><p>' + (type === 'withdraw' ? 'Klik untuk lihat detail' : 'Klik untuk lihat bukti') + '</p></div>' +
+        '<div><h3>' + escapeHtml(user) + '</h3><p>Klik untuk lihat detail</p></div>' +
         '</div>' +
         '<div class="pending-nominal">' +
         '<div class="nom' + nomCls + '">' + formatRupiah(nominal) + '</div>' +
@@ -1400,20 +1958,32 @@ function openDepositDetail(pendingId) {
     document.getElementById('statDeposit').innerText = d.toLocaleString('id-ID');
     document.getElementById('statMaxWin').innerText = user;
 
-    var buktiUrl = p.bukti_url || p.bukti || p.gambar || '';
-    var html = '<div class="section-title">Bukti Transfer</div>' +
-        (buktiUrl ? '<img src="' + buktiUrl + '" class="bukti-thumb" onclick="openFullscreen(\'' + buktiUrl + '\')" onerror="this.style.display=\'none\'">' : '<p style="color:var(--muted);font-size:12px;">Tidak ada bukti</p>') +
-        '<div class="section-title">Detail Permintaan</div>' +
+    var buktiUrl = p.bukti_url || '';
+    var html = '';
+    
+    if(type === 'deposit') {
+        html += '<div class="section-title">Bukti Transfer</div>' +
+            (buktiUrl ? '<img src="' + buktiUrl + '" class="bukti-thumb" onclick="openFullscreen(\'' + buktiUrl + '\')" onerror="this.style.display=\'none\'">' : '<p style="color:var(--muted);font-size:12px;">Tidak ada bukti</p>');
+    }
+    
+    html += '<div class="section-title">Detail Permintaan</div>' +
         '<div class="withdraw-detail">' +
         '<div class="withdraw-row"><span class="label">USERNAME</span><span class="value">' + escapeHtml(user) + '</span></div>' +
-        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:' + (type === 'withdraw' ? 'var(--amber)' : 'var(--green)') + ';">' + formatRupiah(nominal) + '</span></div>' +
-        '<div class="withdraw-row"><span class="label">TANGGAL</span><span class="value">' + d.toLocaleString('id-ID') + '</span></div>' +
+        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:' + (type === 'withdraw' ? 'var(--amber)' : 'var(--green)') + ';">' + formatRupiah(nominal) + '</span></div>';
+        
+    if(type === 'withdraw') {
+        html += '<div class="withdraw-row"><span class="label">BANK</span><span class="value">' + (p.bank || '-') + '</span></div>' +
+                '<div class="withdraw-row"><span class="label">NO REK</span><span class="value">' + (p.no_rekening || '-') + '</span></div>' +
+                '<div class="withdraw-row"><span class="label">NAMA REK</span><span class="value">' + (p.username_bank || '-') + '</span></div>';
+    }
+        
+    html += '<div class="withdraw-row"><span class="label">TANGGAL</span><span class="value">' + d.toLocaleString('id-ID') + '</span></div>' +
         '</div>' +
         '<div class="inbox-actions">' +
         (type === 'withdraw'
             ? '<button class="inbox-btn setujui" onclick="approveWithdraw(' + p.id + ');">SETUJUI</button>'
             : '<button class="inbox-btn setujui" onclick="approveDeposit(' + p.id + ');">SETUJUI</button>') +
-        '<button class="inbox-btn tolak" onclick="rejectPending(' + p.id + ');">TOLAK</button>' +
+        '<button class="inbox-btn tolak" onclick="openRejectModal(' + p.id + ', \'' + type + '\', ' + nominal + ');">TOLAK</button>' +
         '</div>';
 
     var detailGrid = document.querySelector('#content-userdetail .detail-grid');
@@ -1448,21 +2018,12 @@ function renderWithdrawInbox(withdraws) {
             '<div class="withdraw-warning">SILAHKAN TF SESUAI DATA YANG BERLAKU, JIKA NAMA REK DENGAN DATA BERBEDA MAKA AKAN HANGUS!</div>' +
             '<div class="inbox-actions">' +
             '<button class="inbox-btn setujui" onclick="approveWithdraw(' + p.id + ')">SETUJUI</button>' +
-            '<button class="inbox-btn tolak" onclick="rejectPending(' + p.id + ')">TOLAK</button>' +
+            '<button class="inbox-btn tolak" onclick="openRejectModal(' + p.id + ', \'withdraw\', ' + nominal + ')">TOLAK</button>' +
             '</div></div>';
     });
 }
 
 async function ensurePendingDeleted(pendingId) {
-    try {
-        var check = await supabase.from('pending').select('id').eq('id', pendingId);
-        if (check.error) throw check.error;
-        var stillExists = check.data && check.data.length > 0;
-        if (!stillExists) return true;
-    } catch (e) {
-        console.warn('[ensurePendingDeleted] check failed:', e);
-    }
-
     try {
         var del = await supabase.from('pending').delete().eq('id', pendingId).select();
         if (del.error) return false;
@@ -1486,15 +2047,14 @@ async function approveDeposit(pendingId) {
         });
         if (res.error) throw res.error;
 
-        var deleted = await ensurePendingDeleted(p.id);
+        await ensurePendingDeleted(p.id);
+        await supabase.from('transactions').insert({ 
+            username: getPendingUser(p), type: 'deposit', 
+            pesan: 'Deposit Berhasil', nominal: getPendingNominal(p), read_status: true 
+        });
+        
         document.getElementById('loading').style.display = 'none';
-
-        if (deleted) {
-            showNotif('✓ Deposit disetujui & dihapus dari pending', 'success');
-        } else {
-            hidePendingLocally(p.id);
-            showNotif('✓ Deposit disetujui. Pending di DB tidak bisa dihapus (RLS) — item disembunyikan dari tampilan.', 'warn');
-        }
+        showNotif('Deposit disetujui', 'success');
         loadPending();
         loadUsers();
         switchTab('inbox');
@@ -1517,15 +2077,14 @@ async function approveWithdraw(pendingId) {
         });
         if (res.error) throw res.error;
 
-        var deleted = await ensurePendingDeleted(p.id);
+        await ensurePendingDeleted(p.id);
+        await supabase.from('transactions').insert({ 
+            username: getPendingUser(p), type: 'withdraw', 
+            pesan: 'Withdraw Berhasil', nominal: getPendingNominal(p), read_status: true 
+        });
+        
         document.getElementById('loading').style.display = 'none';
-
-        if (deleted) {
-            showNotif('✓ Withdraw disetujui & dihapus dari pending', 'success');
-        } else {
-            hidePendingLocally(p.id);
-            showNotif('✓ Withdraw disetujui. Pending di DB tidak bisa dihapus (RLS) — item disembunyikan dari tampilan.', 'warn');
-        }
+        showNotif('Withdraw disetujui', 'success');
         loadPending();
         loadUsers();
         switchTab('inbox');
@@ -1535,33 +2094,40 @@ async function approveWithdraw(pendingId) {
     }
 }
 
-async function rejectPending(pendingId) {
-    var p = allPending.find(function(x) { return x.id === pendingId; });
+// === MODAL REJECT ===
+function openRejectModal(pendingId, type, nominal) {
+    pendingRejectId = pendingId;
+    document.getElementById('rejectModalDesc').innerText = 'Menolak ' + type.toUpperCase() + ' sebesar ' + formatRupiah(nominal) + '. Pilih alasan:';
+    document.getElementById('rejectModal').classList.add('active');
+}
+function closeRejectModal() {
+    document.getElementById('rejectModal').classList.remove('active');
+    pendingRejectId = null;
+}
+
+async function confirmReject(reason) {
+    if (!pendingRejectId) return;
+    var p = allPending.find(function(x) { return x.id === pendingRejectId; });
     if (!p) return;
-    if (!confirm('Yakin tolak permintaan ' + getPendingUser(p) + ' (' + formatRupiah(getPendingNominal(p)) + ')?')) return;
 
     var type = getPendingType(p);
+    closeRejectModal();
     document.getElementById('loading').style.display = 'flex';
+    
     try {
-        try {
-            await supabase.from('transactions').insert({
-                username: getPendingUser(p), type: type,
-                pesan: (type === 'deposit' ? 'Deposit' : 'Withdraw') + ' Ditolak',
-                nominal: getPendingNominal(p)
-            });
-        } catch (logErr) {
-            console.warn('[rejectPending] log gagal:', logErr);
-        }
+        // Catat ke transaksi user dengan alasan penolakan (read_status: false agar user dapat notif)
+        await supabase.from('transactions').insert({
+            username: getPendingUser(p), 
+            type: type,
+            pesan: type.toUpperCase() + ' Ditolak - ' + reason,
+            nominal: getPendingNominal(p),
+            read_status: false 
+        });
 
-        var deleted = await ensurePendingDeleted(p.id);
+        await ensurePendingDeleted(p.id);
         document.getElementById('loading').style.display = 'none';
-
-        if (deleted) {
-            showNotif('✓ Permintaan ditolak & dihapus dari pending', 'success');
-        } else {
-            hidePendingLocally(p.id);
-            showNotif('✓ Permintaan ditolak. Pending di DB tidak bisa dihapus (RLS) — item disembunyikan dari tampilan.', 'warn');
-        }
+        showNotif('Permintaan ditolak', 'success');
+        
         loadPending();
         loadUsers();
         switchTab('inbox');
@@ -1682,7 +2248,7 @@ function renderChatList(list) {
     filtered.forEach(function(c) {
         var preview = c.last_message || '';
         var isImg = preview.indexOf('[IMG]') === 0;
-        if (isImg) preview = '📷 Foto';
+        if (isImg) preview = 'Foto';
         if (preview.length > 34) preview = preview.substring(0, 34) + '…';
         var isUnreplied = c.last_from === 'user';
 
@@ -1691,7 +2257,7 @@ function renderChatList(list) {
             '<div class="chat-user-info">' +
             '<h3>' + escapeHtml(c.username) + '</h3>' +
             '<p>' + escapeHtml(preview) + '</p>' +
-            '<span class="chat-status-badge ' + (isUnreplied ? 'unreplied' : 'replied') + '">' + (isUnreplied ? '● Belum Dibalas' : '✓ Sudah Dibalas') + '</span>' +
+            '<span class="chat-status-badge ' + (isUnreplied ? 'unreplied' : 'replied') + '">' + (isUnreplied ? 'Belum Dibalas' : 'Sudah Dibalas') + '</span>' +
             '</div>' +
             (c.unread > 0 ? '<div class="chat-user-unread">' + c.unread + '</div>' : '') +
             '</div>';
@@ -1879,7 +2445,7 @@ async function loadActivity() {
             kind: 'pending',
             pendingId: p.id,
             username: getPendingUser(p),
-            title: (type === 'deposit' ? 'Permintaan Deposit' : type === 'withdraw' ? 'Permintaan Withdraw' : 'Permintaan ' + getPendingRawType(p)) + ' — ' + getPendingUser(p),
+            title: (type === 'deposit' ? 'Permintaan Deposit' : 'Permintaan Withdraw') + ' — ' + getPendingUser(p),
             desc: formatRupiah(getPendingNominal(p)),
             time: getPendingDate(p).toLocaleString('id-ID'),
             rawTime: getPendingDate(p),
@@ -1900,7 +2466,7 @@ async function loadActivity() {
         var isUnreplied = last.from_user === 'user';
         if (isUnreplied) unrepliedCount++;
         var descText = last.message || '';
-        if (descText.indexOf('[IMG]') === 0) descText = '📷 Foto';
+        if (descText.indexOf('[IMG]') === 0) descText = 'Foto';
         items.push({
             kind: 'chat',
             username: user,
@@ -1983,9 +2549,9 @@ async function pollForNewMessages() {
             if (newMsgs.length > 0) {
                 var latest = newMsgs[0];
                 var preview = (latest.message || '').substring(0, 55);
-                if ((latest.message || '').indexOf('[IMG]') === 0) preview = '📷 Foto';
+                if ((latest.message || '').indexOf('[IMG]') === 0) preview = 'Foto';
                 else if ((latest.message || '').length > 55) preview += '…';
-                showNotif('💬 ' + latest.username + ': ' + preview, 'success');
+                showNotif('' + latest.username + ': ' + preview, 'success');
             }
             lastChatTimestamp = newest.tanggal;
             loadChatList();
@@ -2008,6 +2574,7 @@ window.addEventListener('DOMContentLoaded', function() {
     if (panel) USER_DETAIL_FORM_HTML = panel.innerHTML;
 
     loadUsers();
+    loadGames();
     loadPending();
     loadChatList();
     loadActivity();
@@ -2015,6 +2582,227 @@ window.addEventListener('DOMContentLoaded', function() {
     document.getElementById('setUrl').value = SUPABASE_URL;
     document.getElementById('setKey').value = SUPABASE_ANON_KEY;
 });
+
+/* ================= IKON ================= */
+var I_LINK = '<svg class="ic" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>';
+var I_PHONE = '<svg class="ic" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>';
+
+/* ================= MENU WEB ================= */
+var DEFAULT_MENUS = [
+    { slug: 'home', label: 'Home', title: 'Hot Games' },
+    { slug: 'slot', label: 'Slot', title: 'Slot Games' },
+    { slug: 'crash', label: 'Crash', title: 'Crash Games' },
+    { slug: 'arcade', label: 'Arcade', title: 'Arcade Games' }
+];
+var webMenus = DEFAULT_MENUS.slice();
+var menusFromDb = false;
+
+async function loadMenus() {
+    try {
+        var r = await supabase.from('site_menus').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
+        if (r.error) throw r.error;
+        if (!r.data || r.data.length === 0) throw new Error('kosong');
+        webMenus = r.data; menusFromDb = true;
+    } catch (e) { webMenus = DEFAULT_MENUS.slice(); menusFromDb = false; }
+    fillGameCategories();
+    return webMenus;
+}
+function fillGameCategories() {
+    var sel = document.getElementById('gameCategory');
+    if (!sel) return;
+    var cur = sel.value;
+    sel.innerHTML = webMenus.map(function(m) {
+        return '<option value="' + escAttr(m.slug) + '">' + escAttr(m.label) + (m.slug === 'home' ? ' (Hot Games)' : '') + '</option>';
+    }).join('');
+    if (cur && Array.prototype.some.call(sel.options, function(o) { return o.value === cur; })) sel.value = cur;
+}
+async function loadMenusPage() { await loadMenus(); renderMenus(); }
+function renderMenus() {
+    var root = document.getElementById('menuList');
+    document.getElementById('mnCount').innerText = webMenus.length + ' menu';
+    var note = menusFromDb ? '' : '<div class="hint-note" style="color:var(--amber);margin-bottom:10px;">Tabel site_menus belum ada / kosong. Jalankan SQL dulu agar menu bisa diubah. Di bawah ini menu bawaan.</div>';
+    root.innerHTML = note + webMenus.map(function(m, i) {
+        var dis = menusFromDb ? '' : ' disabled';
+        return '<div class="mn-row"><div class="mn-info"><b>' + escAttr(m.label) + '</b><span>Judul halaman: ' + escAttr(m.title || m.label) + ' &middot; kode: ' + escAttr(m.slug) + '</span></div>' +
+            '<button class="icon-btn" title="Naik"' + dis + (i === 0 ? ' disabled' : '') + ' onclick="moveMenu(' + m.id + ',-1)"><svg viewBox="0 0 24 24"><path d="' + P_UP + '"/></svg></button>' +
+            '<button class="icon-btn" title="Turun"' + dis + (i === webMenus.length - 1 ? ' disabled' : '') + ' onclick="moveMenu(' + m.id + ',1)"><svg viewBox="0 0 24 24"><path d="' + P_DOWN + '"/></svg></button>' +
+            '<button class="icon-btn red" title="Hapus"' + dis + ' onclick="deleteMenu(' + m.id + ')"><svg viewBox="0 0 24 24"><path d="' + P_TRASH + '"/></svg></button></div>';
+    }).join('');
+}
+var P_UP = 'M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z', P_DOWN = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z', P_TRASH = 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z';
+
+function makeSlug(label) {
+    var base = String(label).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    if (!base) base = 'menu' + Date.now().toString(36);
+    var slug = base, n = 2;
+    while (webMenus.some(function(m) { return m.slug === slug; })) { slug = base + '-' + n; n++; }
+    return slug;
+}
+async function addMenu() {
+    if (!menusFromDb) { showNotif('Jalankan SQL dulu (tabel site_menus belum ada)', 'error'); return; }
+    var label = document.getElementById('mnLabel').value.trim();
+    var title = document.getElementById('mnTitle').value.trim();
+    if (!label) { showNotif('Nama menu wajib diisi', 'error'); return; }
+    var maxOrder = webMenus.reduce(function(m, x) { return Math.max(m, x.sort_order || 0); }, 0);
+    try {
+        var res = await supabase.from('site_menus').insert({ slug: makeSlug(label), label: label, title: title || label, sort_order: maxOrder + 1 });
+        if (res.error) throw res.error;
+        document.getElementById('mnLabel').value = ''; document.getElementById('mnTitle').value = '';
+        showNotif('Menu "' + label + '" ditambahkan', 'success');
+        loadMenusPage();
+    } catch (e) { showNotif('Gagal tambah menu: ' + e.message, 'error'); }
+}
+async function deleteMenu(id) {
+    var m = webMenus.find(function(x) { return x.id === id; });
+    if (!m) return;
+    if (webMenus.length <= 1) { showNotif('Minimal harus ada 1 menu', 'error'); return; }
+    if (!confirm('Hapus menu "' + m.label + '"?\nGame di kategori ini tidak ikut terhapus, tapi tidak akan tampil di web utama sampai dipindah kategori.')) return;
+    try {
+        var res = await supabase.from('site_menus').delete().eq('id', id);
+        if (res.error) throw res.error;
+        showNotif('Menu dihapus', 'success');
+        loadMenusPage();
+    } catch (e) { showNotif('Gagal hapus menu: ' + e.message, 'error'); }
+}
+async function moveMenu(id, dir) {
+    var i = webMenus.findIndex(function(x) { return x.id === id; });
+    var j = i + dir;
+    if (i < 0 || j < 0 || j >= webMenus.length) return;
+    var a = webMenus[i], b = webMenus[j];
+    try {
+        var r1 = await supabase.from('site_menus').update({ sort_order: j + 1 }).eq('id', a.id);
+        var r2 = await supabase.from('site_menus').update({ sort_order: i + 1 }).eq('id', b.id);
+        if (r1.error) throw r1.error; if (r2.error) throw r2.error;
+        // normalisasi urutan agar selalu 1..n
+        for (var k = 0; k < webMenus.length; k++) {
+            var target = webMenus[k];
+            var newOrder = (target.id === a.id) ? j + 1 : (target.id === b.id) ? i + 1 : k + 1;
+            if (target.sort_order !== newOrder) await supabase.from('site_menus').update({ sort_order: newOrder }).eq('id', target.id);
+        }
+        loadMenusPage();
+    } catch (e) { showNotif('Gagal ubah urutan: ' + e.message, 'error'); }
+}
+
+/* ================= BANNER & IKLAN ================= */
+var bnType = 'banner', bnMode = 'url', bnItems = [], bnTableOk = true;
+
+function setBnType(t) {
+    bnType = t;
+    document.getElementById('bnTypeBanner').classList.toggle('on', t === 'banner');
+    document.getElementById('bnTypeIklan').classList.toggle('on', t === 'iklan');
+    document.getElementById('bnTypeHint').innerText = t === 'banner'
+        ? 'Banner = gambar geser otomatis di atas halaman Home (ideal 1200x500).'
+        : 'Iklan = popup yang muncul setiap web utama dibuka / di-refresh (ideal 3:4 atau 1:1).';
+}
+function setBnMode(m) {
+    bnMode = m;
+    document.getElementById('bnModeUrl').classList.toggle('on', m === 'url');
+    document.getElementById('bnModeFile').classList.toggle('on', m === 'file');
+    document.getElementById('bnRowUrl').style.display = m === 'url' ? 'block' : 'none';
+    document.getElementById('bnRowFile').style.display = m === 'file' ? 'block' : 'none';
+}
+function bnUrlPreview() {
+    var v = document.getElementById('bnUrl').value.trim();
+    var box = document.getElementById('bnPreview');
+    if (!v) { box.style.display = 'none'; return; }
+    document.getElementById('bnPreviewImg').src = v; box.style.display = 'flex';
+}
+function bnFilePicked(inp) {
+    var f = inp.files && inp.files[0];
+    if (!f) return;
+    document.getElementById('bnFileName').innerText = f.name + ' (' + Math.round(f.size / 1024) + ' KB)';
+    document.getElementById('bnPreviewImg').src = URL.createObjectURL(f);
+    document.getElementById('bnPreview').style.display = 'flex';
+}
+async function loadBanners() {
+    setBnType(bnType);
+    try {
+        var r = await supabase.from('site_banners').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
+        if (r.error) throw r.error;
+        bnItems = r.data || []; bnTableOk = true;
+    } catch (e) {
+        bnItems = []; bnTableOk = false;
+        showNotif('Gagal load banner: ' + e.message + ' (sudah jalankan SQL?)', 'error');
+    }
+    renderBanners();
+}
+function renderBanners() {
+    ['banner', 'iklan'].forEach(function(type) {
+        var list = bnItems.filter(function(x) { return x.type === type; });
+        var cap = type === 'banner' ? 'Banner' : 'Iklan';
+        document.getElementById('bnCount' + cap).innerText = list.length + ' item';
+        var root = document.getElementById('bnList' + cap);
+        if (list.length === 0) { root.innerHTML = '<div class="hint-note" style="grid-column:1/-1;">Belum ada ' + cap.toLowerCase() + '. Tambahkan lewat form.</div>'; return; }
+        root.innerHTML = list.map(function(x, i) {
+            return '<div class="bn-card"><div class="bn-thumb ' + (type === 'iklan' ? 'tall' : '') + '"><img src="' + escAttr(x.image_url) + '" alt="" onerror="this.parentNode.innerHTML=\'<span class=hint-note>Gagal dimuat</span>\'"></div>' +
+                '<div class="bn-meta"><span>' + cap + ' ' + (i + 1) + '</span><button class="icon-btn red" title="Hapus" onclick="deleteBanner(' + x.id + ')"><svg viewBox="0 0 24 24"><path d="' + P_TRASH + '"/></svg></button></div></div>';
+        }).join('');
+    });
+}
+async function addBanner() {
+    if (!bnTableOk) { showNotif('Jalankan SQL dulu (tabel site_banners belum ada)', 'error'); return; }
+    var btn = document.getElementById('btnAddBanner');
+    var url = '';
+    try {
+        btn.disabled = true; btn.innerText = 'MEMPROSES...';
+        if (bnMode === 'file') {
+            var f = document.getElementById('bnFile').files[0];
+            if (!f) { showNotif('Pilih foto dari HP dulu', 'error'); return; }
+            url = await uploadImage(f, 'banners', bnType === 'iklan' ? 1200 : 1600);
+        } else {
+            url = document.getElementById('bnUrl').value.trim();
+            if (!url) { showNotif('URL foto masih kosong', 'error'); return; }
+            if (!/^https?:\/\//i.test(url)) { showNotif('URL harus diawali http:// atau https://', 'error'); return; }
+        }
+        var maxOrder = bnItems.filter(function(x) { return x.type === bnType; }).reduce(function(m, x) { return Math.max(m, x.sort_order || 0); }, 0);
+        var res = await supabase.from('site_banners').insert({ type: bnType, image_url: url, sort_order: maxOrder + 1 });
+        if (res.error) throw res.error;
+        document.getElementById('bnUrl').value = ''; document.getElementById('bnFile').value = '';
+        document.getElementById('bnFileName').innerText = ''; document.getElementById('bnPreview').style.display = 'none';
+        showNotif((bnType === 'banner' ? 'Banner' : 'Iklan') + ' ditambahkan', 'success');
+        loadBanners();
+    } catch (e) { showNotif('Gagal tambah: ' + e.message, 'error'); }
+    finally { btn.disabled = false; btn.innerText = 'TAMBAH'; }
+}
+async function deleteBanner(id) {
+    if (!confirm('Hapus item ini dari web utama?')) return;
+    try {
+        var res = await supabase.from('site_banners').delete().eq('id', id);
+        if (res.error) throw res.error;
+        showNotif('Dihapus', 'success');
+        loadBanners();
+    } catch (e) { showNotif('Gagal hapus: ' + e.message, 'error'); }
+}
+
+/* ================= INIT: HP / LAPTOP, ANTI ZOOM ================= */
+(function() {
+    var stop = function(e) { e.preventDefault(); };
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function(ev) { document.addEventListener(ev, stop, { passive: false }); });
+    document.addEventListener('touchmove', function(e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+    document.addEventListener('wheel', function(e) { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0', '_'].indexOf(e.key) !== -1) e.preventDefault();
+    });
+    document.addEventListener('contextmenu', function(e) { if (e.target && e.target.tagName === 'IMG') e.preventDefault(); });
+
+    function syncBnavBadges() {
+        [['inboxBadge', 'bnInbox'], ['chatBadge', 'bnChat']].forEach(function(p) {
+            var src = document.getElementById(p[0]), dst = document.getElementById(p[1]);
+            if (!src || !dst) return;
+            var txt = (src.textContent || '').trim();
+            var show = src.style.display !== 'none' && txt !== '' && txt !== '0';
+            dst.style.display = show ? 'block' : 'none';
+            dst.textContent = txt;
+        });
+    }
+    ['inboxBadge', 'chatBadge'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && window.MutationObserver) new MutationObserver(syncBnavBadges).observe(el, { childList: true, characterData: true, subtree: true, attributes: true });
+    });
+    syncBnavBadges();
+    loadMenus();
+})();
+
 </script>
 </body>
   </html>
