@@ -578,6 +578,20 @@ img{-webkit-user-drag:none;user-drag:none;}
   input,select,textarea{font-size:16px !important;}
 }
 @media(min-width:769px){.bnav{display:none !important;}}
+
+/* ===== ON/OFF GAME ===== */
+.sw{position:relative;width:46px;height:26px;border-radius:20px;background:#4a4d55;transition:background .2s;flex-shrink:0;cursor:pointer;}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;}
+.sw.on{background:var(--green,#43c58a);}
+.sw.on::after{left:23px;}
+.gs-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);margin-bottom:8px;}
+.gs-row img{width:42px;height:42px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg);}
+.gs-row input[type=checkbox]{width:20px;height:20px;accent-color:#d4af37;flex-shrink:0;}
+.gs-tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.gs-tools input[type=text]{flex:1;min-width:140px;}
+.gs-btn{padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;font-weight:700;}
+.gs-btn.off{background:rgba(239,100,100,.14);color:var(--red);border-color:rgba(239,100,100,.5);}
+.gs-btn.on{background:rgba(67,197,138,.14);color:var(--green,#43c58a);border-color:rgba(67,197,138,.5);}
 </style>
 </head>
 <body>
@@ -613,6 +627,10 @@ img{-webkit-user-drag:none;user-drag:none;}
         <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 8 18.5 8s1.5.67 1.5 1.5S19.33 11 18.5 11z"/></svg>
         <span>Games</span>
       </div>
+      <div class="nav-item" data-nav="gamestatus" onclick="switchTab('gamestatus')">
+        <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg>
+        <span>ON / OFF Game</span>
+      </div>
       <div class="nav-item" data-nav="photos" onclick="switchTab('photos')">
         <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
         <span>Photo Setting</span>
@@ -624,6 +642,10 @@ img{-webkit-user-drag:none;user-drag:none;}
       <div class="nav-item" data-nav="menus" onclick="switchTab('menus')">
         <svg class="" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
         <span>Menu Web</span>
+      </div>
+      <div class="nav-item" data-nav="rows" onclick="switchTab('rows')">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16v6H4V5zm0 8h16v6H4v-6z"/></svg>
+        <span>Baris Home</span>
       </div>
       <div class="nav-item" data-nav="inbox" onclick="switchTab('inbox')">
         <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
@@ -784,6 +806,16 @@ img{-webkit-user-drag:none;user-drag:none;}
             </select>
           </div>
           <div class="form-group" style="margin-bottom:12px;">
+            <label>Kategori 2 (opsional)</label>
+            <select id="gameCategory2"><option value="">- Tidak ada -</option></select>
+            <p class="hint-note">Isi jika game ingin tampil di 2 menu sekaligus, contoh: Home + Crash.</p>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Baris Home (opsional)</label>
+            <select id="gameRow"><option value="">- Tidak ada -</option></select>
+            <p class="hint-note">Tampilkan game ini juga di baris tambahan pada halaman Home.</p>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
             <label>Foto/Icon Game</label>
             <div class="seg">
               <button type="button" class="on" id="gmModeUrl" onclick="setGameImgMode('url')"><svg class="ic" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>URL</button>
@@ -822,6 +854,39 @@ img{-webkit-user-drag:none;user-drag:none;}
             </table>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="page" id="content-rows">
+      <div class="games-grid">
+        <div class="panel">
+          <div class="panel-title">Tambah Baris Home</div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Judul Baris</label>
+            <input type="text" id="rwTitle" placeholder="Contoh: Game Terbaru, Paling Gacor">
+            <p class="hint-note">Baris baru muncul di halaman Home, di bawah Hot Games. Isi baris dengan memilih "Baris Home" di form Tambah/Edit Game.</p>
+          </div>
+          <button class="save-btn" onclick="addRow()">TAMBAH BARIS</button>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Daftar Baris di Home <span class="hint" id="rwCount"></span></div>
+          <div class="mn-row"><div class="mn-info"><b>Hot Games</b><span>Baris bawaan (game dengan kategori Home)</span></div></div>
+          <div id="rowList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="content-gamestatus">
+      <div class="panel">
+        <div class="panel-title">ON / OFF Game <span class="hint" id="gsCount"></span></div>
+        <p class="hint-note" style="margin-bottom:12px;">Game yang di-OFF tetap tampil di web utama, tapi saat ditekan pemain melihat pesan "Game sedang tidak bisa dimainkan". Centang satu atau lebih game, lalu pilih ON atau OFF. Atau pakai saklar di tiap game.</p>
+        <div class="gs-tools">
+          <input type="text" id="gsSearch" placeholder="Cari nama game..." oninput="renderGameStatus()">
+          <button class="gs-btn" onclick="gsAll()">Pilih Semua</button>
+          <button class="gs-btn off" onclick="gsBulk(false)">OFF kan Terpilih</button>
+          <button class="gs-btn on" onclick="gsBulk(true)">ON kan Terpilih</button>
+        </div>
+        <div id="gsList"></div>
       </div>
     </section>
 
@@ -1179,6 +1244,8 @@ var PAGE_META = {
     dashboard: { title: 'Dashboard', desc: 'Ringkasan statistik dan aktivitas sistem' },
     users:     { title: 'Manajemen Pengguna', desc: 'Kelola seluruh data pengguna terdaftar' },
     games:     { title: 'Manajemen Game', desc: 'Tambah, edit, dan atur link game' },
+    rows:      { title: 'Baris Home', desc: 'Tambah baris game baru di halaman Home (seperti Hot Games)' },
+    gamestatus:{ title: 'ON / OFF Game', desc: 'Aktifkan atau matikan game di web utama' },
     photos:    { title: 'Photo Setting', desc: 'Atur semua foto yang tampil di web utama' },
     banners:   { title: 'Banner & Iklan', desc: 'Tambah atau hapus banner slider dan popup iklan' },
     menus:     { title: 'Menu Web', desc: 'Tambah atau hapus menu di web utama (Home, Crash, dll)' },
@@ -1207,10 +1274,12 @@ function switchTab(tab) {
     document.getElementById('pageDesc').innerText = meta.desc;
 
     if (tab === 'users') loadUsers();
-    if (tab === 'games') { loadGames(); loadMenus(); }
+    if (tab === 'games') { loadGames(); loadMenus(); loadRows(); }
+    if (tab === 'rows') loadRowsPage();
     if (tab === 'banners') loadBanners();
     if (tab === 'menus') loadMenusPage();
     if (tab === 'photos') loadPhotos();
+    if (tab === 'gamestatus') loadGameStatus();
     if (tab === 'inbox') loadPending();
     if (tab === 'chat') loadChatList();
     if (tab === 'activity') loadActivity();
@@ -1275,7 +1344,7 @@ async function loadGames() {
         allGames.forEach(function(g) {
             html += '<tr>' +
                 '<td><div class="u-cell"><img src="' + (g.image_url || 'https://placehold.co/40x40') + '" style="width:40px;height:40px;border-radius:6px;object-fit:cover;"><div><div class="u-name">' + g.title + '</div><div class="u-sub">ID: ' + g.id + '</div></div></div></td>' +
-                '<td><span class="badge level">' + g.category.toUpperCase() + '</span></td>' +
+                '<td>' + catBadges(g) + '</td>' +
                 '<td><button class="btn-detail" onclick="editGame(' + g.id + ')">Edit</button> <button class="btn-detail" style="color:var(--red);border-color:var(--red);" onclick="deleteGame(' + g.id + ')">Hapus</button></td>' +
                 '</tr>';
         });
@@ -1287,6 +1356,8 @@ function resetGameForm() {
     currentEditingGameId = null;
     document.getElementById('gameTitle').value = '';
     document.getElementById('gameCategory').selectedIndex = 0;
+    document.getElementById('gameCategory2').value = '';
+    document.getElementById('gameRow').value = '';
     document.getElementById('gameImage').value = '';
     document.getElementById('gameLink').value = '';
     document.getElementById('gameImageFile').value = '';
@@ -1307,6 +1378,12 @@ function editGame(id) {
         var op = document.createElement('option'); op.value = g.category; op.text = g.category + ' (menu dihapus)'; gc.appendChild(op);
     }
     gc.value = g.category;
+    var gc2 = document.getElementById('gameCategory2');
+    if (g.category2 && !Array.prototype.some.call(gc2.options, function(o) { return o.value === g.category2; })) {
+        var op2 = document.createElement('option'); op2.value = g.category2; op2.text = g.category2 + ' (menu dihapus)'; gc2.appendChild(op2);
+    }
+    gc2.value = g.category2 || '';
+    document.getElementById('gameRow').value = g.row_id ? String(g.row_id) : '';
     document.getElementById('gameImage').value = g.image_url || '';
     document.getElementById('gameLink').value = g.game_link || '';
     document.getElementById('gameImageFile').value = '';
@@ -1332,7 +1409,10 @@ async function saveGame() {
             var gf = document.getElementById('gameImageFile').files[0];
             if (gf) image_url = await uploadImage(gf, 'games', 800);
         }
-        var data = { title: title, category: category, image_url: image_url, game_link: game_link };
+        var category2 = document.getElementById('gameCategory2').value || null;
+        if (category2 === category) category2 = null;
+        var rowVal = document.getElementById('gameRow').value;
+        var data = { title: title, category: category, category2: category2, row_id: rowVal ? Number(rowVal) : null, image_url: image_url, game_link: game_link };
         var res;
         if (currentEditingGameId) {
             res = await supabase.from('games').update(data).eq('id', currentEditingGameId);
@@ -1346,7 +1426,7 @@ async function saveGame() {
         loadGames();
     } catch(e) {
         document.getElementById('loading').style.display = 'none';
-        showNotif('Gagal simpan: ' + e.message, 'error');
+        showNotif('Gagal simpan: ' + e.message + ((String(e.message).indexOf('category2') !== -1 || String(e.message).indexOf('row_id') !== -1) ? ' (jalankan SQL kolom baru dulu)' : ''), 'error');
     }
 }
 
@@ -1431,6 +1511,10 @@ function gameFilePicked(inp) {
 
 /* ================= PHOTO SETTING ================= */
 var PHOTO_GROUPS = [
+    { group: 'Background Web Utama', items: [
+        { key: 'bg_main', label: 'Background Utama', hint: 'Di bawah baris akun sampai bawah halaman web utama (ideal 1080x2400, otomatis digelapkan)', ratio: 'tall', maxW: 1400 },
+        { key: 'bg_sidebar', label: 'Background Sidebar', hint: 'Latar menu samping (sidebar) di web utama (ideal 800x1800)', ratio: 'tall', maxW: 1000 }
+    ]},
     { group: 'Pembayaran', items: [
         { key: 'qris', label: 'Foto QRIS', hint: 'Halaman Deposit: kotak "Scan QRIS untuk Deposit"', ratio: 'square', maxW: 1200 }
     ]},
@@ -1662,1147 +1746,4 @@ function renderDashboardStats() {
 function renderGrowthChart(total) {
     var wrap = document.getElementById('growthChart');
     if (!wrap) return;
-    var labels = ['Jan','Feb','Mar','Apr','Mei','Jun'];
-    var base = Math.max(total, 1);
-    var factors = [0.25, 0.4, 0.55, 0.7, 0.85, 1];
-    var maxH = 120;
-    var html = '';
-    for (var i = 0; i < labels.length; i++) {
-        var h = Math.max(8, Math.round(base * factors[i] / base * maxH));
-        html += '<div class="chart-bar" style="height:' + h + 'px;" title="' + labels[i] + '"></div>';
-    }
-    wrap.innerHTML = html;
-    var lblHtml = '<div style="display:flex;gap:10px;margin-top:24px;">';
-    labels.forEach(function(l) { lblHtml += '<div style="flex:1;text-align:center;font-size:10px;color:var(--muted);">' + l + '</div>'; });
-    lblHtml += '</div>';
-    wrap.innerHTML += lblHtml;
-}
-
-function renderRecentUsers() {
-    var tbody = document.getElementById('dashRecentUsers');
-    if (!tbody) return;
-    var recent = allUsers.slice().reverse().slice(0, 5);
-    if (recent.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted);">Belum ada data</td></tr>';
-        return;
-    }
-    var html = '';
-    recent.forEach(function(u) {
-        html += '<tr>' +
-            '<td><div class="u-cell"><div class="u-avatar">' + (u.username || '?').charAt(0).toUpperCase() + '</div>' +
-            '<div class="u-name">' + u.username + '</div></div></td>' +
-            '<td style="color:var(--muted);">' + (u.email || '-') + '</td>' +
-            '<td style="color:var(--muted);">' + (u.no_hp || '-') + '</td>' +
-            '<td>' + userStatusBadge(u) + '</td>' +
-            '<td><span class="badge level">' + (u.level || 'Bronze') + '</span></td>' +
-            '<td><button class="btn-detail" onclick="openUserDetail(\'' + u.username + '\')">Detail</button></td>' +
-            '</tr>';
-    });
-    tbody.innerHTML = html;
-}
-
-function filterUsers() {
-    var q = document.getElementById('searchUser').value.toLowerCase();
-    var filtered = allUsers.filter(function(u) { return u.username.toLowerCase().indexOf(q) !== -1; });
-    renderUsers(filtered);
-}
-
-function openUserDetail(username) {
-    var panel = document.querySelector('#content-userdetail .panel');
-    if (panel && USER_DETAIL_FORM_HTML) panel.innerHTML = USER_DETAIL_FORM_HTML;
-
-    var user = allUsers.find(function(u) { return u.username === username; });
-    if (!user) return;
-    currentEditingUser = user;
-
-    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-    document.getElementById('content-userdetail').classList.add('active');
-    document.getElementById('pageTitle').innerText = 'Detail Pengguna';
-    document.getElementById('pageDesc').innerText = 'Kelola profil dan data pengguna';
-
-    document.getElementById('detailAvatar').innerText = (user.username || 'U').charAt(0).toUpperCase();
-    document.getElementById('detailProfileName').innerText = user.username || '-';
-    document.getElementById('detailProfileEmail').innerText = user.email || '-';
-    document.getElementById('detailProfileStatus').innerText = user.status || 'Aktif';
-    document.getElementById('detailProfileBank').innerText = user.bank || '-';
-    document.getElementById('detailProfileRek').innerText = user.no_rekening || '-';
-    document.getElementById('detailSubtitle').innerText = '@' + user.username;
-
-    document.getElementById('statSaldo').innerText = formatRupiah(user.saldo || 0);
-    document.getElementById('statLevel').innerText = user.level || 'Bronze';
-    document.getElementById('statDeposit').innerText = formatRupiah(user.total_deposit || 0);
-    document.getElementById('statMaxWin').innerText = formatRupiah(user.max_win || 0);
-
-    document.getElementById('editUsername').value = user.username || '';
-    document.getElementById('editPassword').value = user.password || '';
-    document.getElementById('editEmail').value = user.email || '';
-    document.getElementById('editNoHp').value = user.no_hp || '';
-    document.getElementById('editKodeRef').value = user.kode_ref || '';
-    document.getElementById('editBank').value = user.bank || '';
-    document.getElementById('editUsernameBank').value = user.username_bank || '';
-    document.getElementById('editNoRekening').value = user.no_rekening || '';
-    document.getElementById('editSaldo').value = user.saldo || 0;
-    document.getElementById('editTotalDeposit').value = user.total_deposit || 0;
-    document.getElementById('editMaxWin').value = user.max_win || 0;
-    document.getElementById('editTotalWithdraw').value = user.total_withdraw || 0;
-    document.getElementById('editLevel').value = user.level || 'Bronze';
-    document.getElementById('editStatus').value = user.status || 'Aktif';
-
-    window.scrollTo(0, 0);
-}
-
-function closeUserDetail() {
-    var panel = document.querySelector('#content-userdetail .panel');
-    if (panel && USER_DETAIL_FORM_HTML) panel.innerHTML = USER_DETAIL_FORM_HTML;
-    currentEditingUser = null;
-    switchTab('users');
-}
-
-async function saveUser() {
-    if (!currentEditingUser) return;
-
-    var updatedData = {
-        password: document.getElementById('editPassword').value,
-        email: document.getElementById('editEmail').value,
-        no_hp: document.getElementById('editNoHp').value,
-        kode_ref: document.getElementById('editKodeRef').value,
-        bank: document.getElementById('editBank').value,
-        username_bank: document.getElementById('editUsernameBank').value,
-        no_rekening: document.getElementById('editNoRekening').value,
-        saldo: parseInt(document.getElementById('editSaldo').value) || 0,
-        total_deposit: parseInt(document.getElementById('editTotalDeposit').value) || 0,
-        max_win: parseInt(document.getElementById('editMaxWin').value) || 0,
-        total_withdraw: parseInt(document.getElementById('editTotalWithdraw').value) || 0,
-        level: document.getElementById('editLevel').value,
-        status: document.getElementById('editStatus').value
-    };
-
-    document.getElementById('loading').style.display = 'flex';
-
-    try {
-        var res = await supabase.from('users').update(updatedData).eq('username', currentEditingUser.username);
-        document.getElementById('loading').style.display = 'none';
-        if (res.error) throw res.error;
-        showNotif('Data user berhasil disimpan!', 'success');
-        for (var key in updatedData) currentEditingUser[key] = updatedData[key];
-        document.getElementById('detailProfileStatus').innerText = updatedData.status;
-        document.getElementById('detailProfileBank').innerText = updatedData.bank || '-';
-        document.getElementById('detailProfileRek').innerText = updatedData.no_rekening || '-';
-        document.getElementById('statSaldo').innerText = formatRupiah(updatedData.saldo);
-        document.getElementById('statLevel').innerText = updatedData.level;
-        document.getElementById('statDeposit').innerText = formatRupiah(updatedData.total_deposit);
-        document.getElementById('statMaxWin').innerText = formatRupiah(updatedData.max_win);
-    } catch (e) {
-        document.getElementById('loading').style.display = 'none';
-        showNotif('Gagal menyimpan: ' + e.message, 'error');
-    }
-}
-
-async function deleteUser() {
-    if (!currentEditingUser) return;
-    if (!confirm('Yakin hapus user ' + currentEditingUser.username + '?')) return;
-
-    document.getElementById('loading').style.display = 'flex';
-    try {
-        var res = await supabase.from('users').delete().eq('username', currentEditingUser.username);
-        document.getElementById('loading').style.display = 'none';
-        if (res.error) throw res.error;
-        showNotif('User berhasil dihapus', 'success');
-        closeUserDetail();
-    } catch (e) {
-        document.getElementById('loading').style.display = 'none';
-        showNotif('Gagal hapus: ' + e.message, 'error');
-    }
-}
-
-/* ================= INBOX ================= */
-async function loadPending() {
-    try {
-        var res = await supabase.from('pending').select('*').order('tanggal', { ascending: false });
-        if (res.error) {
-            res = await supabase.from('pending').select('*');
-            if (res.error) throw res.error;
-        }
-        var rawAll = res.data || [];
-        var hiddenCount = 0;
-
-        allPending = rawAll.filter(function(p) {
-            if (isPendingHidden(p.id)) { hiddenCount++; return false; }
-            return true;
-        });
-
-        var deposits = [];
-        var withdraws = [];
-        allPending.forEach(function(p) {
-            var t = getPendingType(p);
-            if (t === 'deposit') deposits.push(p);
-            else if (t === 'withdraw') withdraws.push(p);
-            else deposits.push(p);
-        });
-
-        function safeSort(a, b) { return getPendingDate(b) - getPendingDate(a); }
-        deposits.sort(safeSort);
-        withdraws.sort(safeSort);
-
-        var elInboxBadge = document.getElementById('inboxBadge');
-        if (elInboxBadge) { elInboxBadge.innerText = allPending.length; elInboxBadge.style.display = allPending.length > 0 ? 'inline-block' : 'none'; }
-
-        var elDepBadge = document.getElementById('depositBadge');
-        if (elDepBadge) elDepBadge.innerText = deposits.length;
-
-        var elWdBadge = document.getElementById('withdrawBadge');
-        if (elWdBadge) elWdBadge.innerText = withdraws.length;
-
-        if (document.getElementById('dashPending')) document.getElementById('dashPending').innerText = allPending.length;
-        if (document.getElementById('inboxTotalPending')) document.getElementById('inboxTotalPending').innerText = rawAll.length;
-        if (document.getElementById('inboxShownCount')) document.getElementById('inboxShownCount').innerText = allPending.length;
-
-        var hiddenWrap = document.getElementById('inboxHiddenWrap');
-        if (hiddenWrap) {
-            if (hiddenCount > 0) {
-                hiddenWrap.style.display = 'inline';
-                document.getElementById('inboxHiddenCount').innerText = hiddenCount;
-            } else {
-                hiddenWrap.style.display = 'none';
-            }
-        }
-        
-        var rawTypes = {};
-        rawAll.forEach(function(p) { rawTypes[getPendingType(p)] = (rawTypes[getPendingType(p)] || 0) + 1; });
-        var typesStr = Object.keys(rawTypes).map(function(k){ return k + ':' + rawTypes[k]; }).join(' · ') || 'kosong';
-        if (document.getElementById('inboxTypesSeen')) document.getElementById('inboxTypesSeen').innerText = typesStr;
-
-        var newIds = [];
-        allPending.forEach(function(p) {
-            if (!lastPendingIds[p.id]) newIds.push(p);
-        });
-        if (newIds.length > 0 && Object.keys(lastPendingIds).length > 0) {
-            newIds.forEach(function(np) {
-                showNotif('Permintaan ' + getPendingType(np).toUpperCase() + ' baru: ' + getPendingUser(np) + ' — ' + formatRupiah(getPendingNominal(np)), 'success');
-            });
-        }
-        lastPendingIds = {};
-        allPending.forEach(function(p) { lastPendingIds[p.id] = true; });
-
-        renderDepositInbox(deposits);
-        renderWithdrawInbox(withdraws);
-        renderDashboardStats();
-    } catch (e) {
-        console.error('[loadPending]', e);
-        var statusBar = document.getElementById('inboxStatusBar');
-        if (statusBar) {
-            statusBar.classList.add('error');
-            statusBar.innerHTML = '<span>Gagal memuat pending: ' + (e.message || 'unknown error') + '</span>';
-        }
-        showNotif('Gagal memuat inbox: ' + e.message, 'error');
-    }
-}
-
-function renderPendingCard(p) {
-    var type = getPendingType(p);
-    var user = getPendingUser(p);
-    var nominal = getPendingNominal(p);
-    var d = getPendingDate(p);
-
-    var cls = type === 'withdraw' ? ' withdraw' : '';
-    var avatarCls = type === 'withdraw' ? ' withdraw' : '';
-    var nomCls = type === 'withdraw' ? ' withdraw' : '';
-
-    return '<div class="pending-item' + cls + '" onclick="openDepositDetail(' + p.id + ')">' +
-        '<div class="pending-info">' +
-        '<div class="pending-avatar' + avatarCls + '">' + (user ? user.charAt(0).toUpperCase() : '?') + '</div>' +
-        '<div><h3>' + escapeHtml(user) + '</h3><p>Klik untuk lihat detail</p></div>' +
-        '</div>' +
-        '<div class="pending-nominal">' +
-        '<div class="nom' + nomCls + '">' + formatRupiah(nominal) + '</div>' +
-        '<div class="time">' + d.toLocaleString('id-ID') + '</div>' +
-        '</div></div>';
-}
-
-function renderDepositInbox(deposits) {
-    var container = document.getElementById('depositInboxContainer');
-    if (!container) return;
-    if (deposits.length === 0) {
-        container.innerHTML = '<div class="empty-inbox"><p>Tidak ada permohonan deposit</p></div>';
-        return;
-    }
-    container.innerHTML = '';
-    deposits.forEach(function(p) {
-        container.innerHTML += renderPendingCard(p);
-    });
-}
-
-function openDepositDetail(pendingId) {
-    var p = allPending.find(function(x) { return x.id === pendingId; });
-    if (!p) return;
-
-    var type = getPendingType(p);
-    var user = getPendingUser(p);
-    var nominal = getPendingNominal(p);
-    var d = getPendingDate(p);
-
-    document.querySelectorAll('.page').forEach(function(pg) { pg.classList.remove('active'); });
-    document.getElementById('content-userdetail').classList.add('active');
-    document.getElementById('pageTitle').innerText = 'Detail ' + (type === 'withdraw' ? 'Withdraw' : 'Deposit');
-    document.getElementById('pageDesc').innerText = 'Verifikasi permintaan pengguna';
-
-    document.getElementById('detailAvatar').innerText = user.charAt(0).toUpperCase();
-    document.getElementById('detailProfileName').innerText = user;
-    document.getElementById('detailProfileEmail').innerText = 'Permohonan ' + type;
-    document.getElementById('detailProfileStatus').innerText = type.toUpperCase();
-    document.getElementById('detailProfileBank').innerText = p.bank || '-';
-    document.getElementById('detailProfileRek').innerText = p.no_rekening || '-';
-    document.getElementById('detailSubtitle').innerText = 'Permohonan ' + type;
-    document.getElementById('statSaldo').innerText = formatRupiah(nominal);
-    document.getElementById('statLevel').innerText = type.toUpperCase();
-    document.getElementById('statDeposit').innerText = d.toLocaleString('id-ID');
-    document.getElementById('statMaxWin').innerText = user;
-
-    var buktiUrl = p.bukti_url || '';
-    var html = '';
-    
-    if(type === 'deposit') {
-        html += '<div class="section-title">Bukti Transfer</div>' +
-            (buktiUrl ? '<img src="' + buktiUrl + '" class="bukti-thumb" onclick="openFullscreen(\'' + buktiUrl + '\')" onerror="this.style.display=\'none\'">' : '<p style="color:var(--muted);font-size:12px;">Tidak ada bukti</p>');
-    }
-    
-    html += '<div class="section-title">Detail Permintaan</div>' +
-        '<div class="withdraw-detail">' +
-        '<div class="withdraw-row"><span class="label">USERNAME</span><span class="value">' + escapeHtml(user) + '</span></div>' +
-        '<div class="withdraw-row"><span class="label">NOMINAL</span><span class="value" style="color:' + (type === 'withdraw' ? 'var(--amber)' : 'var(--green)') + ';">' + formatRupiah(nominal) + '</span></div>';
-        
-    if(type === 'withdraw') {
-        html += '<div class="withdraw-row"><span class="label">BANK</span><span class="value">' + (p.bank || '-') + '</span></div>' +
-                '<div class="withdraw-row"><span class="label">NO REK</span><span class="value">' + (p.no_rekening || '-') + '</span></div>' +
-                '<div class="withdraw-row"><span class="label">NAMA REK</span><span class="value">' + (p.username_bank || '-') + '</span></div>';
-    }
-        
-    html += '<div class="withdraw-row"><span class="label">TANGGAL</span><span class="value">' + d.toLocaleString('id-ID') + '</span></div>' +
-        '</div>' +
-        '<div class="inbox-actions">' +
-        (type === 'withdraw'
-            ? '<button class="inbox-btn setujui" onclick="approveWithdraw(' + p.id + ');">SETUJUI</button>'
-            : '<button class="inbox-btn setujui" onclick="approveDeposit(' + p.id + ');">SETUJUI</button>') +
-        '<button class="inbox-btn tolak" onclick="openRejectModal(' + p.id + ', \'' + type + '\', ' + nominal + ');">TOLAK</button>' +
-        '</div>';
-
-    var detailGrid = document.querySelector('#content-userdetail .detail-grid');
-    var panel = detailGrid.querySelector('.panel');
-    if (panel) panel.innerHTML = html;
-
-    window.scrollTo(0, 0);
-}
-
-function renderWithdrawInbox(withdraws) {
-    var container = document.getElementById('withdrawInboxContainer');
-    if (!container) return;
-    if (withdraws.length === 0) {
-        container.innerHTML = '<div class="empty-inbox"><p>Tidak ada permohonan withdraw</p></div>';
-        return;
-    }
-    container.innerHTML = '';
-    withdraws.forEach(function(p) {
-        var user = getPendingUser(p);
-        var nominal = getPendingNominal(p);
-        container.innerHTML += '<div class="inbox-item">' +
-            '<div class="inbox-header">' +
-            '<span class="inbox-user">' + escapeHtml(user) + '</span>' +
-            '<span class="inbox-type withdraw">WITHDRAW</span>' +
-            '</div>' +
-            '<div class="withdraw-detail">' +
-            '<div class="withdraw-row"><span class="label">TOTAL WITHDRAW</span><span class="value" style="color:var(--amber);">' + formatRupiah(nominal) + '</span></div>' +
-            '<div class="withdraw-row"><span class="label">NAMA REK</span><span class="value">' + (p.username_bank || '-') + '</span></div>' +
-            '<div class="withdraw-row"><span class="label">NO REK</span><span class="value">' + (p.no_rekening || '-') + '</span></div>' +
-            '<div class="withdraw-row"><span class="label">BANK</span><span class="value">' + (p.bank || '-') + '</span></div>' +
-            '</div>' +
-            '<div class="withdraw-warning">SILAHKAN TF SESUAI DATA YANG BERLAKU, JIKA NAMA REK DENGAN DATA BERBEDA MAKA AKAN HANGUS!</div>' +
-            '<div class="inbox-actions">' +
-            '<button class="inbox-btn setujui" onclick="approveWithdraw(' + p.id + ')">SETUJUI</button>' +
-            '<button class="inbox-btn tolak" onclick="openRejectModal(' + p.id + ', \'withdraw\', ' + nominal + ')">TOLAK</button>' +
-            '</div></div>';
-    });
-}
-
-async function ensurePendingDeleted(pendingId) {
-    try {
-        var del = await supabase.from('pending').delete().eq('id', pendingId).select();
-        if (del.error) return false;
-        if (del.data && del.data.length > 0) return true;
-        return false;
-    } catch (e) {
-        return false;
-    }
-}
-
-async function approveDeposit(pendingId) {
-    var p = allPending.find(function(x) { return x.id === pendingId; });
-    if (!p) return;
-
-    document.getElementById('loading').style.display = 'flex';
-    try {
-        var res = await supabase.rpc('approve_deposit', {
-            p_username: getPendingUser(p),
-            p_nominal: getPendingNominal(p),
-            p_pending_id: p.id
-        });
-        if (res.error) throw res.error;
-
-        await ensurePendingDeleted(p.id);
-        await supabase.from('transactions').insert({ 
-            username: getPendingUser(p), type: 'deposit', 
-            pesan: 'Deposit Berhasil', nominal: getPendingNominal(p), read_status: true 
-        });
-        
-        document.getElementById('loading').style.display = 'none';
-        showNotif('Deposit disetujui', 'success');
-        loadPending();
-        loadUsers();
-        switchTab('inbox');
-    } catch (e) {
-        document.getElementById('loading').style.display = 'none';
-        showNotif('Gagal: ' + e.message, 'error');
-    }
-}
-
-async function approveWithdraw(pendingId) {
-    var p = allPending.find(function(x) { return x.id === pendingId; });
-    if (!p) return;
-
-    document.getElementById('loading').style.display = 'flex';
-    try {
-        var res = await supabase.rpc('approve_withdraw', {
-            p_username: getPendingUser(p),
-            p_nominal: getPendingNominal(p),
-            p_pending_id: p.id
-        });
-        if (res.error) throw res.error;
-
-        await ensurePendingDeleted(p.id);
-        await supabase.from('transactions').insert({ 
-            username: getPendingUser(p), type: 'withdraw', 
-            pesan: 'Withdraw Berhasil', nominal: getPendingNominal(p), read_status: true 
-        });
-        
-        document.getElementById('loading').style.display = 'none';
-        showNotif('Withdraw disetujui', 'success');
-        loadPending();
-        loadUsers();
-        switchTab('inbox');
-    } catch (e) {
-        document.getElementById('loading').style.display = 'none';
-        showNotif('Gagal: ' + e.message, 'error');
-    }
-}
-
-// === MODAL REJECT ===
-function openRejectModal(pendingId, type, nominal) {
-    pendingRejectId = pendingId;
-    document.getElementById('rejectModalDesc').innerText = 'Menolak ' + type.toUpperCase() + ' sebesar ' + formatRupiah(nominal) + '. Pilih alasan:';
-    document.getElementById('rejectModal').classList.add('active');
-}
-function closeRejectModal() {
-    document.getElementById('rejectModal').classList.remove('active');
-    pendingRejectId = null;
-}
-
-async function confirmReject(reason) {
-    if (!pendingRejectId) return;
-    var p = allPending.find(function(x) { return x.id === pendingRejectId; });
-    if (!p) return;
-
-    var type = getPendingType(p);
-    closeRejectModal();
-    document.getElementById('loading').style.display = 'flex';
-    
-    try {
-        // Catat ke transaksi user dengan alasan penolakan (read_status: false agar user dapat notif)
-        await supabase.from('transactions').insert({
-            username: getPendingUser(p), 
-            type: type,
-            pesan: type.toUpperCase() + ' Ditolak - ' + reason,
-            nominal: getPendingNominal(p),
-            read_status: false 
-        });
-
-        await ensurePendingDeleted(p.id);
-        document.getElementById('loading').style.display = 'none';
-        showNotif('Permintaan ditolak', 'success');
-        
-        loadPending();
-        loadUsers();
-        switchTab('inbox');
-    } catch (e) {
-        document.getElementById('loading').style.display = 'none';
-        showNotif('Gagal: ' + e.message, 'error');
-    }
-}
-
-/* ================= CHAT ================= */
-function setChatFilter(f) {
-    currentChatFilter = f;
-    document.querySelectorAll('.chat-filter-tab').forEach(function(t) {
-        t.classList.toggle('active', t.getAttribute('data-filter') === f);
-    });
-    rebuildChatListFromCache();
-}
-
-function rebuildChatListFromCache() {
-    var users = {};
-    allChats.forEach(function(c) {
-        var u = c.username;
-        if (!users[u]) users[u] = { username: u, last_message: '', last_time: '', last_from: '', unread: 0 };
-        if (!users[u].last_message) {
-            users[u].last_message = c.message || '';
-            users[u].last_time = c.tanggal;
-            users[u].last_from = c.from_user;
-        }
-        if (c.from_user === 'user' && !c.read_status) users[u].unread++;
-    });
-    var list = Object.values(users);
-    updateChatFilterCounts(list);
-    renderChatList(list);
-}
-
-function updateChatFilterCounts(list) {
-    var unreplied = 0, replied = 0;
-    list.forEach(function(c) {
-        if (c.last_from === 'user') unreplied++; else replied++;
-    });
-    var elAll = document.getElementById('chatFilterAllCount');
-    var elUn = document.getElementById('chatFilterUnrepliedCount');
-    var elRe = document.getElementById('chatFilterRepliedCount');
-    if (elAll) elAll.innerText = list.length;
-    if (elUn) elUn.innerText = unreplied;
-    if (elRe) elRe.innerText = replied;
-}
-
-async function loadChatList() {
-    try {
-        var res = await supabase.from('chats').select('*').order('tanggal', { ascending: false });
-        if (res.error) throw res.error;
-        allChats = res.data || [];
-
-        var users = {};
-        allChats.forEach(function(c) {
-            var u = c.username;
-            if (!users[u]) users[u] = { username: u, last_message: '', last_time: '', last_from: '', unread: 0 };
-            if (!users[u].last_message) {
-                users[u].last_message = c.message || '';
-                users[u].last_time = c.tanggal;
-                users[u].last_from = c.from_user;
-            }
-            if (c.from_user === 'user' && !c.read_status) users[u].unread++;
-        });
-
-        var chatList = Object.values(users);
-        var totalUnread = chatList.reduce(function(sum, c) { return sum + c.unread; }, 0);
-        
-        var elChatBadge = document.getElementById('chatBadge');
-        if (elChatBadge) { elChatBadge.innerText = totalUnread; elChatBadge.style.display = totalUnread > 0 ? 'inline-block' : 'none'; }
-
-        updateChatFilterCounts(chatList);
-        renderChatList(chatList);
-        renderDashboardStats();
-
-        if (!document.getElementById('content-activity').classList.contains('active')) {
-            updateActivityBadgeOnly();
-        }
-    } catch (e) {}
-}
-
-function updateActivityBadgeOnly() {
-    var unreplied = getUnrepliedList().length;
-    var actBadge = document.getElementById('activityBadge');
-    if (actBadge) {
-        if (unreplied > 0) {
-            actBadge.innerText = unreplied;
-            actBadge.style.display = 'inline-block';
-        } else {
-            actBadge.style.display = 'none';
-        }
-    }
-}
-
-function renderChatList(list) {
-    var container = document.getElementById('chatList');
-    if (!container) return;
-
-    var filtered = list.slice();
-    if (currentChatFilter === 'unreplied') {
-        filtered = filtered.filter(function(c) { return c.last_from === 'user'; });
-    } else if (currentChatFilter === 'replied') {
-        filtered = filtered.filter(function(c) { return c.last_from === 'admin'; });
-    }
-
-    filtered.sort(function(a, b) {
-        if (a.last_from !== b.last_from) return a.last_from === 'user' ? -1 : 1;
-        return new Date(b.last_time) - new Date(a.last_time);
-    });
-
-    if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-inbox"><p>Tidak ada percakapan</p></div>';
-        return;
-    }
-
-    var html = '';
-    filtered.forEach(function(c) {
-        var preview = c.last_message || '';
-        var isImg = preview.indexOf('[IMG]') === 0;
-        if (isImg) preview = 'Foto';
-        if (preview.length > 34) preview = preview.substring(0, 34) + '…';
-        var isUnreplied = c.last_from === 'user';
-
-        html += '<div class="chat-user-item' + (currentChatUser === c.username ? ' active' : '') + (isUnreplied ? ' is-unreplied' : '') + '" onclick="openChatWindow(\'' + escapeSingleQuote(c.username) + '\')">' +
-            '<div class="chat-user-avatar">' + c.username.charAt(0).toUpperCase() + '</div>' +
-            '<div class="chat-user-info">' +
-            '<h3>' + escapeHtml(c.username) + '</h3>' +
-            '<p>' + escapeHtml(preview) + '</p>' +
-            '<span class="chat-status-badge ' + (isUnreplied ? 'unreplied' : 'replied') + '">' + (isUnreplied ? 'Belum Dibalas' : 'Sudah Dibalas') + '</span>' +
-            '</div>' +
-            (c.unread > 0 ? '<div class="chat-user-unread">' + c.unread + '</div>' : '') +
-            '</div>';
-    });
-    container.innerHTML = html;
-}
-
-function escapeSingleQuote(s) {
-    return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-}
-
-function openChatWindow(user) {
-    currentChatUser = user;
-    document.getElementById('chatWindowUsername').innerText = user;
-    document.getElementById('chatHeaderAvatar').innerText = user.charAt(0).toUpperCase();
-    loadChatMessages();
-    if (chatWindowInterval) clearInterval(chatWindowInterval);
-    chatWindowInterval = setInterval(loadChatMessages, 3000);
-    supabase.from('chats').update({ read_status: true }).eq('username', user).eq('from_user', 'user').then(function() { loadChatList(); });
-    rebuildChatListFromCache();
-}
-
-function closeChatWindow() {
-    if (chatWindowInterval) { clearInterval(chatWindowInterval); chatWindowInterval = null; }
-    currentChatUser = null;
-    loadChatList();
-}
-
-async function loadChatMessages() {
-    if (!currentChatUser) return;
-    var res = await supabase.from('chats').select('*').eq('username', currentChatUser).order('tanggal', { ascending: true });
-
-    var container = document.getElementById('chatWindowMessages');
-    container.innerHTML = '';
-    if (!res.data || res.data.length === 0) {
-        container.innerHTML = '<div class="chat-placeholder">Belum ada pesan</div>';
-        return;
-    }
-    res.data.forEach(function(c) {
-        var cls = c.from_user === 'user' ? 'user' : 'admin';
-        var msg = c.message || '';
-        if (msg.indexOf('[IMG]') === 0) {
-            var src = msg.substring(5);
-            container.innerHTML += '<div class="chat-msg ' + cls + ' img-only">' +
-                '<img src="' + src + '" class="chat-img" onclick="openFullscreen(this.src)" alt="Foto">' +
-                '<span class="time">' + (c.time || '') + '</span></div>';
-        } else {
-            container.innerHTML += '<div class="chat-msg ' + cls + '">' + escapeHtml(msg) + '<span class="time">' + (c.time || '') + '</span></div>';
-        }
-    });
-    container.scrollTop = container.scrollHeight;
-
-    try {
-        await supabase.from('chats').update({ read_status: true })
-            .eq('username', currentChatUser).eq('from_user', 'user').eq('read_status', false);
-    } catch (e) {}
-}
-
-async function sendAdminChat() {
-    if (!currentChatUser) { showNotif('Pilih percakapan dulu', 'error'); return; }
-    var input = document.getElementById('chatWindowInput');
-    var msg = input.value.trim();
-    if (!msg && !pendingChatImage) return;
-
-    var now = new Date();
-    var timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-
-    var sends = [];
-    if (pendingChatImage) {
-        sends.push(supabase.from('chats').insert({
-            username: currentChatUser, from_user: 'admin',
-            message: '[IMG]' + pendingChatImage, time: timeStr, read_status: true
-        }));
-    }
-    if (msg) {
-        sends.push(supabase.from('chats').insert({
-            username: currentChatUser, from_user: 'admin', message: msg, time: timeStr, read_status: true
-        }));
-    }
-
-    cancelChatImage();
-    input.value = '';
-
-    try {
-        var results = await Promise.all(sends);
-        for (var i = 0; i < results.length; i++) {
-            if (results[i].error) throw results[i].error;
-        }
-        loadChatMessages();
-        loadChatList();
-        if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
-        else updateActivityBadgeOnly();
-    } catch (e) {
-        showNotif('Gagal kirim: ' + e.message, 'error');
-    }
-}
-
-function handleChatImageSelect(evt) {
-    if (!currentChatUser) {
-        showNotif('Pilih percakapan dulu', 'error');
-        evt.target.value = '';
-        return;
-    }
-    var file = evt.target.files[0];
-    if (!file) return;
-    if (!file.type || file.type.indexOf('image/') !== 0) {
-        showNotif('File harus berupa gambar', 'error');
-        evt.target.value = '';
-        return;
-    }
-    if (file.size > 8 * 1024 * 1024) {
-        showNotif('Ukuran gambar maksimal 8MB', 'error');
-        evt.target.value = '';
-        return;
-    }
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        compressImage(e.target.result, 1200, 0.75).then(function(compressed) {
-            pendingChatImage = compressed;
-            document.getElementById('chatImgPreviewImg').src = compressed;
-            var kb = Math.round(compressed.length / 1024);
-            document.getElementById('chatImgPreviewInfo').innerText = 'Foto siap dikirim · ' + kb + ' KB';
-            document.getElementById('chatImgPreview').classList.add('active');
-        });
-    };
-    reader.readAsDataURL(file);
-    evt.target.value = '';
-}
-
-function compressImage(dataUrl, maxSize, quality) {
-    return new Promise(function(resolve) {
-        var img = new Image();
-        img.onload = function() {
-            var w = img.width, h = img.height;
-            if (w > maxSize || h > maxSize) {
-                if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-                else { w = Math.round(w * maxSize / h); h = maxSize; }
-            }
-            var canvas = document.createElement('canvas');
-            canvas.width = w; canvas.height = h;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.onerror = function() { resolve(dataUrl); };
-        img.src = dataUrl;
-    });
-}
-
-function cancelChatImage() {
-    pendingChatImage = null;
-    var prev = document.getElementById('chatImgPreview');
-    if (prev) prev.classList.remove('active');
-    var pimg = document.getElementById('chatImgPreviewImg');
-    if (pimg) pimg.src = '';
-}
-
-function escapeHtml(text) {
-    var div = document.createElement('div');
-    div.textContent = text == null ? '' : text;
-    return div.innerHTML;
-}
-
-function openChatFromActivity(username) {
-    switchTab('chat');
-    setTimeout(function() {
-        openChatWindow(username);
-        setTimeout(function() {
-            var input = document.getElementById('chatWindowInput');
-            if (input) input.focus();
-        }, 120);
-    }, 200);
-}
-
-/* ================= ACTIVITY ================= */
-async function loadActivity() {
-    var el = document.getElementById('activityTimeline');
-    if (!el) return;
-
-    var items = [];
-
-    allPending.forEach(function(p) {
-        var type = getPendingType(p);
-        items.push({
-            kind: 'pending',
-            pendingId: p.id,
-            username: getPendingUser(p),
-            title: (type === 'deposit' ? 'Permintaan Deposit' : 'Permintaan Withdraw') + ' — ' + getPendingUser(p),
-            desc: formatRupiah(getPendingNominal(p)),
-            time: getPendingDate(p).toLocaleString('id-ID'),
-            rawTime: getPendingDate(p),
-            isUnreplied: false
-        });
-    });
-
-    var byUser = {};
-    allChats.forEach(function(c) {
-        if (!byUser[c.username]) byUser[c.username] = [];
-        byUser[c.username].push(c);
-    });
-
-    var unrepliedCount = 0;
-    for (var user in byUser) {
-        var msgs = byUser[user].slice().sort(function(a,b){ return new Date(a.tanggal) - new Date(b.tanggal); });
-        var last = msgs[msgs.length - 1];
-        var isUnreplied = last.from_user === 'user';
-        if (isUnreplied) unrepliedCount++;
-        var descText = last.message || '';
-        if (descText.indexOf('[IMG]') === 0) descText = 'Foto';
-        items.push({
-            kind: 'chat',
-            username: user,
-            title: (isUnreplied ? 'Pesan Baru dari ' : 'Percakapan dengan ') + user,
-            desc: descText,
-            time: new Date(last.tanggal).toLocaleString('id-ID'),
-            rawTime: new Date(last.tanggal),
-            isUnreplied: isUnreplied
-        });
-    }
-
-    var actBadge = document.getElementById('activityBadge');
-    if (actBadge) {
-        if (unrepliedCount > 0) {
-            actBadge.innerText = unrepliedCount;
-            actBadge.style.display = 'inline-block';
-        } else {
-            actBadge.style.display = 'none';
-        }
-    }
-
-    if (items.length === 0) {
-        el.innerHTML = '<div class="empty-inbox"><p>Belum ada aktivitas tercatat.</p></div>';
-        return;
-    }
-
-    items.sort(function(a, b) { return b.rawTime - a.rawTime; });
-
-    var html = '';
-    items.slice(0, 40).forEach(function(it) {
-        var cls = 'tl-item' + (it.kind === 'chat' && it.isUnreplied ? ' unreplied' : '');
-        var safeUser = escapeSingleQuote(it.username);
-
-        var actions = '';
-        if (it.kind === 'chat') {
-            if (it.isUnreplied) {
-                actions = '<div class="tl-actions">' +
-                    '<button class="tl-btn-reply" onclick="openChatFromActivity(\'' + safeUser + '\')">Balas Sekarang</button>' +
-                    '</div>';
-            } else {
-                actions = '<div class="tl-actions">' +
-                    '<button class="tl-btn-view" onclick="openChatFromActivity(\'' + safeUser + '\')">Lihat Percakapan</button>' +
-                    '</div>';
-            }
-        } else if (it.kind === 'pending') {
-            actions = '<div class="tl-actions">' +
-                '<button class="tl-btn-view" onclick="openDepositDetail(' + it.pendingId + ')">Lihat Detail</button>' +
-                '</div>';
-        }
-
-        html += '<div class="' + cls + '">' +
-            '<div class="tl-title">' + escapeHtml(it.title) + '</div>' +
-            '<div class="tl-desc">' + escapeHtml(it.desc || '') + '</div>' +
-            '<div class="tl-time">' + it.time + '</div>' +
-            actions +
-            '</div>';
-    });
-    el.innerHTML = html;
-}
-
-/* ================= POLLING ================= */
-async function pollForNewMessages() {
-    try {
-        var res = await supabase.from('chats').select('*')
-            .eq('from_user', 'user')
-            .order('tanggal', { ascending: false })
-            .limit(5);
-        if (res.error || !res.data || res.data.length === 0) return;
-
-        var newest = res.data[0];
-        if (lastChatTimestamp === null) {
-            lastChatTimestamp = newest.tanggal;
-            return;
-        }
-
-        if (new Date(newest.tanggal) > new Date(lastChatTimestamp)) {
-            var newMsgs = res.data.filter(function(c) {
-                return new Date(c.tanggal) > new Date(lastChatTimestamp);
-            });
-            if (newMsgs.length > 0) {
-                var latest = newMsgs[0];
-                var preview = (latest.message || '').substring(0, 55);
-                if ((latest.message || '').indexOf('[IMG]') === 0) preview = 'Foto';
-                else if ((latest.message || '').length > 55) preview += '…';
-                showNotif('' + latest.username + ': ' + preview, 'success');
-            }
-            lastChatTimestamp = newest.tanggal;
-            loadChatList();
-            if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
-            else updateActivityBadgeOnly();
-        }
-    } catch (e) {}
-}
-
-/* ================= INIT ================= */
-setInterval(function() {
-    pollForNewMessages();
-    loadPending();
-    if (document.getElementById('content-chat').classList.contains('active')) loadChatList();
-    if (document.getElementById('content-activity').classList.contains('active')) loadActivity();
-}, 5000);
-
-window.addEventListener('DOMContentLoaded', function() {
-    var panel = document.querySelector('#content-userdetail .panel');
-    if (panel) USER_DETAIL_FORM_HTML = panel.innerHTML;
-
-    loadUsers();
-    loadGames();
-    loadPending();
-    loadChatList();
-    loadActivity();
-    pollForNewMessages();
-    document.getElementById('setUrl').value = SUPABASE_URL;
-    document.getElementById('setKey').value = SUPABASE_ANON_KEY;
-});
-
-/* ================= IKON ================= */
-var I_LINK = '<svg class="ic" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>';
-var I_PHONE = '<svg class="ic" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>';
-
-/* ================= MENU WEB ================= */
-var DEFAULT_MENUS = [
-    { slug: 'home', label: 'Home', title: 'Hot Games' },
-    { slug: 'slot', label: 'Slot', title: 'Slot Games' },
-    { slug: 'crash', label: 'Crash', title: 'Crash Games' },
-    { slug: 'arcade', label: 'Arcade', title: 'Arcade Games' }
-];
-var webMenus = DEFAULT_MENUS.slice();
-var menusFromDb = false;
-
-async function loadMenus() {
-    try {
-        var r = await supabase.from('site_menus').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
-        if (r.error) throw r.error;
-        if (!r.data || r.data.length === 0) throw new Error('kosong');
-        webMenus = r.data; menusFromDb = true;
-    } catch (e) { webMenus = DEFAULT_MENUS.slice(); menusFromDb = false; }
-    fillGameCategories();
-    return webMenus;
-}
-function fillGameCategories() {
-    var sel = document.getElementById('gameCategory');
-    if (!sel) return;
-    var cur = sel.value;
-    sel.innerHTML = webMenus.map(function(m) {
-        return '<option value="' + escAttr(m.slug) + '">' + escAttr(m.label) + (m.slug === 'home' ? ' (Hot Games)' : '') + '</option>';
-    }).join('');
-    if (cur && Array.prototype.some.call(sel.options, function(o) { return o.value === cur; })) sel.value = cur;
-}
-async function loadMenusPage() { await loadMenus(); renderMenus(); }
-function renderMenus() {
-    var root = document.getElementById('menuList');
-    document.getElementById('mnCount').innerText = webMenus.length + ' menu';
-    var note = menusFromDb ? '' : '<div class="hint-note" style="color:var(--amber);margin-bottom:10px;">Tabel site_menus belum ada / kosong. Jalankan SQL dulu agar menu bisa diubah. Di bawah ini menu bawaan.</div>';
-    root.innerHTML = note + webMenus.map(function(m, i) {
-        var dis = menusFromDb ? '' : ' disabled';
-        return '<div class="mn-row"><div class="mn-info"><b>' + escAttr(m.label) + '</b><span>Judul halaman: ' + escAttr(m.title || m.label) + ' &middot; kode: ' + escAttr(m.slug) + '</span></div>' +
-            '<button class="icon-btn" title="Naik"' + dis + (i === 0 ? ' disabled' : '') + ' onclick="moveMenu(' + m.id + ',-1)"><svg viewBox="0 0 24 24"><path d="' + P_UP + '"/></svg></button>' +
-            '<button class="icon-btn" title="Turun"' + dis + (i === webMenus.length - 1 ? ' disabled' : '') + ' onclick="moveMenu(' + m.id + ',1)"><svg viewBox="0 0 24 24"><path d="' + P_DOWN + '"/></svg></button>' +
-            '<button class="icon-btn red" title="Hapus"' + dis + ' onclick="deleteMenu(' + m.id + ')"><svg viewBox="0 0 24 24"><path d="' + P_TRASH + '"/></svg></button></div>';
-    }).join('');
-}
-var P_UP = 'M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z', P_DOWN = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z', P_TRASH = 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z';
-
-function makeSlug(label) {
-    var base = String(label).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    if (!base) base = 'menu' + Date.now().toString(36);
-    var slug = base, n = 2;
-    while (webMenus.some(function(m) { return m.slug === slug; })) { slug = base + '-' + n; n++; }
-    return slug;
-}
-async function addMenu() {
-    if (!menusFromDb) { showNotif('Jalankan SQL dulu (tabel site_menus belum ada)', 'error'); return; }
-    var label = document.getElementById('mnLabel').value.trim();
-    var title = document.getElementById('mnTitle').value.trim();
-    if (!label) { showNotif('Nama menu wajib diisi', 'error'); return; }
-    var maxOrder = webMenus.reduce(function(m, x) { return Math.max(m, x.sort_order || 0); }, 0);
-    try {
-        var res = await supabase.from('site_menus').insert({ slug: makeSlug(label), label: label, title: title || label, sort_order: maxOrder + 1 });
-        if (res.error) throw res.error;
-        document.getElementById('mnLabel').value = ''; document.getElementById('mnTitle').value = '';
-        showNotif('Menu "' + label + '" ditambahkan', 'success');
-        loadMenusPage();
-    } catch (e) { showNotif('Gagal tambah menu: ' + e.message, 'error'); }
-}
-async function deleteMenu(id) {
-    var m = webMenus.find(function(x) { return x.id === id; });
-    if (!m) return;
-    if (webMenus.length <= 1) { showNotif('Minimal harus ada 1 menu', 'error'); return; }
-    if (!confirm('Hapus menu "' + m.label + '"?\nGame di kategori ini tidak ikut terhapus, tapi tidak akan tampil di web utama sampai dipindah kategori.')) return;
-    try {
-        var res = await supabase.from('site_menus').delete().eq('id', id);
-        if (res.error) throw res.error;
-        showNotif('Menu dihapus', 'success');
-        loadMenusPage();
-    } catch (e) { showNotif('Gagal hapus menu: ' + e.message, 'error'); }
-}
-async function moveMenu(id, dir) {
-    var i = webMenus.findIndex(function(x) { return x.id === id; });
-    var j = i + dir;
-    if (i < 0 || j < 0 || j >= webMenus.length) return;
-    var a = webMenus[i], b = webMenus[j];
-    try {
-        var r1 = await supabase.from('site_menus').update({ sort_order: j + 1 }).eq('id', a.id);
-        var r2 = await supabase.from('site_menus').update({ sort_order: i + 1 }).eq('id', b.id);
-        if (r1.error) throw r1.error; if (r2.error) throw r2.error;
-        // normalisasi urutan agar selalu 1..n
-        for (var k = 0; k < webMenus.length; k++) {
-            var target = webMenus[k];
-            var newOrder = (target.id === a.id) ? j + 1 : (target.id === b.id) ? i + 1 : k + 1;
-            if (target.sort_order !== newOrder) await supabase.from('site_menus').update({ sort_order: newOrder }).eq('id', target.id);
-        }
-        loadMenusPage();
-    } catch (e) { showNotif('Gagal ubah urutan: ' + e.message, 'error'); }
-}
-
-/* ================= BANNER & IKLAN ================= */
-var bnType = 'banner', bnMode = 'url', bnItems = [], bnTableOk = true;
-
-function setBnType(t) {
-    bnType = t;
-    document.getElementById('bnTypeBanner').classList.toggle('on', t === 'banner');
-    document.getElementById('bnTypeIklan').classList.toggle('on', t === 'iklan');
-    document.getElementById('bnTypeHint').innerText = t === 'banner'
-        ? 'Banner = gambar geser otomatis di atas halaman Home (ideal 1200x500).'
-        : 'Iklan = popup yang muncul setiap web utama dibuka / di-refresh (ideal 3:4 atau 1:1).';
-}
-function setBnMode(m) {
-    bnMode = m;
-    document.getElementById('bnModeUrl').classList.toggle('on', m === 'url');
-    document.getElementById('bnModeFile').classList.toggle('on', m === 'file');
-    document.getElementById('bnRowUrl').style.display = m === 'url' ? 'block' : 'none';
-    document.getElementById('bnRowFile').style.display = m === 'file' ? 'block' : 'none';
-}
-function bnUrlPreview() {
-    var v = document.getElementById('bnUrl').value.trim();
-    var box = document.getElementById('bnPreview');
-    if (!v) { box.style.display = 'none'; return; }
-    document.getElementById('bnPreviewImg').src = v; box.style.display = 'flex';
-}
-function bnFilePicked(inp) {
-    var f = inp.files && inp.files[0];
-    if (!f) return;
-    document.getElementById('bnFileName').innerText = f.name + ' (' + Math.round(f.size / 1024) + ' KB)';
-    document.getElementById('bnPreviewImg').src = URL.createObjectURL(f);
-    document.getElementById('bnPreview').style.display = 'flex';
-}
-async function loadBanners() {
-    setBnType(bnType);
-    try {
-        var r = await supabase.from('site_banners').select('*').order('sort_order', { ascending: true }).order('id', { ascending: true });
-        if (r.error) throw r.error;
-        bnItems = r.data || []; bnTableOk = true;
-    } catch (e) {
-        bnItems = []; bnTableOk = false;
-        showNotif('Gagal load banner: ' + e.message + ' (sudah jalankan SQL?)', 'error');
-    }
-    renderBanners();
-}
-function renderBanners() {
-    ['banner', 'iklan'].forEach(function(type) {
-        var list = bnItems.filter(function(x) { return x.type === type; });
-        var cap = type === 'banner' ? 'Banner' : 'Iklan';
-        document.getElementById('bnCount' + cap).innerText = list.length + ' item';
-        var root = document.getElementById('bnList' + cap);
-        if (list.length === 0) { root.innerHTML = '<div class="hint-note" style="grid-column:1/-1;">Belum ada ' + cap.toLowerCase() + '. Tambahkan lewat form.</div>'; return; }
-        root.innerHTML = list.map(function(x, i) {
-            return '<div class="bn-card"><div class="bn-thumb ' + (type === 'iklan' ? 'tall' : '') + '"><img src="' + escAttr(x.image_url) + '" alt="" onerror="this.parentNode.innerHTML=\'<span class=hint-note>Gagal dimuat</span>\'"></div>' +
-                '<div class="bn-meta"><span>' + cap + ' ' + (i + 1) + '</span><button class="icon-btn red" title="Hapus" onclick="deleteBanner(' + x.id + ')"><svg viewBox="0 0 24 24"><path d="' + P_TRASH + '"/></svg></button></div></div>';
-        }).join('');
-    });
-}
-async function addBanner() {
-    if (!bnTableOk) { showNotif('Jalankan SQL dulu (tabel site_banners belum ada)', 'error'); return; }
-    var btn = document.getElementById('btnAddBanner');
-    var url = '';
-    try {
-        btn.disabled = true; btn.innerText = 'MEMPROSES...';
-        if (bnMode === 'file') {
-            var f = document.getElementById('bnFile').files[0];
-            if (!f) { showNotif('Pilih foto dari HP dulu', 'error'); return; }
-            url = await uploadImage(f, 'banners', bnType === 'iklan' ? 1200 : 1600);
-        } else {
-            url = document.getElementById('bnUrl').value.trim();
-            if (!url) { showNotif('URL foto masih kosong', 'error'); return; }
-            if (!/^https?:\/\//i.test(url)) { showNotif('URL harus diawali http:// atau https://', 'error'); return; }
-        }
-        var maxOrder = bnItems.filter(function(x) { return x.type === bnType; }).reduce(function(m, x) { return Math.max(m, x.sort_order || 0); }, 0);
-        var res = await supabase.from('site_banners').insert({ type: bnType, image_url: url, sort_order: maxOrder + 1 });
-        if (res.error) throw res.error;
-        document.getElementById('bnUrl').value = ''; document.getElementById('bnFile').value = '';
-        document.getElementById('bnFileName').innerText = ''; document.getElementById('bnPreview').style.display = 'none';
-        showNotif((bnType === 'banner' ? 'Banner' : 'Iklan') + ' ditambahkan', 'success');
-        loadBanners();
-    } catch (e) { showNotif('Gagal tambah: ' + e.message, 'error'); }
-    finally { btn.disabled = false; btn.innerText = 'TAMBAH'; }
-}
-async function deleteBanner(id) {
-    if (!confirm('Hapus item ini dari web utama?')) return;
-    try {
-        var res = await supabase.from('site_banners').delete().eq('id', id);
-        if (res.error) throw res.error;
-        showNotif('Dihapus', 'success');
-        loadBanners();
-    } catch (e) { showNotif('Gagal hapus: ' + e.message, 'error'); }
-}
-
-/* ================= INIT: HP / LAPTOP, ANTI ZOOM ================= */
-(function() {
-    var stop = function(e) { e.preventDefault(); };
-    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function(ev) { document.addEventListener(ev, stop, { passive: false }); });
-    document.addEventListener('touchmove', function(e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
-    document.addEventListener('wheel', function(e) { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
-    document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0', '_'].indexOf(e.key) !== -1) e.preventDefault();
-    });
-    document.addEventListener('contextmenu', function(e) { if (e.target && e.target.tagName === 'IMG') e.preventDefault(); });
-
-    function syncBnavBadges() {
-        [['inboxBadge', 'bnInbox'], ['chatBadge', 'bnChat']].forEach(function(p) {
-            var src = document.getElementById(p[0]), dst = document.getElementById(p[1]);
-            if (!src || !dst) return;
-            var txt = (src.textContent || '').trim();
-            var show = src.style.display !== 'none' && txt !== '' && txt !== '0';
-            dst.style.display = show ? 'block' : 'none';
-            dst.textContent = txt;
-        });
-    }
-    ['inboxBadge', 'chatBadge'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el && window.MutationObserver) new MutationObserver(syncBnavBadges).observe(el, { childList: true, characterData: true, subtree: true, attributes: true });
-    });
-    syncBnavBadges();
-    loadMenus();
-})();
-
-</script>
-</body>
-  </html>
+    var labels = ['Jan','Feb'
