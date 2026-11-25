@@ -1220,6 +1220,43 @@ function getPendingUser(p) { return p.username || 'Unknown'; }
 function getPendingNominal(p) { return parseFloat(p.nominal) || 0; }
 function getPendingDate(p) { return p.tanggal ? new Date(p.tanggal) : new Date(); }
 
+/* ================= NOTIFIKASI SISTEM (muncul walau tab di background) ================= */
+var swReg = null;
+var pendingNotifReady = false;
+(function initSystemNotif() {
+    try {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(function(reg) { swReg = reg; }).catch(function() {});
+        }
+        if ('Notification' in window && Notification.permission === 'default') {
+            var askPerm = function() {
+                document.removeEventListener('click', askPerm, true);
+                document.removeEventListener('touchend', askPerm, true);
+                try { Notification.requestPermission(); } catch (e) {}
+            };
+            document.addEventListener('click', askPerm, true);
+            document.addEventListener('touchend', askPerm, true);
+        }
+    } catch (e) {}
+})();
+
+function sendSystemNotif(title, body, tag) {
+    try {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        if (!document.hidden && document.hasFocus()) return;
+        var opt = { body: body || '', tag: tag || 'neo189-admin', renotify: true, vibrate: [200, 100, 200] };
+        if (swReg && swReg.showNotification) {
+            swReg.showNotification(title, opt);
+        } else if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
+            navigator.serviceWorker.ready.then(function(reg) { reg.showNotification(title, opt); }).catch(function() {
+                try { new Notification(title, opt); } catch (e) {}
+            });
+        } else {
+            new Notification(title, opt);
+        }
+    } catch (e) {}
+}
+
 function showNotif(message, type) {
     type = type || 'info';
     var existing = document.getElementById('neoNotif');
@@ -1965,6 +2002,12 @@ async function loadPending() {
                 showNotif('Permintaan ' + getPendingType(np).toUpperCase() + ' baru: ' + getPendingUser(np) + ' — ' + formatRupiah(getPendingNominal(np)), 'success');
             });
         }
+        if (pendingNotifReady) {
+            newIds.forEach(function(np) {
+                sendSystemNotif('Permintaan ' + getPendingType(np).toUpperCase() + ' baru', getPendingUser(np) + ' — ' + formatRupiah(getPendingNominal(np)), 'pending-' + np.id);
+            });
+        }
+        pendingNotifReady = true;
         lastPendingIds = {};
         allPending.forEach(function(p) { lastPendingIds[p.id] = true; });
 
@@ -2636,6 +2679,7 @@ async function pollForNewMessages() {
                 if ((latest.message || '').indexOf('[IMG]') === 0) preview = 'Foto';
                 else if ((latest.message || '').length > 55) preview += '…';
                 showNotif('' + latest.username + ': ' + preview, 'success');
+                sendSystemNotif('Chat baru — ' + latest.username, preview, 'chat-' + latest.username);
             }
             lastChatTimestamp = newest.tanggal;
             loadChatList();
