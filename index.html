@@ -1223,16 +1223,45 @@ function getPendingDate(p) { return p.tanggal ? new Date(p.tanggal) : new Date()
 /* ================= NOTIFIKASI SISTEM (muncul walau tab di background) ================= */
 var swReg = null;
 var pendingNotifReady = false;
+var pushActive = false;
+var VAPID_PUBLIC_KEY = 'BLiqbXoSysE433q1g7GEHc_n9P7oXdVAQbR0Y07u2SvoFqm-zjD-njGnEKnObjYwZIbbyB9VoE_9fagSz07h7p4';
+
+function urlB64ToUint8Array(b64) {
+    var pad = '='.repeat((4 - b64.length % 4) % 4);
+    var raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+    var arr = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+}
+
+async function subscribePush() {
+    try {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return;
+        if (Notification.permission !== 'granted') return;
+        var reg = await navigator.serviceWorker.ready;
+        var sub = await reg.pushManager.getSubscription();
+        if (!sub) {
+            sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY) });
+        }
+        var j = sub.toJSON();
+        var r = await supabase.from('push_subscriptions').upsert(
+            { endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth },
+            { onConflict: 'endpoint', ignoreDuplicates: true }
+        );
+        if (!r.error) pushActive = true;
+        else console.error('[push] simpan subscription gagal', r.error);
+    } catch (e) { console.error('[push]', e); }
+}
 (function initSystemNotif() {
     try {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(function(reg) { swReg = reg; }).catch(function() {});
+            navigator.serviceWorker.register('sw.js').then(function(reg) { swReg = reg; subscribePush(); }).catch(function() {});
         }
         if ('Notification' in window && Notification.permission === 'default') {
             var askPerm = function() {
                 document.removeEventListener('click', askPerm, true);
                 document.removeEventListener('touchend', askPerm, true);
-                try { Notification.requestPermission(); } catch (e) {}
+                try { var rp = Notification.requestPermission(function() { subscribePush(); }); if (rp && rp.then) rp.then(function() { subscribePush(); }); } catch (e) {}
             };
             document.addEventListener('click', askPerm, true);
             document.addEventListener('touchend', askPerm, true);
@@ -1242,6 +1271,7 @@ var pendingNotifReady = false;
 
 function sendSystemNotif(title, body, tag) {
     try {
+        if (pushActive) return;
         if (!('Notification' in window) || Notification.permission !== 'granted') return;
         if (!document.hidden && document.hasFocus()) return;
         var opt = { body: body || '', tag: tag || 'neo189-admin', renotify: true, vibrate: [200, 100, 200] };
